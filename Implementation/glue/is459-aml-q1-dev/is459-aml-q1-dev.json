@@ -1,0 +1,41 @@
+{
+  "name" : "is459-aml-q1-dev",
+  "jobMode" : "SCRIPT",
+  "description" : "IS459 AML Q1 daily historical exposure. One approved bounded development test.",
+  "role" : "arn:aws:iam::160885259244:role/AWSGlueServiceRole-is459-aml-q1",
+  "executionProperty" : {
+    "maxConcurrentRuns" : 1
+  },
+  "command" : {
+    "name" : "glueetl",
+    "scriptLocation" : "s3://is459-aml-g2team7-160885259244-us-east-1/scripts/q1/q1_risk-v1.py",
+    "pythonVersion" : "3"
+  },
+  "defaultArguments" : {
+    "--encryption-type" : "sse-s3",
+    "--spark-event-logs-path" : "s3://aws-glue-assets-160885259244-us-east-1/sparkHistoryLogs/",
+    "--enable-job-insights" : "false",
+    "--output-root" : "s3://is459-aml-g2team7-160885259244-us-east-1",
+    "--custom-logGroup-prefix" : "/is459/aml/q1",
+    "--conf" : "spark.sql.catalog.glue_catalog.glue.skip-name-validation=true",
+    "--preparation-report" : "s3://is459-aml-g2team7-160885259244-us-east-1/quality/preparation/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/report.json",
+    "--job-bookmark-option" : "job-bookmark-disable",
+    "--job-language" : "python",
+    "--TempDir" : "s3://is459-aml-g2team7-160885259244-us-east-1/temporary/q1/",
+    "--analysis-id" : "q1-dev-20220901-v1"
+  },
+  "maxRetries" : 0,
+  "allocatedCapacity" : 2,
+  "timeout" : 15,
+  "maxCapacity" : 2.0,
+  "glueVersion" : "5.1",
+  "numberOfWorkers" : 2,
+  "workerType" : "G.1X",
+  "executionClass" : "STANDARD",
+  "sourceControlDetails" : {
+    "provider" : "GITHUB",
+    "repository" : "is459-aml-project",
+    "branch" : "codex/glue-github-connection",
+    "folder" : "Implementation/glue/is459-aml-q1-dev"
+  }
+}
