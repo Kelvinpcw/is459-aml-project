@@ -35,4 +35,4 @@ This is on-demand batch analysis of synthetic data. The current one-day prototyp
 5. Shared release gate, one published-run manifest, dashboard and Step Functions integration.
 6. Full-run benchmarks, recovery tests, setup/run videos and final resource cleanup.
 
-See [pipeline design](../Proposal/Architecture/Pipeline_Explanation.md), [Q1 validation](results/Q1_VALIDATION.md), [Q2 validation](results/Q2_VALIDATION.md), [local evaluation](results/EVALUATION_LOCAL_VALIDATION.md) and [deployment checkpoint](../PROJECT_CHECKPOINT.md). Kelvin has now configured project CLI profile `IS-459-BDA`; `default` is still a different account. See [SETUP.md](SETUP.md).
+See [pipeline design](../Proposal/Architecture/Pipeline_Explanation.md), [Q1 validation](results/Q1_VALIDATION.md), [Q2 validation](results/Q2_VALIDATION.md), [local evaluation](results/EVALUATION_LOCAL_VALIDATION.md) and [deployment checkpoint](../PROJECT_CHECKPOINT.md). AWS profile names are machine-local; each member must verify their own project login. See [SETUP.md](SETUP.md).

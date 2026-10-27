@@ -40,20 +40,15 @@ Get originals from the [IBM dataset on Kaggle](https://www.kaggle.com/datasets/e
 
 ## 4. AWS identity — verify before cloud work
 
-Kelvin supplied the following verified account identities on 27 October 2026:
+Shared project account: **`160885259244`**. Project Region: **`us-east-1`**.
 
-| Local profile | Account | Use |
-| --- | --- | --- |
-| `IS-459-BDA` | `160885259244` | This project, IAM user `g2team7` |
-| `default` | `372014757586` | Different personal account; not this project |
+Each member must configure their own authorised console login or CLI profile; cloning does not create AWS access. Profile names are local conveniences, not shared cloud resources. You do not need to use the same profile name as another teammate. Never share keys through GitHub or assume your default account is correct.
 
-Project Region: **`us-east-1`**. A teammate must configure their own authorised login/profile; cloning does not create AWS access. Never share keys through GitHub. Profile names are local conveniences, not shared cloud resources.
-
-Read-only checks (adapt the profile name if yours differs):
+For CLI work, replace `YOUR_PROJECT_PROFILE` below with your actual local profile name. These checks are read-only:
 
 ```bash
-aws sts get-caller-identity --profile IS-459-BDA --region us-east-1
-bash Implementation/scripts/check_aws_profile.sh IS-459-BDA
+aws sts get-caller-identity --profile YOUR_PROJECT_PROFILE --region us-east-1
+bash Implementation/scripts/check_aws_profile.sh YOUR_PROJECT_PROFILE
 ```
 
 The guard checks both account and configured region. It aborts if either differs/missing; investigate rather than falling back to `default`. Its legacy default profile is `is459`, so always pass your chosen profile explicitly. Re-check identity at the time of any authorised cloud action. Explicitly pass `--profile`/`--region` on subsequent CLI commands and choose a verified profile/session for local SDK calls; do not assume a prior STS command changes the default account.

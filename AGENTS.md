@@ -19,8 +19,8 @@ The current user's task sets the scope. Do not implement the whole backlog or pr
 
 ## AWS safety and authorisation
 
-- Expected project account: `160885259244`; region: `us-east-1`. Kelvin's project profile: `IS-459-BDA`. His `default` is another account; never silently fall back to it.
-- Teammates may use another local profile name; verify its STS account and region before cloud actions. `bash Implementation/scripts/check_aws_profile.sh IS-459-BDA` is the existing guard; pass the name explicitly because the script's legacy default is `is459`.
+- Expected project account: `160885259244`; region: `us-east-1`. Each member configures their own authorised login/profile. Do not assume a particular local profile name or silently fall back to default credentials.
+- Verify the chosen profile's STS account and region before cloud actions. Use `bash Implementation/scripts/check_aws_profile.sh YOUR_PROJECT_PROFILE`, replacing the placeholder with that member's actual profile name. Pass it explicitly because the script's legacy default is `is459`.
 - Use explicit `--profile` and `--region` on AWS CLI commands. For local SDK calls, use an explicitly selected/verified session rather than ambient default credentials. Glue execution uses its reviewed service role, not laptop credentials.
 - Repository setup and local tests do not authorise paid processing, deployments, IAM grants, destructive actions or resuming paused jobs. Establish the requested scope first; historical approval for one specific attempt is not blanket approval for new work or another teammate's runs.
 - The saved prototype budget is US$1 total unless explicitly revised. The brief's US$250 course budget is not an automatic increase. Estimates are not billing caps. Flag material costs; do not introduce recurring schedules or idle paid compute.
