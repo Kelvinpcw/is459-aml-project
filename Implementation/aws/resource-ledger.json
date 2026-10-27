@@ -5,7 +5,8 @@
   "user_instructions": {
     "paid_runs": "Retain US$1 total prototype budget and flag significant costs. Exact evaluator approval consumed by one successful bounded run; no retry or earlier-stage rerun. New scope needs its own review.",
     "cleanup": "After the project demo and checks are complete, tear down project-created compute and other costly resources. Retain S3 data.",
-    "scope": "Only resources created for this project. Existing unrelated account resources are outside teardown scope."
+    "scope": "Only resources created for this project. Existing unrelated account resources are outside teardown scope.",
+    "final_full_run_budget": "Latest user revision on 28 October 2026: US$30 total project ceiling, superseding US$80. No full-data paid run started. Keep timeouts, zero retries, US$10 output estimate guard and cleanup; flag costs if full completion cannot fit."
   },
   "resources": [
     {
@@ -289,7 +290,9 @@
     "manifests/detector-inputs/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/manifest.json",
     "manifests/evaluator-inputs/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/analysis_id=q2-dev-20220901-m00-v1/manifest.json",
     "references/annotations/dataset_version=ibm-hi-medium-b1b99c68b765580f/HI-Medium_Patterns.txt",
-    "scripts/evaluation/evaluate_q2-v1.py"
+    "scripts/evaluation/evaluate_q2-v1.py",
+    "published/releases/pilot-20220901-m00-v1/manifest.json",
+    "published/current.json"
   ],
   "paid_run_approvals": [
     {
@@ -509,5 +512,15 @@
     "status": "VERIFIED",
     "verification": "Implementation/aws/reviews/evaluation-cloud-verification-m00-v1.json",
     "scope": "Frozen first minute only; no recall/recovery measurement or holdout result."
-  }
+  },
+  "publication": {
+    "release_id": "pilot-20220901-m00-v1",
+    "manifest_uri": "s3://is459-aml-g2team7-160885259244-us-east-1/published/releases/pilot-20220901-m00-v1/manifest.json",
+    "manifest_sha256": "7a1b7a8ed256f8dbdc1922aa335ae19198506cb35b3d9836b8c8a4a3bb02659e",
+    "kind": "pilot",
+    "writes": 2,
+    "new_compute": false,
+    "status": "published after raw quality hashes and actual Parquet populations reconciled"
+  },
+  "approved_final_total_budget_usd": 30
 }

@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "version": "full-v1",
+  "files": {
+    "q1_risk.py": {
+      "sha256": "961fb197a2d9ea887835b9e4699bf8585dda09c1a4b0b5acaedadc57ab535dcd",
+      "bytes": 8170,
+      "s3_key": "scripts/full-v1/q1_risk.py"
+    },
+    "q2_detect.py": {
+      "sha256": "549b2ac6f3f2ba93bd6de7190b7ccc25befc975269008c50cb5179a93eb656f0",
+      "bytes": 19715,
+      "s3_key": "scripts/full-v1/q2_detect.py"
+    },
+    "q2_distributed.py": {
+      "sha256": "fc2f37404d5a18d842dabff0b91017c035f82f36bac04673f754fa4e56d89935",
+      "bytes": 18369,
+      "s3_key": "scripts/full-v1/q2_distributed.py"
+    },
+    "q2_snapshots.py": {
+      "sha256": "a76b7b2e366ef421b0517f91173911b568d2f5a81c90050cf9dca5e67a63be5b",
+      "bytes": 8450,
+      "s3_key": "scripts/full-v1/q2_snapshots.py"
+    },
+    "evaluate_q2.py": {
+      "sha256": "0416846ba0c00b93b77c122c4d663051d8480131de89b0f6cd2cc2b35639a9ec",
+      "bytes": 36563,
+      "s3_key": "scripts/full-v1/evaluate_q2.py"
+    },
+    "evaluate_distributed.py": {
+      "sha256": "9798d9d2c91d3882f87c24a093b7181664c7f07a79d9582986cb1f815d452d22",
+      "bytes": 29341,
+      "s3_key": "scripts/full-v1/evaluate_distributed.py"
+    },
+    "control.py": {
+      "sha256": "cd6e372440339ae6fbe5e34016a68e1580b13b12df78c698f2a52314dcd2fc9a",
+      "bytes": 4883,
+      "s3_key": "scripts/full-v1/control.py"
+    },
+    "prepare.py": {
+      "sha256": "881acd5d9bb0064d090e333d9c2939a57c530863711ab783613aee0f6e24406b",
+      "bytes": 16265,
+      "s3_key": "scripts/full-v1/prepare.py"
+    },
+    "make_q2_input_manifest.py": {
+      "sha256": "3ffc71a7475e286a0ca1fa7f09ea17f4f5c605918b0912a8005192b4fbc3737b",
+      "bytes": 1678,
+      "s3_key": "scripts/full-v1/make_q2_input_manifest.py"
+    },
+    "jobs.zip": {
+      "sha256": "d7f0c1a504162611664c3d7d5ae2ee210cfffc1561ae147c061df7a025ad201f",
+      "bytes": 49385,
+      "s3_key": "scripts/full-v1/jobs.zip"
+    },
+    "dashboard.zip": {
+      "sha256": "9d0e471befd16edceb8f608e6c52c6252b8d46ea222d9d273eb29658cf9c6625",
+      "bytes": 13719,
+      "s3_key": "scripts/full-v1/dashboard.zip"
+    }
+  },
+  "source_tree_sha256": "73eef6902a704b49b9b90957c068051b1e820f68e60409ab682b764039f2e4d7",
+  "immutable": true
+}

@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "release_id": "pilot-20220901-m00-v1",
+  "release_kind": "pilot",
+  "catalog": {
+    "database": "is459_aml_dev",
+    "q1_table": "q1_daily_counts_dev20220901_v2",
+    "q2_table": "q2_case_index_dev20220901_m00_v1"
+  },
+  "reports": {
+    "preparation": {
+      "uri": "s3://is459-aml-g2team7-160885259244-us-east-1/quality/preparation/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/report.json",
+      "sha256": "7d54847a247f957149b3682dfa398cfc775727ee9bbb5d33b729f93812e6eb10"
+    },
+    "q1": {
+      "uri": "s3://is459-aml-g2team7-160885259244-us-east-1/quality/q1/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/analysis_id=q1-dev-20220901-v1/report.json",
+      "sha256": "dfa8cd3231aec7ebb159d40066759484137db1932698d9102b901581e584b97c"
+    },
+    "q2": {
+      "uri": "s3://is459-aml-g2team7-160885259244-us-east-1/quality/q2/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/analysis_id=q2-dev-20220901-m00-v1/report.json",
+      "sha256": "2cf89c9c7e8c5935540b5e6ce574af9bf97f76c30291ac557c7579244dbd9a58"
+    },
+    "evaluation": {
+      "uri": "s3://is459-aml-g2team7-160885259244-us-east-1/quality/evaluation/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/analysis_id=q2-dev-20220901-m00-v1/evaluation_id=eval-dev-20220901-m00-v1/report.json",
+      "sha256": "986426e0d4cfc39d5f03530d836c3573e51b4087b92a7254399edfc64dfd22f3"
+    }
+  }
+}

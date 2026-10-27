@@ -1,0 +1,14 @@
+[theme]
+base = "light"
+primaryColor = "#137b83"
+backgroundColor = "#f6f8fb"
+secondaryBackgroundColor = "#ffffff"
+textColor = "#142e46"
+
+[browser]
+gatherUsageStats = false
+
+[server]
+headless = true
+address = "127.0.0.1"
+fileWatcherType = "none"

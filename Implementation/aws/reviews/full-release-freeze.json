@@ -1,0 +1,11 @@
+{
+  "status": "FROZEN",
+  "version": "full-v1",
+  "source_tree_sha256": "73eef6902a704b49b9b90957c068051b1e820f68e60409ab682b764039f2e4d7",
+  "files": 11,
+  "credential_scan": "PASSED",
+  "total_budget_usd": 30,
+  "compute_timeout_estimate_usd": 14.19,
+  "output_estimate_guard_usd": 10,
+  "paid_full_processing_started": false
+}

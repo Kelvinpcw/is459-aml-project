@@ -196,3 +196,7 @@ Diagram: [Simplified shared pipeline](Simplified/01_Shared_AWS_Architecture.png)
 ## The Key Distinction
 
 **Q1 measures known historical exposure. Q2 discovers connected leads without looking at the answers, then evaluates them afterwards.**
+
+## Concrete publication implementation — 28 October 2026
+
+The implementation uses a short, separately permissioned Glue control stage for sanitised manifests, explicit Catalog registration and the shared release gate. Step Functions waits with `.sync`; the tested control code reconciles physical Parquet counts, then writes the immutable manifest and conditionally updates the S3 current pointer. This replaces the proposed direct ASL PutObject publisher so the same validated Python contract handles compare-and-swap and physical output checks. There is no Lambda publisher. Its three bounded invocations are included in the full-run cost estimate.

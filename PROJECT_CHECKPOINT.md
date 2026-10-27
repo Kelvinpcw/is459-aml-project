@@ -1,3 +1,41 @@
+## Frozen full-data build ready — 28 October 2026
+
+`Implementation/releases/full-v1/` is now frozen and must not be edited. Its deterministic package manifest and per-file SHA256 values are recorded in `manifest.json`; source/ZIP contents passed credential inspection. Full67test suite and final application smoke passed. Final **US$30** ceiling: nominal maxcompute14.19 plus output-estimate guard10 and other overhead/prior charges. Glue capacity and default VPC preflight passed. Input upload/code upload/idle stack creation are next; check their review records before retrying any operation. **No full-data paid processing has started yet.**
+
+## Latest active build — 28 October 2026
+
+Continue the user's **whole-project completion** task on `codex/project-completion`; latest budget is **US$30 total**, replacing US$80. No full-data paid run has started. Do not stop at the old evaluator milestone. Implementation and checks are ready for final packaging; all67local tests passed after the latest baseline/eligibility changes. Both CloudFormation templates pass cfn-lint; AWS validated the full template before the latest budget/CodeVersion parameter update. Regenerate/validate current templates before deploying.
+
+The complete input copy is ready at `Implementation/data/full-20220901-29-v1/`:31,898,238selected/source records,35,230positive labels,0outside/ingestion-quarantined. Original files unchanged; do not regenerate it. `Implementation/deployment/upload_input.py` performs conditional multipart uploads with per-part server SHA256 and whole-local-file verification to new `raw/full-v1/`; **not run yet**.
+
+New software: `pipeline/release.py`, `dashboard/app.py`/`data.py`, `jobs/q2_distributed.py`, `q2_snapshots.py`, `evaluate_distributed.py`, `control.py`; deployment generators/driver/bundle builder in `Implementation/deployment/`, export/publish CLIs in scripts. Read `Implementation/RUNBOOK.md`. Q2v2 uses balanced2hop cycle joins (no open3hop expansion), degree64cycle scope,200m path guard,2m cases/snapshot and full checksum-addressed evidence chunks. Full workflow has28overlapping7day snapshots. Evaluator separates1–8development,9–16holdout,17–28sparse tail, selects no future snapshots, reports both matched-volume and frozen-fraction amount baselines and all5pattern metrics, freezes a5percentage-point improvement target before holdout. Early unavailable history and cycle exclusions are explicit. No v2 cloud/scale/performance claim yet.
+
+US$30 limits: prepare5workers/45min, risk5/45min, detect10/120min, evaluate5/45min, control2/10min×3; all0retries/concurrency1. Nominal maximum compute US$14.19; per-snapshot conservative output-cost guard US$10; prior recorded Glue estimate US$0.280623 plus small queries/storage. Estimates are not billing caps. Final processing may proceed within the user's scope once code freeze/checks are complete; flag inability to fit30before exceeding it.
+
+Next: final dashboard visual check is open locally at127.0.0.1:8501; server session69287, CUA handle `projectTab` in IAB, though IDs are transient. Local server file watching is now disabled to avoid rebuilds during testing. Do not create/reselect a browser just because context changed; `cua.rewriteDocumentation()` if resuming computer use from summary. CUA proof screenshots should be saved and embedded when reporting UI work. Preliminary faded screenshots were removed; preserve older committed evidence. No EC2 exists yet.
+
+Then run final packaging: `deployment/build_bundle.py` freezes a **new** `releases/full-v1/` (not built yet, never edit after freezing), inspect new files for credentials, commit source/evidence and create a PR. `deploy.py` requires explicit profile and phase upload/create/start/status/dashboard/remove-dashboard. Profile **IS-459-BDA** is verified project160885259244/us-east-1; default is different and prohibited. Deploy helpers never automatically start on upload/create. Current published pilot is `pilot-20220901-m00-v1`; S3pointer changes only after all full gates and ETag CAS. Full user authorisation30is current, historical one-minute approvals remain consumed and pilot must not rerun.
+
+Temporary logs in `/private/tmp/`: `is459-final-budget30-suite.log` (67passed/45.599sec), `is459-balanced-cycle-tests.log` (4passed), `is459-wider-eval-budget30-tests.log` (2passed), `is459-full-ingestion.log`. The latest67suite includes current kernel cleanup, full gate coverage checks, matched/frozen baselines and pattern metrics. Subsequent changes are operational docs/helpers and graph resizing; the application test is rerun for that UI change. Working tree is not yet committed. New pilot release/ledger records exist.
+
+---
+
+## Budget revision — 28 October 2026
+
+The user's latest instruction is **“change the limit to $30.”** The final total project ceiling is now **US$30**, superseding the earlier US$80 instruction below. **No full-data paid run has started.** Only the earlier pilot processing and new small S3 publication/live-dashboard queries exist. Reconfigured full-run maxima: preparation5workers/45min, Q1 5/45min, Q2 10/120min, evaluator5/45min, control2/10min×3, zero retries. Compute timeout estimate **US$14.19** at0.44/DPUh; output cost guard **US$10** (conservative30dayS3storage/PUTs), with remaining room for prior charges/startup/logs/short dashboard validation. These are estimates, not hard billing caps. Do not exceed US$30 or reuse stale US$80 budget arguments/tags. If final validation cannot fit, flag the concrete cost instead of proceeding.
+
+## Active continuation — 28 October 2026
+
+The user requested **completion of the entire project**, followed by a **full-dataset run with US$80 total project ceiling** once implementation/checks are ready. Keep the earlier US$1 development ceiling until that final phase. Do not stop at the evaluator milestone below. Current branch: `codex/project-completion`; implementation is in progress and not yet committed. Read `Implementation/COMPLETION_PLAN.md`.
+
+New publication layer and read-only Streamlit dashboard are implemented locally. Eight publication/data-contract tests pass; two distributed detector tests pass; two distributed evaluator tests pass. Dashboard application testing is in progress. A clearly labelled pilot release was published through the new gate after checking raw report hashes, Catalog locations and actual Parquet population counts. Small S3 objects only; no new Glue run, IAM grant or query was started for publication. Gate source: `Implementation/pipeline/release.py`; CLI: `Implementation/scripts/publish_release.py`; release: `published/releases/pilot-20220901-m00-v1/manifest.json`, initial pointer `published/current.json`. Proof: `Implementation/aws/reviews/pilot-release-published-20261028.json`. Existing pilot report limitations remain explicit.
+
+New distributed detector/evaluator source files are working drafts, not frozen/cloud-deployed: `Implementation/jobs/q2_distributed.py`, `evaluate_distributed.py`. Detector uses distributed fan aggregation, bounded 2–4-cycle joins, explicit degree exclusions and chunked complete evidence; its query-plan lineage is cut between stages to avoid plan-memory explosion. Evaluator uses full population joins and exact bounded reference matching, but broader snapshot/scoring-period integration, calibration artifact creation and production entry points are still being completed. Do not claim full-scale/cloud/holdout validation.
+
+Remaining: finish/test application, distributed snapshot/evaluator contracts, orchestration/deployment/teardown and costed final run. No full-data paid run has started; all five prior AWS Glue runs remain terminal. User's full-project request authorises continuing scoped project work; preserve old pilot outputs and avoid unrelated resources.
+
+---
+
 # IS459 AML project — checkpoint
 
 Updated **28 October 2026, Singapore**. The user explicitly resumed and supplied their project CLI profile. **The scoped evaluator continuation is complete; no known project compute or queries are active.** S3 data/results and idle definitions are retained. No further deployment or processing has started.

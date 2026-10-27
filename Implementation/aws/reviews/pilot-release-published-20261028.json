@@ -1,0 +1,70 @@
+{
+  "result": {
+    "manifest_uri": "s3://is459-aml-g2team7-160885259244-us-east-1/published/releases/pilot-20220901-m00-v1/manifest.json",
+    "release_id": "pilot-20220901-m00-v1",
+    "schema_version": 1,
+    "sha256": "7a1b7a8ed256f8dbdc1922aa335ae19198506cb35b3d9836b8c8a4a3bb02659e"
+  },
+  "release": {
+    "schema_version": 1,
+    "release_id": "pilot-20220901-m00-v1",
+    "release_kind": "pilot",
+    "dataset_version": "ibm-hi-medium-b1b99c68b765580f",
+    "run_id": "dev-20220901-v2",
+    "reports": {
+      "preparation": {
+        "uri": "s3://is459-aml-g2team7-160885259244-us-east-1/quality/preparation/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/report.json",
+        "sha256": "7d54847a247f957149b3682dfa398cfc775727ee9bbb5d33b729f93812e6eb10"
+      },
+      "q1": {
+        "uri": "s3://is459-aml-g2team7-160885259244-us-east-1/quality/q1/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/analysis_id=q1-dev-20220901-v1/report.json",
+        "sha256": "dfa8cd3231aec7ebb159d40066759484137db1932698d9102b901581e584b97c"
+      },
+      "q2": {
+        "uri": "s3://is459-aml-g2team7-160885259244-us-east-1/quality/q2/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/analysis_id=q2-dev-20220901-m00-v1/report.json",
+        "sha256": "2cf89c9c7e8c5935540b5e6ce574af9bf97f76c30291ac557c7579244dbd9a58"
+      },
+      "evaluation": {
+        "uri": "s3://is459-aml-g2team7-160885259244-us-east-1/quality/evaluation/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/analysis_id=q2-dev-20220901-m00-v1/evaluation_id=eval-dev-20220901-m00-v1/report.json",
+        "sha256": "986426e0d4cfc39d5f03530d836c3573e51b4087b92a7254399edfc64dfd22f3"
+      }
+    },
+    "catalog": {
+      "database": "is459_aml_dev",
+      "q1_table": "q1_daily_counts_dev20220901_v2",
+      "q2_table": "q2_case_index_dev20220901_m00_v1"
+    },
+    "q1": {
+      "analysis_id": "q1-dev-20220901-v1",
+      "dates": [
+        "2022-09-01"
+      ],
+      "daily_counts": "s3://is459-aml-g2team7-160885259244-us-east-1/gold/risk/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/analysis_id=q1-dev-20220901-v1/daily_counts/"
+    },
+    "q2": {
+      "analysis_id": "q2-dev-20220901-m00-v1",
+      "window_start": "2022-09-01T00:00:00",
+      "window_end": "2022-09-01T00:01:00",
+      "snapshot_cutoff": "2022-09-01T00:01:00",
+      "case_count": 15,
+      "case_index": "s3://is459-aml-g2team7-160885259244-us-east-1/gold/cases/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/analysis_id=q2-dev-20220901-m00-v1/case_index/",
+      "bundles": "s3://is459-aml-g2team7-160885259244-us-east-1/gold/cases/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/analysis_id=q2-dev-20220901-m00-v1/bundles/"
+    },
+    "evaluation": {
+      "evaluation_id": "eval-dev-20220901-m00-v1",
+      "metrics": {
+        "uri": "s3://is459-aml-g2team7-160885259244-us-east-1/evaluation/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/analysis_id=q2-dev-20220901-m00-v1/evaluation_id=eval-dev-20220901-m00-v1/metrics.json",
+        "bytes": 8041,
+        "sha256": "539d8bc7628440d6508dd2806025fb3e321464be3daa0003eaca8a5aff5787fc"
+      }
+    },
+    "timestamp_policy": "dataset-local event time; UTC used only as a fixed internal parsing convention",
+    "warnings": [
+      "Development pilot: Q1 and Q2 have the separate scopes shown; this is not a full-data release.",
+      "No positive labels in this detector window: recall and lift are not measurable.",
+      "No eligible annotated attempts: recovery is not measurable. Unannotated cases are not proven false."
+    ],
+    "created_at_utc": "2026-10-27T18:00:56.235012+00:00"
+  },
+  "validation": "All four raw quality reports pinned, identities/populations matched, both Catalog locations and actual Parquet populations reconciled, all evaluation files independently hashed."
+}

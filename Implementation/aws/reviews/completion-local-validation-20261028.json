@@ -1,0 +1,39 @@
+{
+  "status": "PASSED",
+  "observed_at_singapore": "2026-10-28T03:09:57.559049+08:00",
+  "local_tests": {
+    "suite_count": 67,
+    "suite_seconds": 45.599,
+    "status": "PASSED",
+    "log": "/private/tmp/is459-final-budget30-suite.log",
+    "additional_export_and_balanced_cycle_tests": "PASSED",
+    "latest_application_smoke": "PASSED"
+  },
+  "cloud_validation_claimed": false,
+  "full_source_ingestion": {
+    "records": 31898238,
+    "positive_labels": 35230,
+    "quarantined": 0,
+    "outside_scope": 0
+  },
+  "final_total_budget_usd": 30,
+  "maximum_nominal_glue_compute_usd": 14.19,
+  "q2_output_estimate_guard_usd": 10,
+  "source_sha256": {
+    "Implementation/jobs/control.py": "cd6e372440339ae6fbe5e34016a68e1580b13b12df78c698f2a52314dcd2fc9a",
+    "Implementation/jobs/evaluate_q2.py": "0416846ba0c00b93b77c122c4d663051d8480131de89b0f6cd2cc2b35639a9ec",
+    "Implementation/jobs/evaluate_distributed.py": "9798d9d2c91d3882f87c24a093b7181664c7f07a79d9582986cb1f815d452d22",
+    "Implementation/jobs/q2_snapshots.py": "a76b7b2e366ef421b0517f91173911b568d2f5a81c90050cf9dca5e67a63be5b",
+    "Implementation/jobs/q1_risk.py": "961fb197a2d9ea887835b9e4699bf8585dda09c1a4b0b5acaedadc57ab535dcd",
+    "Implementation/jobs/q2_detect.py": "549b2ac6f3f2ba93bd6de7190b7ccc25befc975269008c50cb5179a93eb656f0",
+    "Implementation/jobs/prepare.py": "881acd5d9bb0064d090e333d9c2939a57c530863711ab783613aee0f6e24406b",
+    "Implementation/jobs/q2_distributed.py": "fc2f37404d5a18d842dabff0b91017c035f82f36bac04673f754fa4e56d89935",
+    "Implementation/pipeline/release.py": "da628585bf77602b0f39fdc8d4f55b6ab611d1b4a0541662ee527da305fdd061",
+    "Implementation/pipeline/__init__.py": "92da5243810d55a5896877629b2a3718e05c9d972a92cd1a4efe6f8f2afc4ce6",
+    "Implementation/dashboard/__init__.py": "8f7186dcc06091d5c0b12aed102e949d4f2a726aaa23a044177c1f56683d6789",
+    "Implementation/dashboard/app.py": "4297b4237452cc1fcfcac7ffe8db3029f5ca8296fabcc953add2e74bf0ca39a0",
+    "Implementation/dashboard/data.py": "18e9310616817e7c9000dada23b0dfda9c8947d8e37aabc2b6b7a619143e9a3d"
+  },
+  "inspected_new_or_changed_text_files": 34,
+  "credential_patterns_found": false
+}

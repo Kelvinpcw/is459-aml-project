@@ -1,0 +1,37 @@
+{
+  "account_id": "160885259244",
+  "region": "us-east-1",
+  "glue_quotas": [
+    {
+      "name": "Max task DPUs per account",
+      "value": 1000.0
+    },
+    {
+      "name": "The maximum number of concurrent materialized view refresh task runs.",
+      "value": 50.0
+    },
+    {
+      "name": "Concurrent compute capacity for Ray worker instances in M-DPUs per account.",
+      "value": 50.0
+    },
+    {
+      "name": "Number of column statistics tasks running concurrently per account",
+      "value": 50.0
+    },
+    {
+      "name": "Max concurrent job runs per account",
+      "value": 2000.0
+    },
+    {
+      "name": "Max DPUs per dev endpoint",
+      "value": 50.0
+    },
+    {
+      "name": "Concurrent machine learning task runs per transform",
+      "value": 3.0
+    }
+  ],
+  "default_vpc_available": true,
+  "final_budget_usd": 30,
+  "processing_started": false
+}

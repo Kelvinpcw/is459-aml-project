@@ -1,5 +1,8 @@
 # Full architecture and current implementation
 
+**Active completion work, 28 October:** user requested the whole project, then revised the final total ceiling to **US$30**. A new publication layer, live pilot dashboard, distributed detector/evaluator and on-demand deployment/cleanup tools are implemented on `codex/project-completion`. The 67-test suite passed; final packaging checks are underway. A complete local input copy accounts for all31,898,238records/35,230labels. The pilot release is published. **The final full-data cloud run has not started**; v2 scale/holdout and EC2/workflow operation are not yet cloud-validated. See [completion plan](COMPLETION_PLAN.md) and [runbook](RUNBOOK.md).
+
+
 Updated 28 October 2026, Singapore. **The scoped evaluator continuation is complete.** Its single approved run succeeded and all four raw output files match frozen local predictions. All five known project Glue runs and ten recorded Athena statements are terminal; S3 is retained. No further processing or deployment is in progress. See [cloud evaluator validation](results/EVALUATION_CLOUD_VALIDATION.md).
 
 ## GitHub connection — 27 October 2026
@@ -14,10 +17,10 @@ The table below summarises retained evidence, not a new live AWS inventory. The 
 | Q1 reporting | Counts, rates, lift and support by format/bank pair, with currency filters | Glue Q1 and Athena validation complete for one day; full/format/USD baseline counts, rates, lifts and precision independently verified. Bank-pair support limitation documented. No dashboard/holdout result yet. |
 | Q2 detection | Label-free fan-in, fan-out and 2–4-account cycles with supporting cases | Cloud first-minute run PASSED: 15 fan-out cases / 840 evidence transactions. Every complete bundle/hash and all 15 Athena index rows match the frozen replay. Bounded prototype only; wider detection/evaluation remain. |
 | Separate evaluator | Compare frozen detector outputs with labels and eligible annotations | Local evaluator tests/replay verified. First-minute positives and eligible annotations are both zero, so recall/recovery are not measurable. Glue run succeeded; all four raw artifact hashes/bytes match the frozen local reference. This completes pilot evaluation mechanics; calibrated holdout remains. |
-| Release checks and published manifest | Publish only complete, validated outputs; retain previous successful release on failure | Preparation/Q1/Q2 per-stage checks exist. Shared publication gate is not implemented. |
+| Release checks and published manifest | Publish only complete, validated outputs; retain previous successful release on failure | New gate tested; pilot publication observed after physical Parquet/count checks. Immutable release + conditional current pointer; full-data publication still pending. |
 | Glue Data Catalog and Athena | Describe/query summaries and case index | Q1 summary and Q2 case-index tables/partitions registered and read-validated. Ten saved Athena statements are terminal (seven Q1, three Q2). Private SSE-S3 results and 50 MB/query limit retained. |
-| EC2 dashboard | Streamlit/Plotly Q1 charts and PyVis Q2 case inspection | Planned; not implemented or launched. |
-| Step Functions | Preparation, parallel Q1/Q2, evaluator, checks, publication | Planned; not implemented or launched. |
+| EC2 dashboard | Streamlit/Plotly Q1 charts and PyVis Q2 case inspection | App implemented and locally tested against published pilot; private on-demand EC2 template validated locally, not yet launched. |
+| Step Functions | Preparation, parallel Q1/Q2, evaluator, checks, publication | On-demand workflow and isolated roles/jobs implemented; template validated locally and by AWS. No execution yet. |
 
 The runtime flow is S3 → shared preparation → Q1 reporting and Q2 detection → separate Q2 evaluation → release checks → Athena summaries/case index and S3 case bundles → dashboard. Step Functions coordinates the sequence; the dashboard reads a single published dataset/run manifest.
 
