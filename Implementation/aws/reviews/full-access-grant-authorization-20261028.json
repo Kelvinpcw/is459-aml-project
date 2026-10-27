@@ -1,0 +1,13 @@
+{
+  "approved_at_singapore": "2026-10-28T03:20:17.123472+08:00",
+  "user_answer": "Approve these exact roles and deployment",
+  "account_id": "160885259244",
+  "region": "us-east-1",
+  "budget_usd": 30,
+  "scope": "The exact five isolated Glue roles, one workflow role and one read-only dashboard/SSM role described in full-access-grant-review-20261028.md, and their deployment. Q2 remains denied labels/annotations/Q1/evaluation.",
+  "templates": {
+    "Implementation/deployment/full-pipeline-stack.json": "ce59687453c7e4a232acbeda2970b47a771f3be644ba565a3ee8e442b794ee29",
+    "Implementation/deployment/dashboard-stack.json": "61ee7059411ea5d7f8077e2786a7493619161a04f83ccb6c19f7e6547027755f"
+  },
+  "resolved_prior_auto_review_rejection": true
+}

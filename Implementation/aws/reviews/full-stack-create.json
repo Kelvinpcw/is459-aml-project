@@ -1,0 +1,18 @@
+{
+  "StackId": "arn:aws:cloudformation:us-east-1:160885259244:stack/is459-aml-full-v1/73d3a670-d23b-11f1-a886-12ffd699278d",
+  "OperationId": "73d57b30-d23b-11f1-a886-12ffd699278d",
+  "ResponseMetadata": {
+    "RequestId": "8385120f-87cc-47b9-bdb9-0d0015d3515e",
+    "HTTPStatusCode": 200,
+    "HTTPHeaders": {
+      "x-amzn-requestid": "8385120f-87cc-47b9-bdb9-0d0015d3515e",
+      "strict-transport-security": "max-age=47304000; includeSubDomains",
+      "cache-control": "no-store, no-cache",
+      "date": "Tue, 27 Oct 2026 19:20:21 GMT",
+      "content-type": "text/xml",
+      "content-length": "455",
+      "connection": "keep-alive"
+    },
+    "RetryAttempts": 0
+  }
+}

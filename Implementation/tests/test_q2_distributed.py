@@ -1,9 +1,10 @@
 from dataclasses import replace
 from pathlib import Path
 import sys,unittest,os,time
+sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'jobs'))
 sys.path.insert(0,str(Path(__file__).resolve().parent))
-from q2_distributed import DistributedConfig,detect,export_partition
+from q2_distributed import DistributedConfig,detect,export_partition,export_rows
 from q2_snapshots import output_cost_estimate
 from unittest.mock import patch,Mock
 from botocore.exceptions import ClientError
@@ -43,7 +44,9 @@ class DistributedTests(unittest.TestCase):
   self.assertEqual({r['source_id'] for r in evidence.select('source_id').collect()},set(t['source_id'] for c in expected for t in c['transactions']))
   estimate=output_cost_estimate(index,evidence)
   metadata=[c for c in index.columns if c not in evidence.columns or c=='case_id']
-  output=evidence.join(index.select(*metadata),'case_id').orderBy('case_id','event_time','source_id').collect()
+  import tempfile
+  with tempfile.TemporaryDirectory() as directory:index.write.mode('errorifexists').parquet(directory+'/index')
+  output=export_rows(index,evidence).orderBy('case_id','event_time','source_id').collect()
   objects={}
   def put(**kw):
    if kw['Key'] in objects:raise ClientError({'Error':{'Code':'PreconditionFailed'}},'PutObject')
@@ -63,6 +66,27 @@ class DistributedTests(unittest.TestCase):
     self.assertEqual(hashlib.sha256(raw).hexdigest(),part['sha256'])
     self.assertIn(b'0.47209301',raw)
   self.assertGreaterEqual(estimate['estimated_30day_storage_bytes_upper_bound'],sum(map(len,objects.values())))
+
+  # Schema-v3 packs all cases into bounded ZIPs without altering source evidence.
+  from q2_bundle_shards import export_shards
+  from dashboard.data import get_case,read_evidence_part,full_evidence_archive
+  objects.clear();root='gold/cases/bundles-test/'
+  with patch('boto3.Session',return_value=session):
+   refs=list(export_shards(iter(output),'is459-aml-g2team7-160885259244-us-east-1',root,'2022-09-02',0,shard_bytes=16000))
+   original=dict(objects)
+   self.assertEqual(refs,list(export_shards(iter(output),'is459-aml-g2team7-160885259244-us-east-1',root,'2022-09-02',0,shard_bytes=16000)))
+   self.assertEqual(original,objects)
+  release={'dataset_version':cfg.dataset_version,'run_id':cfg.run_id,'q2':{'analysis_id':cfg.analysis_id,'bundles':'s3://is459-aml-g2team7-160885259244-us-east-1/'+root+'bundles/'}}
+  seen={};self.assertEqual(len(refs),len(expected));self.assertGreater(len(objects),1)
+  for case_id,uri,member,digest in refs:
+   row=dict(case_id=case_id,bundle_uri=uri,bundle_member=member,bundle_sha256=digest)
+   loaded,raw=get_case(s3,release,row);cache={};records=[]
+   for ref in loaded['evidence_parts']:records.extend(json.loads(line) for line in read_evidence_part(s3,ref,cache).splitlines())
+   self.assertEqual(len(records),loaded['evidence_transaction_count']);seen[case_id]={r['source_id'] for r in records}
+   self.assertTrue(full_evidence_archive(s3,loaded))
+   with self.assertRaises(ValueError):get_case(s3,release,{**row,'bundle_sha256':'0'*64})
+   with self.assertRaises(ValueError):get_case(s3,release,{**row,'bundle_member':'../'+member})
+  self.assertEqual(set().union(*seen.values()),set(t['source_id'] for c in expected for t in c['transactions']))
 
  def test_explicit_cycle_degree_exclusions_preserve_complete_fan_evidence(self):
   rows=[transaction(str(i),'H',f'P{i}') for i in range(5)]+[transaction('back','P0','H')]

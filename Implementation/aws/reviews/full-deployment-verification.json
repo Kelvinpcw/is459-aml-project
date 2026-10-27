@@ -1,0 +1,79 @@
+{
+  "status": "VERIFIED_BEFORE_PROCESSING",
+  "observed_at_singapore": "2026-10-28T03:30:18.897381+08:00",
+  "account_id": "160885259244",
+  "region": "us-east-1",
+  "parameters": {
+    "CodeVersion": "full-v1",
+    "ReleaseId": "full-20261028-v1",
+    "RunId": "full-20261028-v1"
+  },
+  "approved_template_matches_deployed": true,
+  "roles": [
+    {
+      "name": "is459-aml-full-prepare",
+      "trust_and_exact_policies_match": true
+    },
+    {
+      "name": "is459-aml-full-risk",
+      "trust_and_exact_policies_match": true
+    },
+    {
+      "name": "is459-aml-full-detect",
+      "trust_and_exact_policies_match": true
+    },
+    {
+      "name": "is459-aml-full-evaluate",
+      "trust_and_exact_policies_match": true
+    },
+    {
+      "name": "is459-aml-full-control",
+      "trust_and_exact_policies_match": true
+    },
+    {
+      "name": "is459-aml-full-workflow",
+      "trust_and_exact_policies_match": true
+    }
+  ],
+  "jobs": [
+    {
+      "name": "is459-aml-full-prepare",
+      "reviewed_configuration_matches": true,
+      "runs": 0,
+      "workers": 5,
+      "timeout_minutes": 45
+    },
+    {
+      "name": "is459-aml-full-risk",
+      "reviewed_configuration_matches": true,
+      "runs": 0,
+      "workers": 5,
+      "timeout_minutes": 45
+    },
+    {
+      "name": "is459-aml-full-detect",
+      "reviewed_configuration_matches": true,
+      "runs": 0,
+      "workers": 10,
+      "timeout_minutes": 120
+    },
+    {
+      "name": "is459-aml-full-evaluate",
+      "reviewed_configuration_matches": true,
+      "runs": 0,
+      "workers": 5,
+      "timeout_minutes": 45
+    },
+    {
+      "name": "is459-aml-full-control",
+      "reviewed_configuration_matches": true,
+      "runs": 0,
+      "workers": 2,
+      "timeout_minutes": 10
+    }
+  ],
+  "all_frozen_code_object_sizes_hash_metadata_match": true,
+  "input_manifest_raw_sha256_verified": true,
+  "budget_usd": 30,
+  "paid_full_processing_started": false
+}

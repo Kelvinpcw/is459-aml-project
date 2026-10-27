@@ -72,7 +72,7 @@ The full file remains in scope for ingestion and processing. Separate reporting 
 
 **Business acceptance:** A management user can explain three supported monitoring priorities using rate and volume; an investigator can explain a detected case and retrieve its evidence without writing SQL. These are proposed user-test scenarios, not claims that bank staff have been interviewed.
 
-**Still to confirm:** Team members/owners, AWS region and account permissions, final rule/anomaly cutoffs, benchmarked worker sizing, and a numerical Q2 improvement target. Freeze thresholds and the improvement target before final holdout evaluation.
+**Frozen implementation protocol, 28 October 2026:** `releases/full-v1` fixes fan support at five counterparties, a degree-64 induced graph for 2–4 cycles, seven-day daily lookbacks, and a five-percentage-point typed recovery improvement target against the matched-volume per-currency amount diagnostic. A development-frozen fraction baseline and type-agnostic coverage are reported separately. These settings were frozen before holdout evaluation. Measured sizing/performance and actual target attainment remain to be reported; team ownership remains to be entered.
 
 <!-- pagebreak -->
 
@@ -230,7 +230,7 @@ Use restricted Session Manager access for demonstrations rather than exposing an
 | Question | Baseline / test | Evidence of success |
 | --- | --- | --- |
 | Q1: monitoring allocation | Compare volume-only rankings with supported rate/lift rankings; independently recompute counts and rates. | Exact count reconciliation; clear denominators and warnings; a user explains three supported monitoring priorities without confusing volume with risk. |
-| Q2: connected investigation | Compare with a simple per-currency high-amount rule calibrated on early data. Compare core alerted-transaction metrics at matched alert volume; also measure annotated-attempt recovery. | Report pattern-specific coverage, transaction precision/recall, case volume, and evidence quality. Seek improvement over baseline; numerical uplift target [TBD], fixed before holdout testing. |
+| Q2: connected investigation | Compare with a simple per-currency high-amount rule calibrated on early data. Compare core alerted-transaction metrics at matched alert volume; also measure annotated-attempt recovery. | Report pattern-specific coverage, transaction precision/recall, case volume, and evidence quality. Seek improvement over baseline; frozen target: five percentage points in typed attempt recovery versus matched-volume amount coverage, with type-agnostic coverage also reported. |
 
 **Q2 chronological protocol:** Use 1–8 September for development and threshold calibration; freeze settings before evaluating 9–16 September. Earlier label-free history can support rolling features, but later events cannot enter earlier snapshots. Analyse 17–28 September separately as a sparse-tail completion experiment, not as the headline detector benchmark.
 

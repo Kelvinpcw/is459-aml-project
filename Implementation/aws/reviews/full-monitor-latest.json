@@ -1,0 +1,73 @@
+{
+  "observed_at_singapore": "2026-10-28T04:01:25.814939+08:00",
+  "execution_arn": "arn:aws:states:us-east-1:160885259244:execution:is459-aml-full-pipeline:full-20261028-v1",
+  "execution_status": "FAILED",
+  "jobs": {
+    "prepare": [
+      {
+        "job_name": "is459-aml-full-prepare",
+        "run_id": "jr_f0de5b0ce1549c24b37f25e1319158643acb135ca646c717f38cbc30c23b9887",
+        "status": "SUCCEEDED",
+        "execution_seconds": 1100,
+        "workers": 5,
+        "estimated_compute_usd_including_minimum": 0.672222,
+        "compute_still_running": false,
+        "started_at": "2026-10-28T03:34:07.667000+08:00",
+        "ended_at": "2026-10-28T03:52:35.862000+08:00",
+        "error": null
+      }
+    ],
+    "risk": [
+      {
+        "job_name": "is459-aml-full-risk",
+        "run_id": "jr_190672861b44620fbff821bb15f6cb2d140efa622405aa0224fef42bbf6b87a3",
+        "status": "STOPPED",
+        "execution_seconds": 232,
+        "workers": 5,
+        "estimated_compute_usd_including_minimum": 0.141778,
+        "compute_still_running": false,
+        "started_at": "2026-10-28T03:55:52.770000+08:00",
+        "ended_at": "2026-10-28T04:00:18.630000+08:00",
+        "error": null
+      }
+    ],
+    "detect": [
+      {
+        "job_name": "is459-aml-full-detect",
+        "run_id": "jr_35a45e748227f0a868e2829db7d284703fee1fbea05038e57fb4af8abb664fff",
+        "status": "FAILED",
+        "execution_seconds": 182,
+        "workers": 10,
+        "estimated_compute_usd_including_minimum": 0.222444,
+        "compute_still_running": false,
+        "started_at": "2026-10-28T03:55:52.769000+08:00",
+        "ended_at": "2026-10-28T03:59:09.171000+08:00",
+        "error": "An error occurred while calling o837.join. [INTERNAL_ERROR] "
+      }
+    ],
+    "evaluate": [],
+    "control": [
+      {
+        "job_name": "is459-aml-full-control",
+        "run_id": "jr_22328cd146e790231b8a84078e7937ebf867a6363e25b7e15dfae940ac778b9c",
+        "status": "SUCCEEDED",
+        "execution_seconds": 65,
+        "workers": 2,
+        "estimated_compute_usd_including_minimum": 0.015889,
+        "compute_still_running": false,
+        "started_at": "2026-10-28T03:53:44.275000+08:00",
+        "ended_at": "2026-10-28T03:55:04.271000+08:00",
+        "error": null
+      }
+    ]
+  },
+  "full_compute_estimate_usd": 1.052333,
+  "prior_compute_estimate_usd": 0.280623,
+  "reserved_output_estimate_usd": 10,
+  "other_overhead_reserve_usd": 1,
+  "guard_total_estimate_usd": 12.332956,
+  "total_budget_usd": 30,
+  "active_paid_resources": [],
+  "published_release_changes_only_after_success": true,
+  "cost_note": "Conservative active elapsed-time and one-minute minimum estimates; output reserve is a bound, not a measured invoice. Other reserve is not a billing cap."
+}

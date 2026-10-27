@@ -1,0 +1,232 @@
+{
+  "schema_version": 2,
+  "stage": "preparation",
+  "status": "PASSED",
+  "dataset_version": "ibm-hi-medium-b1b99c68b765580f",
+  "run_id": "full-20261028-v1",
+  "input_root": "s3://is459-aml-g2team7-160885259244-us-east-1/raw/full-v1",
+  "source_manifest": {
+    "schema_version": 1,
+    "dataset_version": "ibm-hi-medium-b1b99c68b765580f",
+    "development_scope": {
+      "start_inclusive": "2022-09-01",
+      "end_exclusive": "2022-09-29"
+    },
+    "timestamp_policy": "dataset-local; source timezone unspecified",
+    "source_files": {
+      "transactions": {
+        "filename": "HI-Medium_Trans.csv",
+        "sha256": "3126afb8155e7c8815d62bc5370549a7b5ae6bf7dfe872b3cd7813e66a3d7ff5",
+        "size_bytes": 3031783420
+      },
+      "accounts": {
+        "filename": "HI-Medium_accounts.csv",
+        "sha256": "0fb441d31df9ca0868803eebce718b7e85a4e385334222427c400a5ba64475f9",
+        "size_bytes": 145008642
+      },
+      "patterns": {
+        "filename": "HI-Medium_Patterns.txt",
+        "sha256": "392d748d8d76efc1a96f6dc29ad8dd282c815de96537f0296bb0a7fa96ec4130",
+        "size_bytes": 2279573
+      }
+    },
+    "counts": {
+      "source_records": 31898238,
+      "selected_records": 31898238,
+      "outside_development_scope": 0,
+      "ingestion_quarantined": 0,
+      "selected_label_0": 31863008,
+      "selected_label_1": 35230
+    },
+    "selected_dates": {
+      "2022-09-01": 4465985,
+      "2022-09-02": 3021258,
+      "2022-09-03": 828958,
+      "2022-09-04": 830607,
+      "2022-09-05": 1928599,
+      "2022-09-06": 1929090,
+      "2022-09-07": 1931015,
+      "2022-09-08": 1930610,
+      "2022-09-09": 2621004,
+      "2022-09-10": 831874,
+      "2022-09-11": 830143,
+      "2022-09-12": 1930240,
+      "2022-09-13": 1928626,
+      "2022-09-14": 1930957,
+      "2022-09-15": 1930419,
+      "2022-09-16": 3021866,
+      "2022-09-17": 2020,
+      "2022-09-18": 1591,
+      "2022-09-19": 1195,
+      "2022-09-20": 855,
+      "2022-09-21": 586,
+      "2022-09-22": 309,
+      "2022-09-23": 134,
+      "2022-09-24": 104,
+      "2022-09-25": 102,
+      "2022-09-26": 59,
+      "2022-09-27": 25,
+      "2022-09-28": 7
+    },
+    "source_id_policy": "original transaction file SHA-256 + colon + 1-based CSV data-record ordinal",
+    "ingestion_columns": [
+      "source_id",
+      "source_record_ordinal",
+      "timestamp_raw",
+      "from_bank_raw",
+      "sender_account",
+      "to_bank_raw",
+      "receiver_account",
+      "amount_received_raw",
+      "receiving_currency",
+      "amount_paid_raw",
+      "payment_currency",
+      "payment_format",
+      "is_laundering_raw"
+    ],
+    "artifacts": {
+      "transactions.csv.gz": {
+        "sha256": "319f1f466fc29ba6e3a09015066c22d7bcfc0d8d4c8b22cf4eecda296d02ccd0",
+        "size_bytes": 796449934
+      },
+      "ingestion-quarantine.jsonl.gz": {
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size_bytes": 0
+      },
+      "accounts.csv.gz": {
+        "sha256": "f1616da19c2c00f405cb809cac4bb2c483e941a836f0223c64077a8a6b4a8368",
+        "size_bytes": 44719352
+      }
+    },
+    "q1_source_reference_by_format": {
+      "ACH": {
+        "transactions": 3868410,
+        "labelled_laundering": 30746,
+        "invalid_labels": 0
+      },
+      "Bitcoin": {
+        "transactions": 689038,
+        "labelled_laundering": 244,
+        "invalid_labels": 0
+      },
+      "Cash": {
+        "transactions": 3217531,
+        "labelled_laundering": 666,
+        "invalid_labels": 0
+      },
+      "Cheque": {
+        "transactions": 12280058,
+        "labelled_laundering": 2220,
+        "invalid_labels": 0
+      },
+      "Credit Card": {
+        "transactions": 8777816,
+        "labelled_laundering": 1354,
+        "invalid_labels": 0
+      },
+      "Reinvestment": {
+        "transactions": 1945611,
+        "labelled_laundering": 0,
+        "invalid_labels": 0
+      },
+      "Wire": {
+        "transactions": 1119774,
+        "labelled_laundering": 0,
+        "invalid_labels": 0
+      }
+    },
+    "reference_note": "Raw selected-input counts; reconcile with accepted facts after preparation quarantines."
+  },
+  "started_at_utc": "2026-10-27T19:34:56.908480+00:00",
+  "amount_policy": {
+    "precision": 38,
+    "scale": 8,
+    "excess_scale": "quarantine_without_rounding"
+  },
+  "max_quarantine_rows": 0,
+  "input_rows": 31898238,
+  "accepted_rows": 31898238,
+  "quarantined_rows": 0,
+  "quarantine_by_reason": [],
+  "valid_account_mappings": 2087786,
+  "invalid_account_mappings": 0,
+  "join_coverage": {
+    "unmatched_sender_rows": 0,
+    "unmatched_receiver_rows": 0
+  },
+  "fact_columns": [
+    "source_id",
+    "source_record_ordinal",
+    "dataset_version",
+    "run_id",
+    "event_time",
+    "event_date",
+    "timestamp_raw",
+    "from_bank_raw",
+    "to_bank_raw",
+    "sender_bank",
+    "sender_account",
+    "receiver_bank",
+    "receiver_account",
+    "amount_paid_raw",
+    "amount_paid",
+    "payment_currency",
+    "amount_received_raw",
+    "amount_received",
+    "receiving_currency",
+    "payment_format",
+    "sender_entity_id",
+    "sender_entity_name",
+    "receiver_entity_id",
+    "receiver_entity_name",
+    "sender_entity_unknown",
+    "receiver_entity_unknown"
+  ],
+  "label_separation_passed": true,
+  "accepted_by_format": [
+    {
+      "payment_format": "Credit Card",
+      "transactions": 8777816,
+      "labelled_laundering": 1354
+    },
+    {
+      "payment_format": "ACH",
+      "transactions": 3868410,
+      "labelled_laundering": 30746
+    },
+    {
+      "payment_format": "Cash",
+      "transactions": 3217531,
+      "labelled_laundering": 666
+    },
+    {
+      "payment_format": "Wire",
+      "transactions": 1119774,
+      "labelled_laundering": 0
+    },
+    {
+      "payment_format": "Bitcoin",
+      "transactions": 689038,
+      "labelled_laundering": 244
+    },
+    {
+      "payment_format": "Reinvestment",
+      "transactions": 1945611,
+      "labelled_laundering": 0
+    },
+    {
+      "payment_format": "Cheque",
+      "transactions": 12280058,
+      "labelled_laundering": 2220
+    }
+  ],
+  "quarantined_by_format": [],
+  "source_reference_reconciliation_passed": true,
+  "outputs": {
+    "transactions": "s3://is459-aml-g2team7-160885259244-us-east-1/curated/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=full-20261028-v1/transactions/",
+    "accounts": "s3://is459-aml-g2team7-160885259244-us-east-1/curated/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=full-20261028-v1/accounts/",
+    "labels": "s3://is459-aml-g2team7-160885259244-us-east-1/references/labels/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=full-20261028-v1/transactions/"
+  },
+  "timestamp_policy": "dataset-local event time; UTC used only as a fixed internal parsing convention",
+  "finished_at_utc": "2026-10-27T19:52:24.263115+00:00"
+}

@@ -91,6 +91,7 @@ def main():
     parser.add_argument("--preparation-report", required=True)
     parser.add_argument("--output-root", required=True)
     parser.add_argument("--analysis-id", required=True)
+    parser.add_argument("--attempt-id", default="")
     args, _ = parser.parse_known_args()
     if not re.fullmatch(r"[A-Za-z0-9_-]{1,100}", args.analysis_id):
         raise ValueError("analysis-id must contain 1-100 letters, digits, underscores or hyphens")
@@ -105,6 +106,9 @@ def main():
     validate_preparation_contract(prep)
     version, run_id = prep["dataset_version"], prep["run_id"]
     suffix = f"dataset_version={version}/run_id={run_id}/analysis_id={args.analysis_id}"
+    if args.attempt_id:
+        if not re.fullmatch(r"[A-Za-z0-9_-]{1,100}",args.attempt_id):raise ValueError("Invalid attempt ID")
+        suffix+="/attempt="+args.attempt_id
     root = args.output_root.rstrip("/")
     for zone in ("gold/risk", "quality/q1"):
         prefix = "/".join(filter(None, [output.path.strip("/"), zone, suffix])) + "/"

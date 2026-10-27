@@ -1,0 +1,12 @@
+{
+  "checked_at_singapore": "2026-10-28T03:29:23.371877+08:00",
+  "source": "AWS Pricing GetProducts API",
+  "ec2_t3_small_linux_us_east_1": [
+    {
+      "description": "$0.0208 per On Demand Linux t3.small Instance Hour",
+      "usd_per_hour": "0.0208000000"
+    }
+  ],
+  "total_project_budget_usd": 30,
+  "dashboard_not_launched": true
+}

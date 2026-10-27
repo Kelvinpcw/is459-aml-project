@@ -1,0 +1,16 @@
+{
+  "executionArn": "arn:aws:states:us-east-1:160885259244:execution:is459-aml-full-pipeline:full-20261028-v1",
+  "startDate": "2026-10-28T03:34:07.457000+08:00",
+  "ResponseMetadata": {
+    "RequestId": "584ec090-32a1-4bd5-8892-4e523cf4ce67",
+    "HTTPStatusCode": 200,
+    "HTTPHeaders": {
+      "x-amzn-requestid": "584ec090-32a1-4bd5-8892-4e523cf4ce67",
+      "date": "Tue, 27 Oct 2026 19:34:07 GMT",
+      "content-type": "application/x-amz-json-1.0",
+      "content-length": "136",
+      "connection": "keep-alive"
+    },
+    "RetryAttempts": 0
+  }
+}

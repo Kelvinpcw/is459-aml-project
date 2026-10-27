@@ -1,0 +1,9 @@
+{
+  "execution_name": "full-20261028-v1",
+  "state_machine": "arn:aws:states:us-east-1:160885259244:stateMachine:is459-aml-full-pipeline",
+  "input": {
+    "expected_pointer_etag": "\"0723de16ebf74b926d3d19c6ca972941\"",
+    "total_budget_usd": 30
+  },
+  "budget_authorization": "User explicitly approved US$30 final full-data ceiling on 28 October 2026."
+}

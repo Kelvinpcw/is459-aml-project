@@ -1,0 +1,117 @@
+{
+  "stack": {
+    "StackId": "arn:aws:cloudformation:us-east-1:160885259244:stack/is459-aml-full-v1/73d3a670-d23b-11f1-a886-12ffd699278d",
+    "StackName": "is459-aml-full-v1",
+    "Description": "IS459 isolated full-data batch definitions. No jobs run and no EC2 is launched by stack creation.",
+    "Parameters": [
+      {
+        "ParameterKey": "CodeVersion",
+        "ParameterValue": "full-v1"
+      },
+      {
+        "ParameterKey": "ReleaseId",
+        "ParameterValue": "full-20261028-v1"
+      },
+      {
+        "ParameterKey": "RunId",
+        "ParameterValue": "full-20261028-v1"
+      }
+    ],
+    "CreationTime": "2026-10-27T19:20:21.373000+00:00",
+    "RollbackConfiguration": {},
+    "StackStatus": "CREATE_COMPLETE",
+    "DisableRollback": false,
+    "DeploymentConfig": {
+      "Mode": "STANDARD",
+      "DisableRollback": false
+    },
+    "NotificationARNs": [],
+    "Capabilities": [
+      "CAPABILITY_NAMED_IAM"
+    ],
+    "Outputs": [
+      {
+        "OutputKey": "ComputeMaximumEstimateUSD",
+        "OutputValue": "14.19 at US$0.44/DPU-hour if every job reaches its timeout; S3/requests/logging/dashboard separate. Not a hard billing cap."
+      },
+      {
+        "OutputKey": "WorkflowArn",
+        "OutputValue": "arn:aws:states:us-east-1:160885259244:stateMachine:is459-aml-full-pipeline"
+      }
+    ],
+    "Tags": [
+      {
+        "Key": "Project",
+        "Value": "is459-aml"
+      },
+      {
+        "Key": "BudgetUSD",
+        "Value": "30"
+      }
+    ],
+    "EnableTerminationProtection": false,
+    "DriftInformation": {
+      "StackDriftStatus": "NOT_CHECKED"
+    },
+    "LastOperations": [
+      {
+        "OperationType": "CREATE_STACK",
+        "OperationId": "73d57b30-d23b-11f1-a886-12ffd699278d"
+      }
+    ]
+  },
+  "execution": {
+    "executionArn": "arn:aws:states:us-east-1:160885259244:execution:is459-aml-full-pipeline:full-20261028-v1",
+    "stateMachineArn": "arn:aws:states:us-east-1:160885259244:stateMachine:is459-aml-full-pipeline",
+    "name": "full-20261028-v1",
+    "status": "RUNNING",
+    "startDate": "2026-10-28T03:34:07.457000+08:00",
+    "input": "{\"expected_pointer_etag\": \"\\\"0723de16ebf74b926d3d19c6ca972941\\\"\", \"total_budget_usd\": 30}",
+    "inputDetails": {
+      "included": true
+    },
+    "redriveCount": 0,
+    "redriveStatus": "NOT_REDRIVABLE",
+    "redriveStatusReason": "Execution is RUNNING and cannot be redriven",
+    "ResponseMetadata": {
+      "RequestId": "3db66c94-a0b8-4a44-a896-5a681896683d",
+      "HTTPStatusCode": 200,
+      "HTTPHeaders": {
+        "x-amzn-requestid": "3db66c94-a0b8-4a44-a896-5a681896683d",
+        "date": "Tue, 27 Oct 2026 19:39:44 GMT",
+        "content-type": "application/x-amz-json-1.0",
+        "content-length": "614",
+        "connection": "keep-alive"
+      },
+      "RetryAttempts": 0
+    }
+  },
+  "jobs": {
+    "prepare": [
+      {
+        "Id": "jr_f0de5b0ce1549c24b37f25e1319158643acb135ca646c717f38cbc30c23b9887",
+        "Attempt": 0,
+        "JobName": "is459-aml-full-prepare",
+        "JobMode": "SCRIPT",
+        "JobRunQueuingEnabled": false,
+        "StartedOn": "2026-10-28T03:34:07.667000+08:00",
+        "LastModifiedOn": "2026-10-28T03:36:11.121000+08:00",
+        "JobRunState": "RUNNING",
+        "PredecessorRuns": [],
+        "AllocatedCapacity": 5,
+        "ExecutionTime": 330,
+        "Timeout": 45,
+        "MaxCapacity": 5.0,
+        "WorkerType": "G.1X",
+        "NumberOfWorkers": 5,
+        "LogGroupName": "/is459/aml/full/prepare",
+        "GlueVersion": "5.1",
+        "ExecutionClass": "STANDARD"
+      }
+    ],
+    "risk": [],
+    "detect": [],
+    "evaluate": [],
+    "control": []
+  }
+}

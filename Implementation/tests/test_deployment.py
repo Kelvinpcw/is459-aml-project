@@ -24,6 +24,18 @@ class DeploymentTests(unittest.TestCase):
   deny=[s for s in policy['Statement'] if s['Effect']=='Deny'][0]
   self.assertTrue(any('/references/' in r for r in deny['Resource']))
   self.assertNotEqual(stack['Resources']['DetectJob']['Properties']['Role'],stack['Resources']['RiskJob']['Properties']['Role'])
+ def test_recovery_reuses_preparation_and_every_approved_role(self):
+  from build_recovery import build as recovery,dashboard
+  original=build();stack=recovery()
+  for key,value in original['Resources'].items():
+   if value['Type']=='AWS::IAM::Role':self.assertEqual(value,stack['Resources'][key])
+  definition=json.loads(stack['Resources']['RecoveryWorkflow']['Properties']['DefinitionString']['Fn::Sub'][0])
+  self.assertNotIn('Prepare',definition['States']);self.assertNotIn('MakeManifest',definition['States'])
+  self.assertEqual(definition['StartAt'],'Branches')
+  self.assertIn('attempt=recovery1',stack['Resources']['EvaluateJob']['Properties']['DefaultArguments']['--detector-report']['Fn::Sub'])
+  from build_dashboard_stack import build as base_dashboard
+  self.assertEqual(base_dashboard()['Resources']['Role'],dashboard()['Resources']['Role'])
+
  def test_schedule_overlaps_and_preserves_full_daily_history(self):
   windows=schedule('2022-09-02T00:00:00','2022-09-29T00:00:00')
   self.assertEqual(len(windows),28)

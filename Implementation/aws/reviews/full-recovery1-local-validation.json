@@ -1,0 +1,95 @@
+{
+  "status": "PASSED",
+  "local_tests": {
+    "count": 68,
+    "seconds": 47.87,
+    "log": "/private/tmp/is459-recovery-full-suite.log"
+  },
+  "export_round_trip_tests": {
+    "count": 2,
+    "seconds": 15.419
+  },
+  "both_recovery_templates_cfn_lint": "PASSED",
+  "frozen_rules_and_evaluator_checks": {
+    "q2_distributed.py:DistributedConfig": "IDENTICAL_AST",
+    "q2_distributed.py:detect": "IDENTICAL_AST",
+    "q2_snapshots.py:schedule": "IDENTICAL_AST",
+    "q2_snapshots.py:run_snapshots": "IDENTICAL_AST",
+    "q1_risk.py:aggregate_daily": "IDENTICAL_AST",
+    "evaluate_distributed.py": "BYTE_IDENTICAL",
+    "evaluate_q2.py": "BYTE_IDENTICAL"
+  },
+  "no_active_compute_at_packaging": true,
+  "new_payload_manifest": {
+    "schema_version": 1,
+    "version": "full-v2",
+    "files": {
+      "q1_risk.py": {
+        "sha256": "83813f52104db9d402e2c2a3db8b45bb52881d8ecb8fcc335ecb0e3031cb96b0",
+        "bytes": 8398,
+        "s3_key": "scripts/full-v1/recovery1/q1_risk.py"
+      },
+      "q2_detect.py": {
+        "sha256": "549b2ac6f3f2ba93bd6de7190b7ccc25befc975269008c50cb5179a93eb656f0",
+        "bytes": 19715,
+        "s3_key": "scripts/full-v1/recovery1/q2_detect.py"
+      },
+      "q2_distributed.py": {
+        "sha256": "ba684592909f5f7f67c9379d2ca1e7e21fb6bf18a63b25667f3e99df6309f209",
+        "bytes": 18864,
+        "s3_key": "scripts/full-v1/recovery1/q2_distributed.py"
+      },
+      "q2_bundle_shards.py": {
+        "sha256": "a25bf4651214d9d4727aab26185869fbc4a1717f6e37698bd69047cf20d6990d",
+        "bytes": 5001,
+        "s3_key": "scripts/full-v1/recovery1/q2_bundle_shards.py"
+      },
+      "q2_snapshots.py": {
+        "sha256": "cf2f4e4b0382e0e96eadb840d7b79690c40ac2268a05325fbed34e0bda22245b",
+        "bytes": 9306,
+        "s3_key": "scripts/full-v1/recovery1/q2_snapshots.py"
+      },
+      "evaluate_q2.py": {
+        "sha256": "0416846ba0c00b93b77c122c4d663051d8480131de89b0f6cd2cc2b35639a9ec",
+        "bytes": 36563,
+        "s3_key": "scripts/full-v1/recovery1/evaluate_q2.py"
+      },
+      "evaluate_distributed.py": {
+        "sha256": "9798d9d2c91d3882f87c24a093b7181664c7f07a79d9582986cb1f815d452d22",
+        "bytes": 29341,
+        "s3_key": "scripts/full-v1/recovery1/evaluate_distributed.py"
+      },
+      "control.py": {
+        "sha256": "0d5989fb4c1baff993390dd8bc7f2fb2df23f8425a7eae7cb615831fd11a6fcb",
+        "bytes": 5283,
+        "s3_key": "scripts/full-v1/recovery1/control.py"
+      },
+      "prepare.py": {
+        "sha256": "881acd5d9bb0064d090e333d9c2939a57c530863711ab783613aee0f6e24406b",
+        "bytes": 16265,
+        "s3_key": "scripts/full-v1/recovery1/prepare.py"
+      },
+      "make_q2_input_manifest.py": {
+        "sha256": "3ffc71a7475e286a0ca1fa7f09ea17f4f5c605918b0912a8005192b4fbc3737b",
+        "bytes": 1678,
+        "s3_key": "scripts/full-v1/recovery1/make_q2_input_manifest.py"
+      },
+      "jobs.zip": {
+        "sha256": "b1d46409a709d6042ac2baf5f6efc3de073db3c7c2611ff8d8c163459a4b3698",
+        "bytes": 52206,
+        "s3_key": "scripts/full-v1/recovery1/jobs.zip"
+      },
+      "dashboard.zip": {
+        "sha256": "50c145bf26ce8bf0c91120ae2d15ab2762cb77743efd567b9a86ed667eedd84d",
+        "bytes": 14301,
+        "s3_key": "published/software/full-v2/dashboard.zip"
+      }
+    },
+    "source_tree_sha256": "03318a47e61487243680591a3a1b2f44b57307b2823803d815237eb637d2fb42",
+    "immutable": true,
+    "recovery_of": "full-v1",
+    "namespace_reason": "New immutable subrelease inside the previously approved script prefix; no IAM grant changes. Dashboard is a new immutable published software artifact."
+  },
+  "credential_patterns_found": false,
+  "full_cloud_success_claimed": false
+}

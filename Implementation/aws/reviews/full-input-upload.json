@@ -1,0 +1,36 @@
+{
+  "dataset_version": "ibm-hi-medium-b1b99c68b765580f",
+  "counts": {
+    "source_records": 31898238,
+    "selected_records": 31898238,
+    "outside_development_scope": 0,
+    "ingestion_quarantined": 0,
+    "selected_label_0": 31863008,
+    "selected_label_1": 35230
+  },
+  "destination": "s3://is459-aml-g2team7-160885259244-us-east-1/raw/full-v1/",
+  "objects": {
+    "transactions.csv.gz": {
+      "status": "new conditional upload; every part checksum verified by S3; local whole-file hash matched",
+      "sha256": "319f1f466fc29ba6e3a09015066c22d7bcfc0d8d4c8b22cf4eecda296d02ccd0",
+      "size_bytes": 796449934,
+      "parts": 48,
+      "server_composite_checksum_sha256": "G9hoyZezZ44FEdV2fz4rbd4jkAId7M7PrpljMtWlg/o=-48"
+    },
+    "ingestion-quarantine.jsonl.gz": {
+      "status": "new empty quarantine artifact",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "accounts.csv.gz": {
+      "status": "new conditional upload; every part checksum verified by S3; local whole-file hash matched",
+      "sha256": "f1616da19c2c00f405cb809cac4bb2c483e941a836f0223c64077a8a6b4a8368",
+      "size_bytes": 44719352,
+      "parts": 3,
+      "server_composite_checksum_sha256": "SMDekOQkLX7O6QWcTK5c5Y/TJolh0uqXapNXWbNeM38=-3"
+    }
+  },
+  "manifest_sha256": "263cfc04ff0bac86586b89aa2a990bdcb1b874076f081277c268d05d38b7e634",
+  "originals_changed": false,
+  "paid_processing_started": false
+}

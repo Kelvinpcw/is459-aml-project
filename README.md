@@ -2,7 +2,7 @@
 
 Shared implementation and design context for a six-person team using the synthetic IBM HI-Medium anti-money-laundering dataset.
 
-**This is a development prototype, not a finished pipeline.** Architecture diagrams describe the target design, not proof that every service is deployed.
+**Full-data validation is in progress.** The complete implementation is on `codex/project-completion`; the approved on-demand AWS workflow is running. Architecture diagrams describe the design; the checkpoint and dated validation records identify what has actually passed.
 
 ## Start here — humans and AI assistants
 
@@ -38,20 +38,20 @@ Complete outputs + quality reports + evaluation → shared release gate
 Step Functions coordinates the target workflow; EC2 hosts the target dashboard.
 ```
 
-## What actually exists? — saved AWS evidence through 28 October 2026
+## Current evidence — 28 October 2026
 
-| Component | Verified scope / remaining gap |
+| Component | Observed scope / remaining validation |
 | --- | --- |
-| Preparation | One day, **1 September 2022**: 4,465,985 accepted transactions; no quarantine |
-| Q1 | Glue aggregation and Athena validation for that one day; not the full dataset or a dashboard |
-| Q2 | **00:00 inclusive–00:01 exclusive** on 1 September: 43,681 transactions, 15 fan-out cases, 840 supporting transactions |
-| Evaluator | Frozen first-minute Glue run succeeded; all four raw output files match local predictions. Zero positives/eligible annotations, so recall/recovery remain unmeasurable; [validation](Implementation/results/EVALUATION_CLOUD_VALIDATION.md) |
-| Dashboard, Step Functions, shared publication | Not implemented |
-| Full input | 31,898,238 transactions; not yet processed in full |
+| Full preparation | **PASSED**: all 31,898,238 transactions and 35,230 positive labels reconciled; no quarantine or unmatched account joins |
+| Full Q1 / distributed Q2 | Running in parallel in the approved workflow; full outputs and evaluation are pending |
+| Evaluator | Frozen first-minute pilot succeeded; zero positives/eligible annotations in that pilot. New development, holdout and sparse-tail evaluation is pending |
+| Publication | Pilot release published through the tested gate; full release replaces it only after every quality check passes |
+| Dashboard | Implemented and locally tested against the live pilot; temporary private EC2 validation is pending |
+| Orchestration | Dedicated on-demand Step Functions workflow deployed and running; no recurring schedule |
 
-Q2's data window is **one minute, not one second**. Its recorded execution took 145 seconds. Its graph core collects at most 50,000 window rows into one process; it is not scalable full-day detection. Do not merely widen the dates or remove the guard. Independently processing non-overlapping minutes would miss patterns across boundaries.
+The full implementation uses distributed fan aggregation and bounded, degree-eligible 2–4-cycle joins over overlapping seven-day daily snapshots. The frozen first-minute detector remains unchanged and is not the full-data implementation. Complete case evidence is retained beyond display caps. See [runbook](Implementation/RUNBOOK.md) and [checkpoint](PROJECT_CHECKPOINT.md).
 
-The pilot minute contains zero positive labels and zero eligible annotated attempts. Its evaluation cannot establish useful recall/recovery. Wider-window development, calibration and frozen holdout evaluation remain necessary.
+The user's latest total ceiling is **US$30**, including prior development charges and final validation. Estimates and timeouts are not a hard billing cap. Expensive project compute is removed/stopped after validation; retained S3 storage still has a cost.
 
 ## Code map
 
