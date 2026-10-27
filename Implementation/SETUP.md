@@ -1,29 +1,73 @@
-# Latest continuation — 26 October 2026
+# Team setup
 
-Q1 Catalog DB/table/date partition registered and independently read-validated through Athena. All-format population, both decimal(38,8) amount columns, USD format rates/lifts and supported segment ranking match source references. No new Glue run; seven SQL executions are terminal, three successful scans cost below US$0.001 estimated. No active project compute/queries. Next: Q2 implementation. See ../PROJECT_CHECKPOINT.md and results/Q1_VALIDATION.md. Earlier pause/setup notes below are historical.
+Updated 27 October 2026. Read [STATUS.md](STATUS.md) for implementation state and [../AGENTS.md](../AGENTS.md) before using an AI assistant. Historical deployment steps remain in [../PROJECT_CHECKPOINT.md](../PROJECT_CHECKPOINT.md) and `aws/reviews/`; do not repeat them as fresh setup.
 
-# Current pause — 26 October 2026
+## 1. Clone and create a feature branch
 
-Q1 completed in AWS: Succeeded, 2m49s, report PASSED, 4,465,985 transactions / 1,056 positives. Role/policy/code/job are deployed. No active project compute. Athena workgroup is459-aml-dev exists with private SSE-S3 output and 50 MB/query scan limit; no SQL or project Catalog registration performed yet. Next on user resume: Catalog table/date partition and bounded Athena validation over existing Q1 results. Do not rerun Glue. Canonical source: ../PROJECT_CHECKPOINT.md.
+```bash
+git clone https://github.com/Kelvinpcw/is459-aml-project.git
+cd is459-aml-project
+git switch -c feature/your-task
+```
 
-Historical setup notes follow.
+If you already have the repository, use that copy; do not run `git init` again. Only invited collaborators can push even though the repository is public. Prefer pull requests reviewed by a teammate.
 
-# AWS implementation status
+## 2. Local Python/Spark environment
 
-26 October 2026: preparation v2 succeeded and its report was independently verified. **No project compute running.** Canonical continuation instructions: `../PROJECT_CHECKPOINT.md`.
+The recorded local test environment is Python 3.11, PySpark 3.5.6 and Java 21. Install Python/Java first and ensure `java -version` resolves to the intended JDK (`JAVA_HOME` may need setting). Python packages alone do not install Java.
 
-- Account 160885259244, user g2team7, us-east-1. Local AWS CLI uses another account; do not mutate with it.
-- Private project bucket, approved preparation role/policy and one saved Glue job exist. No role permissions changed.
-- Current Glue job `is459-aml-prepare-dev`: `scripts/preparation/prepare-v2.py`, `--run-id=dev-20220901-v2`, zero-quarantine limit, Glue 5.1, two G.1X workers, 15-minute timeout, zero retries, concurrency one.
-- Exactly two runs exist, both terminal Succeeded. v1 incorrectly quarantined 93,554 valid transactions because it required two decimal places. v2 retains all 4,465,985 transactions and all 1,056 positive labels with zero quarantine. Account mapping/label separation and all payment-format counts reconcile.
-- v2 execution 5m50s, 0.194722 DPU-hours, about US$0.086 compute; combined test compute about US$0.17 plus storage/logs. Both single-run approvals are consumed; additional paid processing needs authorization.
-- User-authorized deletion of superseded v1 synthetic test outputs completed: 35 objects, approximately 414 MB, zero failures. Retained source data, code, corrected v2 results, local review evidence and small static logs.
-- 12 local tests passed, including real Spark precision/Parquet/aggregation checks. Full local amount audit and independent cloud report/manifest comparison passed. Actual v2 cloud Parquet samples/schemas have not yet been independently read.
-- Next: review local Q1 role/job permission drafts in `aws/q1-*.json`, prepare its security grant review, code upload, job and catalog/table setup. No Q1 deployment/grant or paid run is approved yet. No Q2/evaluator/dashboard deployment exists.
-- Historical v1 config: `aws/preparation-job.json`; current reproducible intent: `aws/preparation-job-v2.json`. Review/evidence: `aws/reviews/` and `evidence/`.
+Run from the repository root:
 
-See `TEARDOWN.md` for future cleanup. Keep S3. No continuously running project services were introduced.
+```bash
+python3.11 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r Implementation/requirements.txt
+python -m pytest Implementation/tests -q
+```
 
-## Q1 continuation update
+These tests use local fixtures and local Spark, not paid AWS jobs. A fresh clone does not require the 3 GB original dataset for the regression suite. Do not claim a test passed until you run it; report missing Python/Java/dependencies as setup blockers. This documentation update did not rerun the suite.
 
-Q1 aggregation and actual query template now pass six additional local Spark tests (18 total). Query points at v2; exact table/partition DDL and separate analysis-attempt ID added. IAM policy draft validated with zero errors/warnings and staged at Review and create, but not created. Pending grant/run request and source hashes: `aws/reviews/q1-pending-authorization.json`. No Q1 role/code upload/job/execution or Catalog setup performed. Full architecture status: `STATUS.md`; exact deployment review: `Q1_READINESS.md`.
+## 3. Original data and generated artifacts
+
+The following are deliberately ignored and absent from a fresh clone:
+
+- `Ibm_dataset_medium/`: original `HI-Medium_Trans.csv`, `HI-Medium_accounts.csv`, `HI-Medium_Patterns.txt`.
+- `Implementation/data/`: generated date slices, source manifests, local replays and downloaded cloud bundles.
+
+Get originals from the [IBM dataset on Kaggle](https://www.kaggle.com/datasets/ealtman2019/ibm-transactions-for-anti-money-laundering-aml), following its access/licence terms; provenance/licence notes are in [IBM/AML-Data](https://github.com/IBM/AML-Data). Do not put the dataset into Git. Existing cloud objects/manifests are recorded in `aws/reviews/` and the checkpoint; ask the relevant owner for the exact required subset rather than uploading another copy.
+
+`scripts/build_development_input.py` creates stable-ID, date-selected copies without changing originals. Its defaults select **only 1 September 2022** (`--start 2022-09-01`, exclusive `--end 2022-09-02`). It scans the unsorted full source locally. Review the intended date scope and use a fresh output directory when building another slice; do not run a full replay automatically as part of onboarding.
+
+## 4. AWS identity — verify before cloud work
+
+Kelvin supplied the following verified account identities on 27 October 2026:
+
+| Local profile | Account | Use |
+| --- | --- | --- |
+| `IS-459-BDA` | `160885259244` | This project, IAM user `g2team7` |
+| `default` | `372014757586` | Different personal account; not this project |
+
+Project Region: **`us-east-1`**. A teammate must configure their own authorised login/profile; cloning does not create AWS access. Never share keys through GitHub. Profile names are local conveniences, not shared cloud resources.
+
+Read-only checks (adapt the profile name if yours differs):
+
+```bash
+aws sts get-caller-identity --profile IS-459-BDA --region us-east-1
+bash Implementation/scripts/check_aws_profile.sh IS-459-BDA
+```
+
+The guard checks both account and configured region. It aborts if either differs/missing; investigate rather than falling back to `default`. Its legacy default profile is `is459`, so always pass your chosen profile explicitly. Re-check identity at the time of any authorised cloud action. Explicitly pass `--profile`/`--region` on subsequent CLI commands and choose a verified profile/session for local SDK calls; do not assume a prior STS command changes the default account.
+
+**No AWS deployment/run is required to start local development.** Project bucket/configuration is described in `aws/environment.json`, but its legacy status field is not an up-to-date deployment summary. Use `STATUS.md` and the newest scoped run/review evidence instead.
+
+## 5. Shared AWS resources are not branch-isolated
+
+- Coordinate with the component owner before editing shared Glue jobs, IAM, Catalog tables or Step Functions.
+- For an authorised experiment, use distinct script paths, jobs where necessary, and fresh dataset/run/analysis output namespaces. Do not overwrite validated results or frozen releases.
+- Do not reuse Q1's label-reading role for Q2. Keep references/evaluation inaccessible to detection.
+- Paid runs, permissions and deletions must stay within the current user's explicit scope. The checkpoint's paused evaluator is not resumed by cloning or reading documentation. Existing exact attempt approval is historical and not blanket permission for new attempts.
+- Record actual cloud actions, parameters, evidence and estimated costs in the ledger/checkpoint. Stop authorised compute after use; retain approved S3 artifacts. See [TEARDOWN.md](TEARDOWN.md).
+
+## 6. Handoff and pull request
+
+Before asking another person or AI to continue, record: your task/branch, changed files/contracts, commands/tests actually run, any cloud mutations or spend, exact output IDs/paths, and remaining blockers. Never paste credentials or signed URLs into the handoff. Update `STATUS.md` when completion state changes and the deployment checkpoint only when there is an actual deployment handoff to record.

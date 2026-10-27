@@ -1,10 +1,24 @@
 # The 3GB IBM dataset lives on Kaggle/local disk - never in git
 Ibm_dataset_medium/
 
-# Keep non-implementation materials locally, outside the shared repository
-/Proposal/
+# Share confirmed requirements and architecture, not old drafts/Word copies
+/Proposal/*
+!/Proposal/Project_Proposal.md
+!/Proposal/assets/
+!/Proposal/Architecture/
+/Proposal/Architecture/*
+!/Proposal/Architecture/Pipeline_Explanation.md
+!/Proposal/Architecture/Detailed/
+!/Proposal/Architecture/Simplified/
+/Proposal/Architecture/Simplified/AWS_Architecture_Pack2.pdf
 /\[IS459\] Project_G2.pptx
 /other.txt
+
+# Machine-local credentials and environment settings must never be committed
+.env
+.env.*
+!.env.example
+.aws/
 
 # Regenerable slices, replays and cloud copies live in S3 or local disk
 Implementation/data/
