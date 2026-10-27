@@ -2,7 +2,7 @@
 
 Shared implementation and design context for a six-person team using the synthetic IBM HI-Medium anti-money-laundering dataset.
 
-**This is a development prototype, not a finished pipeline.** Architecture diagrams describe the target design, not proof that every service is deployed.
+**The complete software path is implemented on the project-completion branch.** Actual new AWS validation records and the detailed operational checkpoint remain local at the user's request. Read the [checkpoint pointer](PROJECT_CHECKPOINT.md) before resuming deployment; source/configuration is not proof of live cloud state.
 
 ## Start here — humans and AI assistants
 
@@ -38,20 +38,13 @@ Complete outputs + quality reports + evaluation → shared release gate
 Step Functions coordinates the target workflow; EC2 hosts the target dashboard.
 ```
 
-## What actually exists? — saved AWS evidence through 28 October 2026
+## Implementation and evidence
 
-| Component | Verified scope / remaining gap |
-| --- | --- |
-| Preparation | One day, **1 September 2022**: 4,465,985 accepted transactions; no quarantine |
-| Q1 | Glue aggregation and Athena validation for that one day; not the full dataset or a dashboard |
-| Q2 | **00:00 inclusive–00:01 exclusive** on 1 September: 43,681 transactions, 15 fan-out cases, 840 supporting transactions |
-| Evaluator | Frozen first-minute Glue run succeeded; all four raw output files match local predictions. Zero positives/eligible annotations, so recall/recovery remain unmeasurable; [validation](Implementation/results/EVALUATION_CLOUD_VALIDATION.md) |
-| Dashboard, Step Functions, shared publication | Not implemented |
-| Full input | 31,898,238 transactions; not yet processed in full |
+The branch adds conditional publication, a pinned read-only Streamlit dashboard, distributed fan/cycle detection, a separate chronological evaluator, on-demand orchestration and cleanup. The recovery passed68synthetic tests; both recovery templates pass cfn-lint. Frozen detection rules and evaluator settings are preserved while complete evidence is packed into bounded, checksum-verified schema3 ZIP shards.
 
-Q2's data window is **one minute, not one second**. Its recorded execution took 145 seconds. Its graph core collects at most 50,000 window rows into one process; it is not scalable full-day detection. Do not merely widen the dates or remove the guard. Independently processing non-overlapping minutes would miss patterns across boundaries.
+The full implementation uses distributed fan aggregation and bounded, degree-eligible2–4cycle joins over overlapping seven-day daily snapshots. The frozen first-minute driver detector is preserved separately; its pilot is not proof of full-data effectiveness. See [status](Implementation/STATUS.md) and [runbook](Implementation/RUNBOOK.md).
 
-The pilot minute contains zero positive labels and zero eligible annotated attempts. Its evaluation cannot establish useful recall/recovery. Wider-window development, calibration and frozen holdout evaluation remain necessary.
+New AWS reports, measured results, costs and detailed checkpoints are intentionally local. Fresh clones contain neither these operational records nor source/generated data. Previously committed pilot records are historical; never infer current resource state or deployment authority from them.
 
 ## Code map
 

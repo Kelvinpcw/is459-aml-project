@@ -83,21 +83,55 @@ def run_query(athena,query,timeout=30,max_rows=500,sleep=time.sleep):
     return rows
 
 
+def shard_member(raw,member,max_bytes=8_000_000):
+    import zipfile
+    with zipfile.ZipFile(io.BytesIO(raw)) as z:
+        if z.namelist().count(member)!=1:raise ValueError('Missing or duplicate shard member')
+        info=z.getinfo(member)
+        if info.file_size>max_bytes:raise ValueError('Shard member exceeds bound')
+        return z.read(info)
+
+
+def read_evidence_part(s3,part,cache=None):
+    cache={} if cache is None else cache
+    if part.get('member'):
+        uri=part['uri']
+        if uri not in cache:
+            cache.clear();cache[uri]=read_object(s3,uri)
+        body=shard_member(cache[uri],part['member'])
+    else:body=read_object(s3,part['uri'])
+    if len(body)!=part['bytes'] or sha(body)!=part['sha256']:raise ValueError('Evidence chunk changed')
+    return body
+
+
 def get_case(s3,release,row):
-    expected=release['q2']['bundles']+row['case_id']+'.json'
-    if row['bundle_uri']!=expected:raise ValueError('Case URI is not in the pinned release')
-    raw=read_object(s3,expected)
+    sharded=bool(row.get('bundle_member'))
+    if sharded:
+        prefix=release['q2']['bundles']+'shards/'
+        if not row['bundle_uri'].startswith(prefix) or not re.fullmatch(r'[0-9]{4}-[0-9]{2}-[0-9]{2}/partition-[0-9]{5}-[0-9]{6}\.zip',row['bundle_uri'][len(prefix):]):raise ValueError('Shard URI escapes pinned release')
+        if row['bundle_member']!=row['case_id']+'.json':raise ValueError('Wrong case shard member')
+        raw=shard_member(read_object(s3,row['bundle_uri']),row['bundle_member'])
+        if sha(raw)!=row['bundle_sha256']:raise ValueError('Case header changed')
+    else:
+        expected=release['q2']['bundles']+row['case_id']+'.json'
+        if row['bundle_uri']!=expected:raise ValueError('Case URI is not in the pinned release')
+        raw=read_object(s3,expected)
     case=json.loads(raw)
     for k,value in (('dataset_version',release['dataset_version']),('run_id',release['run_id']),
                     ('analysis_id',release['q2']['analysis_id']),('case_id',row['case_id'])):
         if case[k]!=value:raise ValueError('Case identity differs from pinned release')
-    count=sum(p['rows'] for p in case['evidence_parts']) if case.get('schema_version')==2 else len(case['transactions'])
-    if case.get('schema_version')==2:
+    version=case.get('schema_version',1)
+    if version not in (1,2,3) or sharded!=(version==3):raise ValueError('Unknown case storage contract')
+    count=sum(p['rows'] for p in case['evidence_parts']) if version>=2 else len(case['transactions'])
+    if version>=2:
         prefix=release['q2']['bundles'].replace('/bundles/','/evidence/')+row['case_id']+'/'
         for part in case['evidence_parts']:
-            if not part['uri'].startswith(prefix) or not re.fullmatch(r'part-[0-9]{6}\.jsonl',part['uri'][len(prefix):]):raise ValueError('Evidence URI escapes pinned case')
-    if count!=case['evidence_transaction_count']:
-        raise ValueError('Case evidence is incomplete')
+            if version==3:
+                root=release['q2']['bundles']+'shards/'
+                if not part['uri'].startswith(root) or not re.fullmatch(r'[0-9]{4}-[0-9]{2}-[0-9]{2}/partition-[0-9]{5}-[0-9]{6}\.zip',part['uri'][len(root):]):raise ValueError('Evidence shard escapes pinned release')
+                if not re.fullmatch('evidence/'+re.escape(row['case_id'])+r'/part-[0-9]{6}\.jsonl',part.get('member','')):raise ValueError('Evidence member escapes pinned case')
+            elif not part['uri'].startswith(prefix) or not re.fullmatch(r'part-[0-9]{6}\.jsonl',part['uri'][len(prefix):]):raise ValueError('Evidence URI escapes pinned case')
+    if count!=case['evidence_transaction_count']:raise ValueError('Case evidence is incomplete')
     return case,raw
 
 
@@ -129,11 +163,15 @@ def full_evidence_archive(s3,case,max_bytes=50_000_000):
     if parts is None:return None
     if sum(p['bytes'] for p in parts)>max_bytes:
         raise ValueError('This export exceeds the in-app download size. Use the complete evidence manifest with the export CLI; no evidence is truncated.')
-    output=io.BytesIO()
+    output=io.BytesIO();cache={}
     with zipfile.ZipFile(output,'w',compression=zipfile.ZIP_DEFLATED) as archive:
         for i,part in enumerate(parts):
-            raw=read_object(s3,part['uri'])
-            if len(raw)!=part['bytes'] or sha(raw)!=part['sha256']:raise ValueError('Evidence chunk changed')
+            raw=read_evidence_part(s3,part,cache)
             archive.writestr(f'part-{i:06d}.jsonl',raw)
         archive.writestr('manifest.json',json.dumps(case,indent=2))
     return output.getvalue()
+
+
+def find_case_query(release,case_id):
+    if not re.fullmatch(r'[a-f0-9]{64}',case_id):raise ValueError('Require full case ID')
+    return f"SELECT * FROM {table(release,'q2_table')} WHERE dataset_version={literal(release['dataset_version'])} AND run_id={literal(release['run_id'])} AND analysis_id={literal(release['q2']['analysis_id'])} AND case_id={literal(case_id)} LIMIT 1"

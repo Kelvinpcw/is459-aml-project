@@ -37,10 +37,17 @@ def main():
     p=argparse.ArgumentParser()
     p.add_argument('--phase',choices=['manifests','catalog','publish'],required=True)
     p.add_argument('--run-id',required=True);p.add_argument('--release-id',required=True)
+    p.add_argument('--q1-report');p.add_argument('--q2-report');
     p.add_argument('--expected-pointer-etag');args,_=p.parse_known_args()
     from pipeline.release import safe_id
     safe_id(args.run_id);safe_id(args.release_id)
     session=boto3.Session(region_name=REGION);s3=session.client('s3');glue=session.client('glue');keys=paths(args.run_id)
+    from pipeline.release import split_uri
+    for stage,uri in [('q1',args.q1_report),('q2',args.q2_report)]:
+        if uri:
+            bucket,key=split_uri(uri)
+            if not key.startswith(keys[stage].rsplit('/',1)[0]+'/attempt='):raise ValueError('Recovery report escapes the original analysis')
+            keys[stage]=key
     raw={};reports={}
     def read(stage):
         body=s3.get_object(Bucket=BUCKET,Key=keys[stage])['Body'].read(5_000_001)

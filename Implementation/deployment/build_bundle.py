@@ -17,7 +17,7 @@ def archive(files):
 def build(version='full-v1'):
     import re
     if not re.fullmatch(r'full-v[1-9][0-9]*',version):raise ValueError('Use an explicit new full release version')
-    sources={name:(ROOT/'Implementation/jobs'/name).read_bytes() for name in ['q1_risk.py','q2_detect.py','q2_distributed.py','q2_snapshots.py','evaluate_q2.py','evaluate_distributed.py','control.py']}
+    sources={name:(ROOT/'Implementation/jobs'/name).read_bytes() for name in ['q1_risk.py','q2_detect.py','q2_distributed.py','q2_bundle_shards.py','q2_snapshots.py','evaluate_q2.py','evaluate_distributed.py','control.py']}
     sources['prepare.py']=(ROOT/'Implementation/releases/preparation-v2/prepare-v2.py').read_bytes()
     sources['make_q2_input_manifest.py']=(ROOT/'Implementation/scripts/make_q2_input_manifest.py').read_bytes()
     for name in ['__init__.py','release.py']:sources['pipeline/'+name]=(ROOT/'Implementation/pipeline'/name).read_bytes()

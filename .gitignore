@@ -36,3 +36,7 @@ __pycache__/
 # OS noise
 .DS_Store
 Icon*
+
+# User request: keep new AWS operational records and detailed checkpoints local.
+# Previously committed review evidence remains historical; do not add new runs.
+/Implementation/aws/reviews/*

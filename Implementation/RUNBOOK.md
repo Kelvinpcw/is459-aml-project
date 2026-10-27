@@ -34,7 +34,7 @@ Original data and generated `Implementation/data/` are excluded from Git. The ex
 
 ## On-demand AWS execution
 
-The deployment driver requires a profile and a deliberate phase. `upload` only uploads immutable code, `create` creates idle definitions/roles and the on-demand workflow, and `start` starts one named full attempt. The user must have authorised that concrete scope and cost first. Do not run these steps for onboarding or repeat a completed attempt.
+For the original full attempt, the deployment driver requires a profile and a deliberate phase. `upload` only uploads immutable code, `create` creates idle definitions/roles and the on-demand workflow, and `start` starts one named full attempt. The user must have authorised that concrete scope and cost first. Do not run these steps for onboarding or repeat a completed attempt.
 
 ```bash
 python Implementation/deployment/deploy.py --profile IS-459-BDA --phase upload
@@ -53,7 +53,9 @@ New jobs are `is459-aml-full-{prepare,risk,detect,evaluate,control}`; workflow i
 
 The new detector uses Spark fan aggregation and pruned2–4cycle joins. Every daily snapshot reads a complete overlapping7day lookback, preserving patterns across minutes/days. Source history before1September is unavailable and early snapshots explicitly flag incomplete history. Cycles are exhaustive only in the declared degree-eligible induced graph; degree exclusions and expansion guards are reported. A guard failure fails the attempt rather than clipping cases. Fan evidence retains all non-self counterparties/parallel source records.
 
-Schema-v2 cases have a bounded graph/transaction preview plus complete checksum-addressed evidence chunks. Distributed Parquet relations retain the case index, directional pairs and every case/source membership. Executor retries accept only byte-identical existing objects. This changes the versioned case contract; it does not modify the frozen pilot bundles.
+The failed full-v1 export used schema2 (one case header plus evidence chunks). The tested full-v2 recovery uses **schema3**: complete headers and evidence chunks packed into bounded immutable ZIP shards, with a case-index member locator and per-member SHA256/row counts. This reduces storage requests without changing motifs, thresholds, IDs or evidence. The app/CLI resolve only members under the pinned case/release. A case can span multiple shards; no transaction is clipped. The frozen pilot's original bundles and failed full-v1 files remain unchanged.
+
+For the diagnosed first full failure, `deployment/recover.py` separates immutable upload, idle stack update, status and once-only recovery start. `verify_recovery.py` checks exact cloud definitions, original role grants, reusable preparation and empty new attempt prefixes. Recovery starts at parallel Q1/Q2, then Catalog/evaluation/publication, using nested `attempt=recovery1/` outputs. Do not rerun its start or preparation. Read the checkpoint/request markers before any action. The unchanged-role comparison is a requirement of these recovery definitions.
 
 The evaluator validates full fact/label joins and frozen case identities, pair topology and complete evidence before scoring. It selects only snapshots available within each reporting period. Development1–8September, holdout9–16 and sparse17–28 are non-overlapping scoring populations; older context can support a case but cannot enter a later period's transaction denominator. Future snapshots cannot create earlier alerts. References require exact unique source matching; ambiguous/repeated/missing matches are excluded and audited. Typed recovery requires the correct motif/hub/oriented cycle and at least80% of reference source transactions in one case.
 
@@ -64,7 +66,8 @@ A baseline alert fraction per currency is frozen from development alert volume b
 Create the separate temporary dashboard stack only when ready to demonstrate. It uses an existing default VPC/subnet, one`t3.small`, an encrypted8GB root disk with delete-on-termination, IMDSv2 and no inbound security-group rules. Access is through SSM port forwarding, not a public web port. Its role reads published analysis and metrics only, never raw facts/labels, and writes only its restricted Athena result prefix. The dashboard workgroup has a512MB/query scan cutoff and app queries cancel after30seconds.
 
 ```bash
-python Implementation/deployment/deploy.py --profile IS-459-BDA --phase dashboard
+python Implementation/deployment/deploy.py --profile IS-459-BDA --phase dashboard \
+  --dashboard-template dashboard-recovery1-stack.json
 python Implementation/deployment/deploy.py --profile IS-459-BDA --phase dashboard-status
 aws ssm start-session --target INSTANCE_ID --document-name AWS-StartPortForwardingSession \
   --parameters '{"portNumber":["8501"],"localPortNumber":["8502"]}' \
@@ -78,7 +81,7 @@ Demo checks: explain supported Q1 comparisons with the common baseline and low-s
 For a case larger than the50MB in-app ZIP download limit, download its evidence manifest and use the complete export CLI; no evidence is truncated:
 
 ```bash
-python Implementation/scripts/export_case.py --profile IS-459-BDA \
+AML_ATHENA_WORKGROUP=is459-aml-dashboard python Implementation/scripts/export_case.py --profile IS-459-BDA \
   --release-id RELEASE_ID --case-id COMPLETE_CASE_ID --output Implementation/data/case-export-new
 ```
 

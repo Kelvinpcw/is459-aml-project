@@ -120,8 +120,8 @@ with investigation:
             st.dataframe(pd.DataFrame(case['nodes']),hide_index=True,width='stretch')
             st.dataframe(pd.DataFrame(case['transactions'][:200]),hide_index=True,width='stretch')
             st.caption('First 200 evidence rows displayed. Downloads contain all evidence; parallel payments retain separate source IDs.')
-            st.download_button('Download case manifest' if case.get('schema_version')==2 else 'Download complete case JSON',raw,file_name=case['case_id']+'.json',mime='application/json')
-            if case.get('schema_version')==2:
+            st.download_button('Download case manifest' if case.get('schema_version',1)>=2 else 'Download complete case JSON',raw,file_name=case['case_id']+'.json',mime='application/json')
+            if case.get('schema_version',1)>=2:
                 if st.button('Prepare complete evidence download'):
                     try:
                         archive=full_evidence_archive(s3,case)

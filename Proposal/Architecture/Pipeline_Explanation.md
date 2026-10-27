@@ -2,7 +2,7 @@
 
 Think of **Q1 as a reporting job** and **Q2 as an investigation job**. They share the same data preparation, but perform different analyses.
 
-**Design reference, updated 28 October 2026:** This describes the full target workflow, not a completed deployment. Preparation/Q1 are validated for one day; Q2 is validated for its first minute only. The evaluator cloud run and exact output verification are complete for that frozen first minute. Scalable wider-window detection, calibrated holdout evaluation, dashboard, shared publication and orchestration remain incomplete. See [implementation status](../../Implementation/STATUS.md) for evidence and scope. The IBM dataset is synthetic.
+**Design reference, updated28October2026:** The project-completion branch implements this path and its recovery. New AWS validation records and the detailed operational checkpoint remain local at the user's request; read the [checkpoint pointer](../../PROJECT_CHECKPOINT.md) before continuation. Configuration/local tests do not establish cloud completion or effectiveness. The IBM dataset is synthetic.
 
 **Architecture diagrams:** [Simplified PDF](Simplified/AWS_Architecture_Pack.pdf) · [Detailed PDF](Detailed/AWS_Architecture_Pack.pdf)
 

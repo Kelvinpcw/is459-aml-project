@@ -8,7 +8,7 @@ from datetime import datetime,timedelta
 from dataclasses import replace
 from functools import reduce
 import json
-from q2_distributed import DistributedConfig,detect,export_partition
+from q2_distributed import DistributedConfig,detect,export_rows
 from q2_detect import validate_manifest
 
 
@@ -40,7 +40,7 @@ def run_snapshots(facts,manifest,config,windows,write_snapshot):
 
 
 
-def output_cost_estimate(index,evidence):
+def output_cost_estimate(index,evidence,sharded=False):
     """Conservative 30-day S3 storage/PUT estimate, checked before each export."""
     from pyspark.sql import functions as F
     from q2_detect import DETECTOR_COLUMNS
@@ -52,8 +52,9 @@ def output_cost_estimate(index,evidence):
     cases=r['cases'];bytes_data=(r['memberships'] or 0)*row_bytes
     chunks=cases+bytes_data/(1000000-row_bytes)
     total_bytes=2*bytes_data+(r['headers'] or 0)+chunks*512+cases*1024
-    return {'estimated_30day_storage_bytes_upper_bound':int(total_bytes),'estimated_put_requests_upper_bound':int(cases+chunks+1),
-            'estimated_output_cost_usd':total_bytes/1_000_000_000*.023+(cases+chunks)*.000005}
+    requests=(total_bytes/4_000_000+320 if sharded else cases+chunks)
+    return {'estimated_30day_storage_bytes_upper_bound':int(total_bytes),'estimated_put_requests_upper_bound':int(requests+1),
+            'estimated_output_cost_usd':total_bytes/1_000_000_000*.023+requests*.000005}
 
 def main():
     import argparse,boto3
@@ -63,6 +64,7 @@ def main():
     from pyspark.sql import SparkSession,functions as F
     p=argparse.ArgumentParser()
     for arg in ('input-manifest','output-root','analysis-id','first-snapshot-end','last-snapshot-end'):p.add_argument('--'+arg,required=True)
+    p.add_argument('--attempt-id',default='')
     p.add_argument('--max-cycle-degree',type=int,default=64)
     p.add_argument('--max-cycle-path-rows',type=int,default=2000000)
     p.add_argument('--max-output-cost-usd',type=float,default=10)
@@ -72,13 +74,16 @@ def main():
     manifest=json.loads(s3.get_object(Bucket=src.netloc,Key=src.path.lstrip('/'))['Body'].read());validate_manifest(manifest)
     windows=schedule(args.first_snapshot_end,args.last_snapshot_end)
     config=DistributedConfig(manifest['dataset_version'],manifest['run_id'],args.analysis_id,windows[0][0].isoformat(),windows[-1][1].isoformat(),windows[-1][1].isoformat(),max_cycle_degree=args.max_cycle_degree,max_cycle_path_rows=args.max_cycle_path_rows)
+    from pipeline.release import safe_id
+    if args.attempt_id:safe_id(args.attempt_id)
     config.times();suffix=f'dataset_version={config.dataset_version}/run_id={config.run_id}/analysis_id={config.analysis_id}/'
+    if args.attempt_id:suffix+='attempt='+args.attempt_id+'/'
     base=out.path.strip('/');base=base+'/' if base else ''
     prefix=base+'gold/cases/'+suffix;qualitykey=base+'quality/q2/'+suffix+'report.json';root=f's3://{out.netloc}/{prefix}'
     for key in (prefix,base+'quality/q2/'+suffix):
         if s3.list_objects_v2(Bucket=out.netloc,Prefix=key,MaxKeys=1).get('KeyCount',0):raise ValueError('Fresh snapshot attempt required')
     report={'schema_version':2,'stage':'q2','status':'FAILED','config':asdict(config),'rule_version':'structural-v2','distributed_processing':True,
-      'detector_received_labels':False,'input_manifest':args.input_manifest,'full_prepared_rows':manifest['accepted_rows']}
+      'detector_received_labels':False,'input_manifest':args.input_manifest,'full_prepared_rows':manifest['accepted_rows'],'case_bundle_schema_version':3,'attempt_id':args.attempt_id}
     spark=SparkSession.builder.appName('is459-q2-snapshots').config('spark.sql.session.timeZone','UTC').config('spark.sql.shuffle.partitions','64').getOrCreate()
     facts=spark.read.parquet(manifest['inputs']['transactions'])
     try:
@@ -86,19 +91,24 @@ def main():
         index_schema=None
         def write_snapshot(cfg,index,pairs,evidence,stats):
             nonlocal estimated_output_cost,index_schema
-            estimate=output_cost_estimate(index,evidence)
+            from q2_bundle_shards import export_shards
+            from pyspark import TaskContext
+            from pyspark.sql import types as T
+            estimate=output_cost_estimate(index,evidence,sharded=True)
             if estimated_output_cost+estimate['estimated_output_cost_usd']>args.max_output_cost_usd:raise ValueError('Projected output cost exceeds the declared budget guard before this snapshot export')
             estimated_output_cost+=estimate['estimated_output_cost_usd'];stats.update(estimate)
-            index=index.withColumn('bundle_uri',F.concat(F.lit(root+'bundles/'),F.col('case_id'),F.lit('.json')))
+            export=export_rows(index,evidence).repartition(64,'case_id').sortWithinPartitions('case_id','event_time','source_id')
+            refs_schema=T.StructType([T.StructField(c,T.StringType(),False) for c in ('case_id','bundle_uri','bundle_member','bundle_sha256')])
+            snapshot=cfg.window_end[:10]
+            refs=spark.createDataFrame(export.rdd.mapPartitions(lambda rows:export_shards(rows,out.netloc,prefix,snapshot,TaskContext.get().partitionId())),refs_schema).localCheckpoint(eager=True)
+            if refs.count()!=stats['case_count']:raise ValueError('Snapshot shard export incomplete')
+            index=index.join(refs.select(*(F.col(c).alias(c) for c in refs.columns)),'case_id')
             index_schema=index.schema.jsonValue()
             index.write.mode('append').partitionBy('window_date').parquet(root+'case_index/')
             pairs.write.mode('append').parquet(root+'case_edges/')
             evidence.write.mode('append').parquet(root+'case_evidence/')
-            metadata=[c for c in index.columns if c not in evidence.columns or c=='case_id']
-            export=evidence.join(index.select(*metadata),'case_id').repartition(64,'case_id').sortWithinPartitions('case_id','event_time','source_id')
-            totals=export.rdd.mapPartitions(lambda rows:export_partition(rows,out.netloc,prefix)).collect()
-            if sum(x[0] for x in totals)!=stats['case_count'] or sum(x[1] for x in totals)!=stats['case_evidence_rows_including_case_overlap']:
-                raise ValueError('Snapshot exports incomplete')
+            s3.put_object(Bucket=out.netloc,Key=base+'quality/q2/'+suffix+'snapshots/'+snapshot+'.json',Body=(json.dumps({'config':asdict(cfg),'statistics':stats},indent=2)+'\n').encode(),IfNoneMatch='*',ContentType='application/json')
+            print(json.dumps({'snapshot_completed':cfg.window_end,'statistics':stats}),flush=True)
         snapshots=run_snapshots(facts,manifest,config,windows,write_snapshot)
         scope_count=facts.filter((F.col('event_time')>=F.lit(windows[0][0]))&(F.col('event_time')<F.lit(windows[-1][1]))).count()
         report.update(status='PASSED',snapshots=snapshots,statistics={'scoped_rows':scope_count,'case_count':sum(x['case_count'] for x in snapshots),

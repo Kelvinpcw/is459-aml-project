@@ -138,6 +138,18 @@ def detect(facts,manifest,config,inputs_validated=False):
     return index,pairs,evidence,stats
 
 
+def export_rows(index,evidence):
+    """Give metadata fresh expression IDs before joining shared checkpoint lineage.
+
+    Glue's Spark analyzer can otherwise retain the same case_id attribute on
+    both sides, even though the relations have different projection lineages.
+    """
+    from pyspark.sql import functions as F
+    metadata=[c for c in index.columns if c not in evidence.columns or c=='case_id']
+    right=index.select(*(F.col(c).alias(c) for c in metadata))
+    return evidence.join(right,'case_id')
+
+
 def export_partition(rows,bucket,prefix,profile=None,region='us-east-1'):
     """Bounded-memory complete evidence chunks; deterministic executor retries."""
     import boto3,itertools
@@ -220,7 +232,7 @@ def main():
         pairs.write.mode('errorifexists').parquet(root+'case_edges/')
         evidence.write.mode('errorifexists').parquet(root+'case_evidence/')
         metadata=[c for c in index.columns if c not in evidence.columns or c=='case_id']
-        export=evidence.join(index.select(*metadata),'case_id').repartition(64,'case_id').sortWithinPartitions('case_id','event_time','source_id')
+        export=export_rows(index,evidence).repartition(64,'case_id').sortWithinPartitions('case_id','event_time','source_id')
         totals=export.rdd.mapPartitions(lambda rows:export_partition(rows,out.netloc,caseprefix)).collect()
         if sum(x[0] for x in totals)!=stats['case_count'] or sum(x[1] for x in totals)!=stats['case_evidence_rows_including_case_overlap']:
             raise ValueError('Export completion inventory differs')

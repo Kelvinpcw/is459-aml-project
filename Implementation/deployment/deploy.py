@@ -18,6 +18,7 @@ def main():
  p=argparse.ArgumentParser()
  p.add_argument('--profile',required=True);p.add_argument('--region',default=REGION)
  p.add_argument('--phase',required=True,choices=['upload','create','start','status','dashboard','dashboard-status','stop','remove-dashboard'])
+ p.add_argument('--dashboard-template',choices=['dashboard-stack.json','dashboard-recovery1-stack.json'],default='dashboard-stack.json')
  p.add_argument('--code-version',default='full-v1')
  p.add_argument('--run-id',default='full-20261028-v1');p.add_argument('--release-id',default='full-20261028-v1')
  args=p.parse_args()
@@ -68,7 +69,7 @@ def main():
   if len(vpcs)!=1:raise ValueError('Select an authorised existing VPC; no new VPC/NAT is created automatically')
   vpc=vpcs[0]['VpcId'];subnets=ec2.describe_subnets(Filters=[{'Name':'vpc-id','Values':[vpc]},{'Name':'default-for-az','Values':['true']}])['Subnets']
   if not subnets:raise ValueError('No default public subnet is available')
-  template=(ROOT/'Implementation/deployment/dashboard-stack.json').read_text()
+  template=(ROOT/'Implementation/deployment'/args.dashboard_template).read_text()
   result=cfn.create_stack(StackName=DASHBOARD,TemplateBody=template,Capabilities=['CAPABILITY_NAMED_IAM'],ClientRequestToken=str(uuid.uuid4()),Parameters=[{'ParameterKey':'CodeVersion','ParameterValue':args.code_version},{'ParameterKey':'VpcId','ParameterValue':vpc},{'ParameterKey':'SubnetId','ParameterValue':subnets[0]['SubnetId']}],Tags=[{'Key':'Project','Value':'is459-aml'}],OnFailure='DO_NOTHING')
   save('dashboard-stack-create.json',result);print(json.dumps(result))
  elif args.phase=='dashboard-status':

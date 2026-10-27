@@ -135,7 +135,7 @@ def validate_candidate(candidate, reports):
             'dataset_version':identity[0], 'run_id':identity[1], 'reports':candidate['reports'], 'catalog':catalog,
             'q1':{'analysis_id':q1['analysis_id'],'dates':dates,'daily_counts':q1['outputs']['daily_counts']},
             'q2':{'analysis_id':config['analysis_id'],'window_start':config['window_start'],'window_end':config['window_end'],
-                  'snapshot_cutoff':config['snapshot_cutoff'],'case_count':stats['case_count'], 'snapshots':q2.get('snapshots',[]), **q2['outputs']},
+                  'snapshot_cutoff':config['snapshot_cutoff'],'case_count':stats['case_count'], 'snapshots':q2.get('snapshots',[]),'case_bundle_schema_version':q2.get('case_bundle_schema_version',1), **q2['outputs']},
             'evaluation':{'evaluation_id':evaluation['evaluation_id'],'metrics':evaluation['artifacts']['metrics.json']},
             'timestamp_policy':prep['timestamp_policy'], 'warnings':warnings,
             'created_at_utc':datetime.now(timezone.utc).isoformat()}
