@@ -1,6 +1,11 @@
 # The 3GB IBM dataset lives on Kaggle/local disk - never in git
 Ibm_dataset_medium/
 
+# Keep non-implementation materials locally, outside the shared repository
+/Proposal/
+/\[IS459\] Project_G2.pptx
+/other.txt
+
 # Regenerable slices, replays and cloud copies live in S3 or local disk
 Implementation/data/
 
