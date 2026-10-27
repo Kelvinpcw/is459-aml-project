@@ -101,4 +101,4 @@ AI tools that do not automatically load `AGENTS.md` should be explicitly asked t
 
 The large source dataset and generated `Implementation/data/` artifacts are intentionally not in Git. Cloning does not download them. See [SETUP.md](Implementation/SETUP.md) before requesting data or attempting a replay. Never commit credentials, signed S3 URLs or environment secrets; this repository is public.
 
-Kelvin's named project profile is **`IS-459-BDA`**, account **`160885259244`**, region **`us-east-1`**. His `default` profile is a different account. Teammates must independently authenticate and verify their own profile; profile names/credentials are not shared by GitHub.
+The shared project account is **`160885259244`**, Region **`us-east-1`**. Each member must independently authenticate and verify their own AWS console login or CLI profile. Local profile names and credentials are not shared by GitHub; do not assume your default account is correct.
