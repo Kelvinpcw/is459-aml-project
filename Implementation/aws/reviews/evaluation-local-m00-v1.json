@@ -1,0 +1,86 @@
+{
+  "status": "PASSED",
+  "policy_version": "development-evaluation-v1",
+  "scope": {
+    "dataset_version": "ibm-hi-medium-b1b99c68b765580f",
+    "run_id": "dev-20220901-v2",
+    "analysis_id": "q2-dev-20220901-m00-v1",
+    "window_start": "2022-09-01T00:00:00",
+    "window_end": "2022-09-01T00:01:00",
+    "snapshot_cutoff": "2022-09-01T00:01:00"
+  },
+  "benchmark_status": "development_diagnostic_only_not_calibrated_holdout",
+  "case_count": 15,
+  "detector_transaction_metrics": {
+    "population": 43681,
+    "positive_labels": 0,
+    "unique_alerted_transactions": 840,
+    "true_positive": 0,
+    "false_positive": 840,
+    "false_negative": 0,
+    "true_negative": 42841,
+    "precision": 0.0,
+    "recall": null,
+    "lift_vs_population": null,
+    "precision_status": "measured",
+    "recall_status": "no_positive_labels"
+  },
+  "amount_baseline_transaction_metrics": {
+    "population": 43681,
+    "positive_labels": 0,
+    "unique_alerted_transactions": 840,
+    "true_positive": 0,
+    "false_positive": 840,
+    "false_negative": 0,
+    "true_negative": 42841,
+    "precision": 0.0,
+    "recall": null,
+    "lift_vs_population": null,
+    "precision_status": "measured",
+    "recall_status": "no_positive_labels"
+  },
+  "annotation_metrics": {
+    "total_file_attempts": 2756,
+    "eligible_attempts": 0,
+    "recovered_attempts": 0,
+    "attempt_recovery": null,
+    "detector_type_agnostic_coverage_80pct": null,
+    "amount_baseline_coverage_80pct": null,
+    "denominator_status": "no_eligible_annotated_attempts",
+    "exclusion_counts_overlapping": {
+      "outside_declared_window": 2756,
+      "after_snapshot_cutoff": 2756,
+      "unsupported_annotation_type": 1689,
+      "cycle_size_out_of_scope": 203,
+      "below_fan_degree": 324,
+      "invalid_fan_topology": 1
+    }
+  },
+  "provenance": {
+    "validation_scope": "Local checksum-verified source projection + frozen cloud cases; not a cloud evaluator run",
+    "selected_source_sha256": "b137bcacba9727b98d356f6756935f93904ee8b3999d2281ee5819b38bf51de2",
+    "annotations_sha256": "392d748d8d76efc1a96f6dc29ad8dd282c815de96537f0296bb0a7fa96ec4130",
+    "full_source_rows_checked": 4465985,
+    "full_positive_labels_checked": 1056,
+    "detector_report_canonical_sha256": "a093664ed2c6b4edfc6988eb00b6f30b969d93090344a05a111c3fa4963fceb2",
+    "evaluator_source_sha256": "0416846ba0c00b93b77c122c4d663051d8480131de89b0f6cd2cc2b35639a9ec"
+  },
+  "artifacts": {
+    "metrics.json": {
+      "sha256": "539d8bc7628440d6508dd2806025fb3e321464be3daa0003eaca8a5aff5787fc",
+      "bytes": 8041
+    },
+    "case_evaluation.jsonl": {
+      "sha256": "f3b1f43cb465d4c0a1941676bb4ed6d415ae61cd8fe10021f74f3ea82e422698",
+      "bytes": 2567
+    },
+    "attempt_evaluation.jsonl": {
+      "sha256": "ff902357f7b433cf51dbf9624be473f4da3d9f14ee3a6561457dd522c4c14336",
+      "bytes": 1167095
+    },
+    "alert_source_ids.json": {
+      "sha256": "8546f104e9085c0551df4de761202574a2c619e2fcd4fdf2e11e40750935e203",
+      "bytes": 133004
+    }
+  }
+}

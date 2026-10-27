@@ -1,0 +1,39 @@
+{
+  "status": "VERIFIED",
+  "dataset_version": "ibm-hi-medium-b1b99c68b765580f",
+  "run_id": "dev-20220901-v2",
+  "accepted_rows": 4465985,
+  "positive_labels": 1056,
+  "quarantined_rows": 0,
+  "payment_formats": {
+    "Credit Card": {
+      "transactions": 676318,
+      "labelled_laundering": 114
+    },
+    "ACH": {
+      "transactions": 345243,
+      "labelled_laundering": 681
+    },
+    "Cash": {
+      "transactions": 268168,
+      "labelled_laundering": 63
+    },
+    "Wire": {
+      "transactions": 101916,
+      "labelled_laundering": 0
+    },
+    "Bitcoin": {
+      "transactions": 92751,
+      "labelled_laundering": 16
+    },
+    "Reinvestment": {
+      "transactions": 1945611,
+      "labelled_laundering": 0
+    },
+    "Cheque": {
+      "transactions": 1035978,
+      "labelled_laundering": 182
+    }
+  },
+  "scope": "Independent report/manifest checks; actual Parquet schema/sample inspection recorded separately"
+}

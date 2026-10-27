@@ -1,0 +1,22 @@
+{
+  "service": "glue-job-run",
+  "job_name": "is459-aml-prepare-dev",
+  "run_id": "jr_bede7c68199d9eeec1e051d1b1a69bf9d9842aad199e097915f604c8ad246f08",
+  "run_id_parameter": "dev-20220901-v2",
+  "status": "SUCCEEDED",
+  "started_at_singapore": "2026-10-26 10:15:05",
+  "workers": 2,
+  "worker_type": "G.1X",
+  "timeout_minutes": 15,
+  "automatic_retries": 0,
+  "approved_total_test_budget_usd": 1,
+  "compute_still_running": false,
+  "quality_report_reviewed": true,
+  "ended_at_singapore": "2026-10-26 10:21:29",
+  "execution_seconds": 350,
+  "startup_seconds": 33,
+  "dpu_hours": 0.194722,
+  "estimated_glue_compute_usd": 0.085678,
+  "report_verification": "VERIFIED; 4465985 accepted, 0 quarantined, 1056 positive labels; exact format reconciliation",
+  "release_ready": true
+}

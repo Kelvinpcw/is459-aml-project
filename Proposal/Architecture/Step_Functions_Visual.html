@@ -1,0 +1,503 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Step Functions — watch the manager at work</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #203047;
+      --muted: #627086;
+      --line: #dfe4ec;
+      --purple: #7546c5;
+      --purple-light: #f2ecfc;
+      --orange: #a9510b;
+      --orange-light: #fff3e5;
+      --green: #146b59;
+      --green-light: #eaf7f2;
+      --red: #ad3542;
+      --red-light: #fff0f1;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: #f6f7fb;
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.5;
+    }
+    main { max-width: 1160px; margin: 0 auto; padding: 22px 24px 18px; }
+    .eyebrow { margin: 0 0 7px; font-size: 11px; font-weight: 750; letter-spacing: .13em; color: var(--purple); }
+    h1 { margin: 0; font-size: clamp(25px, 3.3vw, 38px); line-height: 1.2; letter-spacing: -.035em; }
+    h1 span { color: var(--purple); }
+    .intro { margin: 8px 0 16px; font-size: 14px; color: var(--muted); }
+    button, select { font: inherit; }
+    button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      min-height: 40px;
+      padding: 8px 14px;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      background: white;
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 650;
+      cursor: pointer;
+    }
+    button:hover:not(:disabled) { border-color: var(--purple); background: var(--purple-light); }
+    button:disabled { opacity: .4; cursor: not-allowed; }
+    button:focus-visible, select:focus-visible { outline: 3px solid #b59ae6; outline-offset: 3px; }
+    .primary { background: var(--purple); border-color: var(--purple); color: white; min-width: 125px; }
+    .primary:hover:not(:disabled) { background: #6034ad; color: white; }
+    .controls { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+    .scenario { display: flex; align-items: center; gap: 8px; margin-left: auto; font-size: 12px; color: var(--muted); }
+    select { min-height: 40px; padding: 7px 28px 7px 10px; border: 1px solid var(--line); border-radius: 9px; background: white; color: var(--ink); font-size: 13px; }
+    .board {
+      position: relative;
+      display: grid;
+      grid-template-columns: 250px minmax(0, 1fr);
+      gap: 42px;
+      padding: 18px;
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      box-shadow: 0 8px 28px #20304707;
+    }
+    .wires { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
+    .wire { fill: none; stroke: var(--purple); stroke-width: 2; stroke-dasharray: 5 5; animation: send 1.2s linear infinite; }
+    .wire.waiting { opacity: .5; animation: none; }
+    @keyframes send { to { stroke-dashoffset: -20; } }
+    .manager, .workers { position: relative; z-index: 1; min-width: 0; }
+    .manager { display: flex; flex-direction: column; }
+    .manager-card { position: relative; padding: 16px; border: 2px solid #d1bdeb; border-radius: 13px; background: var(--purple-light); }
+    .service-label { display: flex; align-items: center; gap: 7px; margin: 0 0 5px; font-size: 10px; font-weight: 800; letter-spacing: .09em; color: var(--purple); }
+    .service-label svg { width: 19px; height: 19px; }
+    .manager h2 { margin: 0; font-size: 23px; letter-spacing: -.03em; }
+    .role { margin: 3px 0 13px; color: #684697; font-size: 12px; }
+    .speech { min-height: 88px; margin: 0; padding: 11px; background: white; border-radius: 9px; font-size: 15px; font-weight: 650; line-height: 1.5; }
+    .port { position: absolute; right: -7px; top: 139px; width: 12px; height: 12px; border-radius: 50%; background: var(--purple); border: 3px solid white; }
+    .manager-reminder { margin: 10px 0 0; font-size: 11px; color: #684697; }
+    .manager-reminder strong { display: block; }
+    .plan-label { margin: 14px 0 7px; font-size: 10px; letter-spacing: .1em; font-weight: 750; color: var(--muted); }
+    .plan { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; }
+    .plan li { display: flex; align-items: center; gap: 9px; padding: 4px 9px; border-radius: 7px; font-size: 12px; color: var(--muted); }
+    .plan .number { width: 20px; height: 20px; display: grid; place-items: center; border: 1px solid var(--line); border-radius: 50%; font-size: 10px; background: white; }
+    .plan li.active { background: var(--purple-light); color: var(--purple); font-weight: 700; }
+    .plan li.active .number { background: var(--purple); color: white; border-color: var(--purple); }
+    .plan li.done .number { background: var(--green-light); color: var(--green); border-color: #add5c8; }
+    .plan li.blocked { background: var(--red-light); color: var(--red); font-weight: 700; }
+    .workers-heading { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 9px; }
+    .workers-heading .service-label { color: var(--orange); margin: 0; }
+    .wire-legend { font-size: 10px; color: var(--purple); white-space: nowrap; }
+    .wire-legend::before { content: ""; display: inline-block; width: 20px; border-top: 2px dashed var(--purple); margin-right: 5px; vertical-align: middle; }
+    .s3-source { display: flex; align-items: center; gap: 10px; margin-bottom: 11px; padding: 8px 11px; border-radius: 9px; background: var(--green-light); color: var(--green); }
+    .s3-source svg { flex: 0 0 23px; width: 23px; height: 23px; }
+    .s3-source strong { font-size: 12px; }
+    .s3-source small { display: block; font-size: 11px; }
+    .prep-wrap { display: flex; justify-content: center; }
+    .job { position: relative; padding: 10px 12px; border: 1.5px solid var(--line); border-radius: 10px; background: white; transition: border-color .2s, background .2s; min-width: 0; }
+    .prep-wrap .job { width: 72%; }
+    .job-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+    .job-name { margin: 0; font-size: 13px; font-weight: 750; }
+    .job-detail { margin: 3px 0 0; font-size: 11px; color: var(--muted); }
+    .status { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 700; color: var(--muted); white-space: nowrap; }
+    .status::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: #a0abba; }
+    .job[data-status="running"] { background: var(--orange-light); border-color: #e0a66f; }
+    .job[data-status="running"] .status { color: var(--orange); }
+    .job[data-status="running"] .status::before { background: var(--orange); animation: pulse 1s ease-in-out infinite; }
+    .job[data-status="done"] { background: #f3faf7; border-color: #a5d1c3; }
+    .job[data-status="done"] .status { color: var(--green); }
+    .job[data-status="done"] .status::before { background: var(--green); }
+    .job[data-status="failed"] { background: var(--red-light); border-color: #e5a0a7; }
+    .job[data-status="failed"] .status { color: var(--red); }
+    .job[data-status="failed"] .status::before { background: var(--red); }
+    .job[data-status="skipped"] { opacity: .55; }
+    @keyframes pulse { 50% { opacity: .25; } }
+    .fork { display: block; width: 100%; height: 27px; }
+    .fork path { fill: none; stroke: #b7c6c0; stroke-width: 1.5; }
+    .branch-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .branch { min-width: 0; }
+    .branch-note { margin: 12px 8px 0; font-size: 11px; color: var(--muted); text-align: center; }
+    .branch-note strong { color: var(--ink); }
+    .down-arrow { text-align: center; color: #8baba0; height: 23px; line-height: 23px; font-size: 17px; }
+    .retry-note { margin: 4px 0 0; font-size: 10px; font-weight: 650; color: var(--red); }
+    .retry-note:empty { display: none; }
+    .storage { margin-top: 12px; padding: 9px 11px; border: 1px solid var(--line); border-radius: 10px; background: #f9fbfa; }
+    .storage-heading { display: flex; align-items: center; gap: 6px; font-size: 10px; font-weight: 750; letter-spacing: .06em; color: var(--green); }
+    .storage-heading svg { width: 16px; height: 16px; }
+    .files { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 7px; }
+    .file { font-size: 10px; padding: 3px 7px; border: 1px solid var(--line); background: white; border-radius: 5px; color: #7b8592; }
+    .file.ready { border-color: #a5d1c3; color: var(--green); background: var(--green-light); }
+    .release { margin-top: 11px; padding-top: 10px; border-top: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .release-label { font-size: 11px; font-weight: 650; }
+    .gate { font-size: 10px; color: var(--muted); border-radius: 5px; padding: 3px 7px; background: #edf0f4; }
+    .gate.checking { background: var(--purple-light); color: var(--purple); }
+    .gate.passed { background: var(--green-light); color: var(--green); }
+    .gate.blocked { background: var(--red-light); color: var(--red); }
+    .dashboard {
+      display: flex; justify-content: space-between; align-items: center; gap: 10px;
+      margin-top: 11px; padding: 10px 12px; border: 1.5px solid var(--line); border-radius: 10px; background: white;
+    }
+    .dashboard.published { border-color: #72b5a1; background: var(--green-light); }
+    .dashboard svg { width: 23px; height: 23px; color: var(--muted); }
+    .dashboard-name { display: flex; align-items: center; gap: 9px; font-size: 12px; font-weight: 750; }
+    .dashboard small { display: block; font-size: 10px; color: var(--muted); font-weight: 400; }
+    .published-run { text-align: right; font-size: 11px; font-weight: 700; color: var(--muted); }
+    .dashboard.published .published-run { color: var(--green); }
+    .story { display: grid; grid-template-columns: auto 1fr; gap: 15px; align-items: start; margin-bottom: 15px; padding: 14px 18px; border: 1px solid var(--line); border-radius: 12px; background: white; }
+    .story-step { width: 42px; height: 42px; display: grid; place-items: center; background: var(--purple-light); color: var(--purple); border-radius: 10px; font-size: 12px; font-weight: 750; }
+    .story h2 { margin: 0 0 4px; font-size: 16px; }
+    .story p { margin: 0; font-size: 13px; color: var(--muted); }
+    .progress { height: 3px; background: #e8e1f4; border-radius: 3px; margin-top: 13px; overflow: hidden; }
+    .progress span { display: block; height: 100%; width: 0; background: var(--purple); transition: width .2s; }
+    footer { display: flex; justify-content: space-between; gap: 12px; margin-top: 12px; font-size: 10px; color: var(--muted); }
+    .symbols { position: absolute; width: 0; height: 0; overflow: hidden; }
+    @media (max-width: 1040px) {
+      main { padding: 20px 18px; }
+      .board { grid-template-columns: 220px minmax(0, 1fr); gap: 30px; padding: 18px; }
+      .manager-card { padding: 15px; }
+      .manager h2 { font-size: 21px; }
+      .speech { font-size: 14px; }
+      .prep-wrap .job { width: 90%; }
+      .workers-heading { flex-wrap: wrap; }
+      .branch-row { gap: 10px; }
+      .job { padding: 10px; }
+      .job-top { flex-wrap: wrap; gap: 3px; }
+    }
+    @media (max-width: 640px) {
+      main { padding: 20px 13px; }
+      .intro { font-size: 13px; }
+      .scenario { width: 100%; margin: 4px 0 0; }
+      .board { grid-template-columns: 1fr; gap: 21px; padding: 15px; }
+      .manager-card { padding: 14px; }
+      .manager h2 { font-size: 22px; }
+      .role { margin-bottom: 10px; }
+      .speech { min-height: 0; font-size: 15px; }
+      .manager-reminder { margin-top: 9px; }
+      .manager-reminder strong { display: inline; }
+      .port, .wires { display: none; }
+      .plan-label { margin-top: 12px; }
+      .plan { display: flex; flex-wrap: wrap; gap: 3px; }
+      .plan li { padding: 3px; font-size: 10px; gap: 4px; }
+      .plan .number { width: 17px; height: 17px; }
+      .workers-heading { padding-top: 14px; border-top: 1px solid var(--line); }
+      .wire-legend { display: none; }
+      .story { padding: 14px; gap: 10px; }
+      .story h2 { font-size: 14px; }
+      .story p { font-size: 12px; }
+      footer { flex-direction: column; gap: 3px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <svg class="symbols" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+    <symbol id="icon-manager" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="5" rx="1.5"/><path d="M12 7v4M5 15v-4h14v4"/><rect x="1" y="15" width="8" height="6" rx="1.5"/><rect x="15" y="15" width="8" height="6" rx="1.5"/></g></symbol>
+    <symbol id="icon-tools" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4a5 5 0 0 0-6 6L3 16a3 3 0 0 0 4 4l6-6a5 5 0 0 0 6-6l-3 3-3-3 2-4Z"/></g></symbol>
+    <symbol id="icon-store" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v13c0 4 16 4 16 0V5M4 11c0 4 16 4 16 0"/></g></symbol>
+    <symbol id="icon-screen" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4M6 13V9M11 13V6M16 13v-3"/></g></symbol>
+  </svg>
+  <main>
+    <header>
+      <p class="eyebrow">YOUR AWS PIPELINE · MADE VISIBLE</p>
+      <h1><span>Step Functions directs.</span> Glue does the work.</h1>
+      <p class="intro">Follow one run. The purple manager gives instructions; the orange workers process the data.</p>
+    </header>
+
+    <nav class="controls" aria-label="Walkthrough controls">
+      <button id="play" class="primary" type="button">▶ Play the run</button>
+      <button id="back" type="button" aria-label="Previous step">← Back</button>
+      <button id="next" type="button">Next step →</button>
+      <button id="reset" type="button">Reset</button>
+      <label class="scenario">Try a scenario
+        <select id="scenario">
+          <option value="success">Everything succeeds</option>
+          <option value="failure">Q2 fails, even after retry</option>
+        </select>
+      </label>
+    </nav>
+
+    <section class="story" aria-label="Explanation of the current step" aria-live="polite">
+      <div class="story-step" id="step-number"></div>
+      <div>
+        <h2 id="event-title"></h2>
+        <p id="explanation"></p>
+        <div class="progress" aria-hidden="true"><span id="progress"></span></div>
+      </div>
+    </section>
+
+    <section class="board" id="board" aria-label="Step Functions coordinator alongside Glue workers and S3 storage">
+      <svg class="wires" id="wires" aria-hidden="true">
+        <defs><marker id="command-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0 10 5 0 10Z" fill="#7546c5"/></marker></defs>
+        <g id="command-paths"></g>
+      </svg>
+
+      <aside class="manager">
+        <div class="manager-card">
+          <p class="service-label"><svg aria-hidden="true"><use href="#icon-manager"/></svg> THE MANAGER</p>
+          <h2>Step Functions</h2>
+          <p class="role">Decides what runs, and when.</p>
+          <p class="speech" id="speech" aria-live="polite"></p>
+          <span class="port" id="port" aria-hidden="true"></span>
+          <p class="manager-reminder"><strong>I do not clean or analyse transactions.</strong> I start jobs, wait, and decide what is next.</p>
+        </div>
+        <p class="plan-label">THE PLAN YOU GIVE THE MANAGER</p>
+        <ol class="plan" id="plan">
+          <li><span class="number">1</span>Prepare the data</li>
+          <li><span class="number">2</span>Run Q1 + Q2 together</li>
+          <li><span class="number">3</span>Evaluate Q2 cases</li>
+          <li><span class="number">4</span>Check the outputs</li>
+          <li><span class="number">5</span>Publish the complete run</li>
+        </ol>
+      </aside>
+
+      <div class="workers">
+        <div class="workers-heading">
+          <p class="service-label"><svg aria-hidden="true"><use href="#icon-tools"/></svg> GLUE · THE WORKERS</p>
+          <span class="wire-legend">Instructions / job status, not data</span>
+        </div>
+
+        <div class="s3-source">
+          <svg aria-hidden="true"><use href="#icon-store"/></svg>
+          <div><strong>S3 holds the input files.</strong><small>Glue reads these files — not Step Functions.</small></div>
+        </div>
+
+        <div class="prep-wrap">
+          <article class="job" id="prep" data-status="queued">
+            <div class="job-top"><h3 class="job-name">Prepare the data</h3><span class="status"></span></div>
+            <p class="job-detail">Clean files, join accounts, separate labels.</p>
+          </article>
+        </div>
+
+        <svg class="fork" viewBox="0 0 400 34" preserveAspectRatio="none" aria-hidden="true"><path d="M200 0V14H100V31M200 14H300V31M96 26l4 5 4-5M296 26l4 5 4-5"/></svg>
+
+        <div class="branch-row">
+          <div class="branch">
+            <article class="job" id="q1" data-status="queued">
+              <div class="job-top"><h3 class="job-name">Q1 · Risk summaries</h3><span class="status"></span></div>
+            <p class="job-detail">Keep N/L counts by both currencies; filter before calculating rates.</p>
+            </article>
+            <p class="branch-note"><strong>These two jobs can run at the same time.</strong><br>Q1 need not wait for Q2.</p>
+          </div>
+          <div class="branch">
+            <article class="job" id="q2" data-status="queued">
+              <div class="job-top"><h3 class="job-name">Q2 · Detect cases</h3><span class="status"></span></div>
+              <p class="job-detail">Find connected patterns, without labels.</p>
+            </article>
+            <div class="down-arrow" aria-hidden="true">↓</div>
+            <article class="job" id="evaluate" data-status="queued">
+              <div class="job-top"><h3 class="job-name">Evaluate Q2 cases</h3><span class="status"></span></div>
+              <p class="job-detail">Cases + full eligible facts + isolated labels/annotations.</p>
+            </article>
+          </div>
+        </div>
+        <p class="retry-note" id="retry-note"></p>
+
+        <div class="storage">
+          <div class="storage-heading"><svg aria-hidden="true"><use href="#icon-store"/></svg> S3 · FILES SAVED FOR THIS NEW RUN</div>
+          <div class="files">
+            <span class="file" id="file-prep">Clean data</span>
+            <span class="file" id="file-q1">Q1 summaries</span>
+            <span class="file" id="file-q2">Q2 cases</span>
+            <span class="file" id="file-evaluate">Evaluation report</span>
+            <span class="file" id="file-quality">Prep / Q1 / Q2 quality reports</span>
+          </div>
+          <div class="release"><span class="release-label">Release gate · complete outputs + quality checks + evaluation</span><span class="gate" id="gate">Not checked yet</span></div>
+        </div>
+
+        <div class="dashboard" id="dashboard">
+          <div class="dashboard-name"><svg aria-hidden="true"><use href="#icon-screen"/></svg><div>Your dashboard<small>Athena queries + S3 case bundles pinned to one published run.</small></div></div>
+          <div class="published-run" id="published-run">Previous successful run</div>
+        </div>
+      </div>
+    </section>
+
+    <footer><span>Teaching simulation of the proposed architecture. No AWS calls. Timing, run names, and the one-retry policy are illustrative.</span><span>Tip: use Next step to go slowly.</span></footer>
+  </main>
+
+  <script>
+    const commonSteps = [
+      {
+        speech: '“I have the plan. Press Play, or walk through it with Next step.”',
+        title: 'You give Step Functions a plan, then start one run.',
+        explanation: 'Imagine telling a manager: first prepare the data, then run the two analyses, then check and release the results. Step Functions follows that plan automatically.',
+        jobs: ['queued', 'queued', 'queued', 'queued'], stage: -1, targets: [], duration: 4200
+      },
+      {
+        speech: '“Glue, start preparing the data.”',
+        title: '1. The manager starts a Glue job.',
+        explanation: 'Step Functions sends the start instruction. Glue is the service actually opening the S3 files, cleaning the transactions, and joining the account information.',
+        jobs: ['running', 'queued', 'queued', 'queued'], stage: 0, targets: ['prep'], duration: 4200
+      },
+      {
+        speech: '“Glue is still working. I will wait. Do not start Q1 or Q2 yet.”',
+        title: '2. Starting a job is not the same as finishing it.',
+        explanation: 'Glue works while Step Functions tracks its status. The next jobs need clean data, so the manager holds them back until preparation reports success.',
+        jobs: ['running', 'queued', 'queued', 'queued'], stage: 0, targets: ['prep'], waiting: true, duration: 4800
+      },
+      {
+        speech: '“Preparation succeeded. Q1 and Q2, you can both start now.”',
+        title: '3. One completed job unlocks two parallel jobs.',
+        explanation: 'Both jobs use the prepared data, but neither needs the other’s results. Step Functions starts both. Glue runs the analyses; the cleaned files stay in S3.',
+        jobs: ['done', 'running', 'running', 'queued'], stage: 1, targets: ['q1', 'q2'], duration: 4800
+      },
+      {
+        speech: '“Q1 has finished. Q2 is still working. I am not ready to publish.”',
+        title: '4. The manager remembers which jobs are finished.',
+        explanation: 'The two jobs do not have to finish together. Here, Q1 finishes first. Its output is saved, but a complete release still needs Q2 and its evaluation.',
+        jobs: ['done', 'done', 'running', 'queued'], stage: 1, targets: ['q2'], waiting: true, duration: 4800
+      }
+    ];
+    const successEnding = [
+      {
+        speech: '“Q2 succeeded. Start the evaluator on its completed cases.”',
+        title: '5. A dependent job starts only when its input is ready.',
+        explanation: 'The manager starts and waits for the separate evaluator. It reads completed cases, all eligible curated transactions, and restricted labels/annotations. Full facts provide the amounts/currencies for the baseline and source records for annotation matching. Q2 still cannot read the answers.',
+        jobs: ['done', 'done', 'done', 'running'], stage: 2, targets: ['evaluate'], duration: 4800
+      },
+      {
+        speech: '“Both branches are finished. Check the required files and validation reports.”',
+        title: '6. Finished jobs do not automatically mean a safe release.',
+        explanation: 'The release gate requires complete Q1/Q2 outputs, passing preparation/Q1/Q2 quality reports, and valid completed evaluation reports. Only compact check summaries and S3 locations enter the workflow state; the transaction data stays in S3. Frozen holdout rules are not retuned.',
+        jobs: ['done', 'done', 'done', 'done'], stage: 3, targets: ['gate'], gate: 'checking', duration: 4800
+      },
+      {
+        speech: '“All checks passed. Publish the new run. We are done.”',
+        title: '7. Only the complete, validated run is published.',
+        explanation: 'Step Functions writes the small published-run manifest directly to S3 with PutObject; no Lambda publisher is needed. A single publisher updates the pointer only after checks pass. The dashboard pins every Athena query and S3 graph-bundle read to that same dataset/run.',
+        jobs: ['done', 'done', 'done', 'done'], stage: 4, targets: ['dashboard'], gate: 'passed', published: true
+      }
+    ];
+    const failureEnding = [
+      {
+        speech: '“Q2 reported a failure. My plan allows one retry.”',
+        title: '5. The manager notices a failure and follows the retry rule.',
+        explanation: 'For this example, the workflow is configured to retry Q2 once. Q1’s saved results do not make this new run complete, and the evaluator cannot run without Q2 cases.',
+        jobs: ['done', 'done', 'failed', 'queued'], stage: 1, targets: ['q2'], retry: 'Q2 failed · one configured retry is available.', duration: 4800
+      },
+      {
+        speech: '“Try Q2 again. Keep the previous dashboard release.”',
+        title: '6. Step Functions starts the retry; Glue does the work again.',
+        explanation: 'The manager sends another start instruction for Q2. In a real implementation, run-specific output paths and safe retry handling prevent duplicate or mixed results.',
+        jobs: ['done', 'done', 'running', 'queued'], stage: 1, targets: ['q2'], retry: 'Q2 retry · attempt 1 of 1.', duration: 4800
+      },
+      {
+        speech: '“Q2 failed again. Stop this run. Do not publish incomplete results.”',
+        title: '7. A failed run does not replace a successful release.',
+        explanation: 'The configured retry is exhausted. This example stops the workflow and skips evaluation and publication. Notice that the dashboard still points to the previous successful run.',
+        jobs: ['done', 'done', 'failed', 'skipped'], stage: 1, targets: ['gate'], gate: 'blocked', stopped: true, retry: 'Retry exhausted · this run is stopped.'
+      }
+    ];
+
+    const ids = ['prep', 'q1', 'q2', 'evaluate'];
+    const statusLabels = { queued: 'Waiting', running: 'Working', done: 'Done ✓', failed: 'Failed', skipped: 'Skipped' };
+    const el = (id) => document.getElementById(id);
+    let steps = [...commonSteps, ...successEnding];
+    let index = 0;
+    let playing = false;
+    let timer = null;
+
+    function drawWires() {
+      const board = el('board').getBoundingClientRect();
+      const port = el('port').getBoundingClientRect();
+      const paths = el('command-paths');
+      paths.replaceChildren();
+      el('wires').setAttribute('viewBox', `0 0 ${board.width} ${board.height}`);
+      if (!port.width) return;
+      const x1 = port.left + port.width / 2 - board.left;
+      const y1 = port.top + port.height / 2 - board.top;
+      steps[index].targets.forEach((id) => {
+        const target = el(id).getBoundingClientRect();
+        const x2 = target.left - board.left;
+        const y2 = target.top + target.height / 2 - board.top;
+        const bend = x1 + Math.min(30, (x2 - x1) / 2);
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setAttribute('d', `M${x1},${y1} C${bend},${y1} ${bend},${y2} ${x2 - 3},${y2}`);
+        path.setAttribute('class', `wire${steps[index].waiting ? ' waiting' : ''}`);
+        path.setAttribute('marker-end', 'url(#command-arrow)');
+        paths.append(path);
+      });
+    }
+
+    function render() {
+      const step = steps[index];
+      el('speech').textContent = step.speech;
+      el('event-title').textContent = step.title;
+      el('explanation').textContent = step.explanation;
+      el('step-number').textContent = `${index + 1} / ${steps.length}`;
+      el('progress').style.width = `${index / (steps.length - 1) * 100}%`;
+      ids.forEach((id, i) => {
+        el(id).dataset.status = step.jobs[i];
+        el(id).querySelector('.status').textContent = statusLabels[step.jobs[i]];
+        el(`file-${id}`).classList.toggle('ready', step.jobs[i] === 'done');
+      });
+      el('file-quality').classList.toggle('ready', step.jobs.slice(0, 3).every((status) => status === 'done'));
+      document.querySelectorAll('#plan li').forEach((item, i) => {
+        item.classList.toggle('active', i === step.stage && !step.stopped);
+        item.classList.toggle('done', i < step.stage || Boolean(step.published));
+        item.classList.toggle('blocked', i === step.stage && Boolean(step.stopped));
+        item.querySelector('.number').textContent = i < step.stage || step.published ? '✓' : i + 1;
+      });
+      const gate = step.gate || 'waiting';
+      el('gate').className = `gate ${gate}`;
+      el('gate').textContent = { waiting: 'Not checked yet', checking: 'Checking…', passed: 'Passed ✓', blocked: 'Release blocked' }[gate];
+      el('dashboard').classList.toggle('published', Boolean(step.published));
+      el('published-run').textContent = step.published ? 'New complete run ✓' : 'Previous successful run';
+      el('retry-note').textContent = step.retry || '';
+      el('back').disabled = index === 0;
+      el('next').disabled = index === steps.length - 1;
+      el('play').textContent = playing ? 'Ⅱ Pause' : index === steps.length - 1 ? '↻ Replay the run' : index === 0 ? '▶ Play the run' : '▶ Continue';
+      el('play').setAttribute('aria-pressed', String(playing));
+      drawWires();
+    }
+
+    function pause() {
+      playing = false;
+      clearTimeout(timer);
+      timer = null;
+    }
+    function schedule() {
+      if (!playing) return;
+      if (index === steps.length - 1) { pause(); render(); return; }
+      timer = setTimeout(() => { index += 1; render(); schedule(); }, steps[index].duration || 4500);
+    }
+    function move(amount) {
+      pause();
+      index = Math.max(0, Math.min(steps.length - 1, index + amount));
+      render();
+    }
+    el('play').addEventListener('click', () => {
+      if (playing) { pause(); render(); return; }
+      if (index === steps.length - 1) index = 0;
+      playing = true;
+      if (index === 0) index = 1;
+      render();
+      schedule();
+    });
+    el('next').addEventListener('click', () => move(1));
+    el('back').addEventListener('click', () => move(-1));
+    el('reset').addEventListener('click', () => { pause(); index = 0; render(); });
+    el('scenario').addEventListener('change', (event) => {
+      pause();
+      steps = [...commonSteps, ...(event.target.value === 'failure' ? failureEnding : successEnding)];
+      index = 0;
+      render();
+    });
+    document.addEventListener('keydown', (event) => {
+      if (event.target.closest('button, select, input, textarea, [contenteditable]')) return;
+      if (event.key === 'ArrowRight') { event.preventDefault(); move(1); }
+      if (event.key === 'ArrowLeft') { event.preventDefault(); move(-1); }
+      if (event.code === 'Space') { event.preventDefault(); el('play').click(); }
+    });
+    document.addEventListener('visibilitychange', () => { if (document.hidden && playing) { pause(); render(); } });
+    new ResizeObserver(drawWires).observe(el('board'));
+    render();
+  </script>
+</body>
+</html>

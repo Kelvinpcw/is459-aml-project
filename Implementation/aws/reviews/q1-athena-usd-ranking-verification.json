@@ -1,0 +1,11 @@
+{
+  "status": "VERIFIED",
+  "rows": 20,
+  "payment_currency": "US Dollar",
+  "baseline_n": 1634628,
+  "baseline_l": 382,
+  "source_input_sha256": "b137bcacba9727b98d356f6756935f93904ee8b3999d2281ee5819b38bf51de2",
+  "support_threshold": 1000,
+  "ranking_matches_independent_source": true,
+  "important_limitation": "The highest eligible segment lift is zero; this one-day support threshold yields no positive labelled exposure among supported segments."
+}

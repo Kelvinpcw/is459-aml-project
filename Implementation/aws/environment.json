@@ -1,0 +1,15 @@
+{
+  "project": "is459-aml",
+  "account_id": "160885259244",
+  "region": "us-east-1",
+  "bucket": "is459-aml-g2team7-160885259244-us-east-1",
+  "preparation_role_name": "AWSGlueServiceRole-is459-aml-prepare",
+  "preparation_policy_name": "is459-aml-prepare-data-access",
+  "preparation_log_prefix": "/is459/aml/preparation",
+  "status": "Q1-development-Catalog-and-Athena-validation-COMPLETE; no-active-project-compute-or-queries; Q2-implementation-next",
+  "q1_role_name": "AWSGlueServiceRole-is459-aml-q1",
+  "q1_policy_name": "is459-aml-q1-data-access",
+  "athena_workgroup": "is459-aml-dev",
+  "catalog_database": "is459_aml_dev",
+  "q1_catalog_table": "q1_daily_counts_dev20220901_v2"
+}

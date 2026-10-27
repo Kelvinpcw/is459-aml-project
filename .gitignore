@@ -1,0 +1,19 @@
+# The 3GB IBM dataset lives on Kaggle/local disk - never in git
+Ibm_dataset_medium/
+
+# Regenerable slices, replays and cloud copies live in S3 or local disk
+Implementation/data/
+
+# Data artifacts
+*.csv
+*.csv.gz
+*.parquet
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# OS noise
+.DS_Store
+Icon*

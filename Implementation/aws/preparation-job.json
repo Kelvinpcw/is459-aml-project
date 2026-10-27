@@ -1,0 +1,32 @@
+{
+  "Name": "is459-aml-prepare-dev",
+  "Description": "IS459 AML development preparation. Saved only. Paid runs require user approval.",
+  "Role": "arn:aws:iam::160885259244:role/AWSGlueServiceRole-is459-aml-prepare",
+  "Command": {
+    "Name": "glueetl",
+    "ScriptLocation": "s3://is459-aml-g2team7-160885259244-us-east-1/scripts/preparation/prepare.py",
+    "PythonVersion": "3"
+  },
+  "GlueVersion": "5.1",
+  "WorkerType": "G.1X",
+  "NumberOfWorkers": 2,
+  "ExecutionClass": "STANDARD",
+  "ExecutionProperty": { "MaxConcurrentRuns": 1 },
+  "JobRunQueuingEnabled": false,
+  "MaxRetries": 0,
+  "Timeout": 15,
+  "DefaultArguments": {
+    "--job-language": "python",
+    "--job-bookmark-option": "job-bookmark-disable",
+    "--custom-logGroup-prefix": "/is459/aml/preparation",
+    "--enable-metrics": "false",
+    "--enable-observability-metrics": "false",
+    "--enable-job-insights": "false",
+    "--enable-spark-ui": "false",
+    "--TempDir": "s3://is459-aml-g2team7-160885259244-us-east-1/temporary/preparation/",
+    "--input-root": "s3://is459-aml-g2team7-160885259244-us-east-1/raw/development/20220901",
+    "--output-root": "s3://is459-aml-g2team7-160885259244-us-east-1",
+    "--run-id": "dev-20220901-v1"
+  },
+  "Tags": { "Project": "is459-aml", "Environment": "development" }
+}

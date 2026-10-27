@@ -1,0 +1,58 @@
+{
+  "scope": "label-free workload profiling only; projected timestamp and bank/account columns, no labels or annotations used",
+  "hourly_input_rows": {
+    "hour_00": 1380940,
+    "hour_01": 133995,
+    "hour_02": 133879,
+    "hour_03": 133461,
+    "hour_04": 134226,
+    "hour_05": 134178,
+    "hour_06": 133803,
+    "hour_07": 133688,
+    "hour_08": 133125,
+    "hour_09": 134668,
+    "hour_10": 134377,
+    "hour_11": 134659,
+    "hour_12": 134487,
+    "hour_13": 134150,
+    "hour_14": 133689,
+    "hour_15": 134801,
+    "hour_16": 134326,
+    "hour_17": 133664,
+    "hour_18": 133957,
+    "hour_19": 133685,
+    "hour_20": 134812,
+    "hour_21": 134035,
+    "hour_22": 135274,
+    "hour_23": 134106
+  },
+  "first_window_profiles": {
+    "5": {
+      "input_rows": 217840,
+      "nonself_edges": 54216,
+      "max_out_degree": 1321,
+      "max_in_degree": 16,
+      "fan_out_hubs_ge5": 15,
+      "fan_in_hubs_ge5": 8,
+      "length_2_walk_upper_bound": 8722
+    },
+    "15": {
+      "input_rows": 656070,
+      "nonself_edges": 137795,
+      "max_out_degree": 3175,
+      "max_in_degree": 40,
+      "fan_out_hubs_ge5": 22,
+      "fan_in_hubs_ge5": 43,
+      "length_2_walk_upper_bound": 56871
+    },
+    "1": {
+      "input_rows": 43681,
+      "nonself_edges": 11760,
+      "max_out_degree": 301,
+      "max_in_degree": 4,
+      "fan_out_hubs_ge5": 15,
+      "fan_in_hubs_ge5": 0,
+      "length_2_walk_upper_bound": 176
+    }
+  }
+}

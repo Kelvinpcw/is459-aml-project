@@ -1,0 +1,26 @@
+{
+  "bucket": "is459-aml-g2team7-160885259244-us-east-1",
+  "account_id": "160885259244",
+  "region": "us-east-1",
+  "scope": "Superseded synthetic development test output v1 only",
+  "user_authorization": "yes. can delete the old output",
+  "precondition": "v2 terminal SUCCEEDED and report independently verified against source manifest",
+  "status": "completed",
+  "prefixes": [
+    "curated/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v1/",
+    "references/labels/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v1/",
+    "quarantine/preparation/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v1/",
+    "quality/preparation/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v1/"
+  ],
+  "retain": [
+    "raw/",
+    "scripts/",
+    "all dev-20220901-v2 output",
+    "local v1 report, audit and executed source"
+  ],
+  "versioning": "disabled; test outputs are reproducible from retained input; no normal S3 recovery",
+  "completed_at_singapore": "2026-10-26T10:31:09.543651+08:00",
+  "deleted_objects": 35,
+  "failed_objects": 0,
+  "result_record": "v1-output-cleanup-results.json"
+}

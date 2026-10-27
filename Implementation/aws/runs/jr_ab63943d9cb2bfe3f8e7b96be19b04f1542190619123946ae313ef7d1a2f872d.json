@@ -1,0 +1,22 @@
+{
+  "service": "glue-job-run",
+  "job_name": "is459-aml-prepare-dev",
+  "run_id": "jr_ab63943d9cb2bfe3f8e7b96be19b04f1542190619123946ae313ef7d1a2f872d",
+  "status": "SUCCEEDED",
+  "started_at_singapore": "2026-10-26 03:03:35",
+  "ended_at_singapore": "2026-10-26 03:09:14",
+  "verified_at_singapore": "2026-10-26 03:09:43",
+  "execution_seconds": 330,
+  "startup_seconds": 8,
+  "dpu_hours": 0.183333,
+  "estimated_glue_compute_usd": 0.080667,
+  "approved_budget_usd": 1,
+  "workers": 2,
+  "worker_type": "G.1X",
+  "timeout_minutes": 15,
+  "automatic_retries": 0,
+  "quality_report_reviewed": true,
+  "compute_still_running": false,
+  "release_ready": false,
+  "review_issue": "93554 valid six-decimal amount transactions excluded by v1; use precision-safe v2 after separate authorization"
+}

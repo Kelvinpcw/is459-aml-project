@@ -1,0 +1,18 @@
+[
+  {
+    "zone": "curated",
+    "status": "Successfully deleted objects\nView details below.\nDelete objects: status\nClose\nAfter you navigate away from this page, the following information is no longer available.\nSummary\nSource\ns3://is459-aml-g2team7-160885259244-us-east-1/curated/dataset_version=ibm-hi-medium-b1b99c68b765580f/\nSuccessfully deleted\n17 objects, 373.1 MB\nFailed to delete\n0 objects\nFailed to delete\nConfiguration\n Failed to delete (0)\nName\n\t\nFolder\n\t\nType\n\t\nLast modified\n\t\nSize\n\t\nError\n\n\n\nNo objects failed to delete."
+  },
+  {
+    "zone": "references/labels",
+    "status": "Successfully deleted objects\nView details below.\nDelete objects: status\nClose\nAfter you navigate away from this page, the following information is no longer available.\nSummary\nSource\ns3://is459-aml-g2team7-160885259244-us-east-1/references/labels/dataset_version=ibm-hi-medium-b1b99c68b765580f/\nSuccessfully deleted\n16 objects, 36.5 MB\nFailed to delete\n0 objects\nFailed to delete\nConfiguration\n Failed to delete (0)\nName\n\t\nFolder\n\t\nType\n\t\nLast modified\n\t\nSize\n\t\nError\n\n\n\nNo objects failed to delete."
+  },
+  {
+    "zone": "quarantine/preparation",
+    "status": "Successfully deleted objects\nView details below.\nDelete objects: status\nClose\nAfter you navigate away from this page, the following information is no longer available.\nSummary\nSource\ns3://is459-aml-g2team7-160885259244-us-east-1/quarantine/preparation/dataset_version=ibm-hi-medium-b1b99c68b765580f/\nSuccessfully deleted\n1 object, 4.5 MB\nFailed to delete\n0 objects\nFailed to delete\nConfiguration\n Failed to delete (0)\nName\n\t\nFolder\n\t\nType\n\t\nLast modified\n\t\nSize\n\t\nError\n\n\n\nNo objects failed to delete."
+  },
+  {
+    "zone": "quality/preparation",
+    "status": "Successfully deleted objects\nView details below.\nDelete objects: status\nClose\nAfter you navigate away from this page, the following information is no longer available.\nSummary\nSource\ns3://is459-aml-g2team7-160885259244-us-east-1/quality/preparation/dataset_version=ibm-hi-medium-b1b99c68b765580f/\nSuccessfully deleted\n1 object, 5.8 KB\nFailed to delete\n0 objects\nFailed to delete\nConfiguration\n Failed to delete (0)\nName\n\t\nFolder\n\t\nType\n\t\nLast modified\n\t\nSize\n\t\nError\n\n\n\nNo objects failed to delete."
+  }
+]

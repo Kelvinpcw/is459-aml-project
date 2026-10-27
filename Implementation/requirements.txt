@@ -1,0 +1,14 @@
+# Local dev should match the deployed Glue 5.1 runtime:
+# Spark 3.5 / Python 3.11 / Java 21 (aligns with the frozen job configs)
+pyspark==3.5.6
+boto3
+pandas
+pyarrow
+
+# Tests
+pytest
+
+# Dashboard (planned: Streamlit + Plotly for Q1, PyVis for Q2 case explorer)
+streamlit
+plotly
+pyvis

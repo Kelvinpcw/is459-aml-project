@@ -1,0 +1,37 @@
+{
+  "status": "BLOCKED_AMOUNT_PRECISION",
+  "release_ready": false,
+  "report_matches_local_manifest": true,
+  "row_reconciliation_passed": true,
+  "per_format_reconciliation_passed": true,
+  "input_rows": 4465985,
+  "legacy_amount_rejections": 93554,
+  "reasons_reproduced_locally": {
+    "invalid_paid_amount;invalid_received_amount": 92721,
+    "invalid_received_amount": 819,
+    "invalid_paid_amount": 14
+  },
+  "rejected_by_format": {
+    "Bitcoin": {
+      "transactions": 92721,
+      "labelled_laundering": 16
+    },
+    "ACH": {
+      "transactions": 625,
+      "labelled_laundering": 0
+    },
+    "Wire": {
+      "transactions": 208,
+      "labelled_laundering": 0
+    },
+    "Cash": {},
+    "Cheque": {},
+    "Credit Card": {},
+    "Reinvestment": {}
+  },
+  "quarantined_label_1": 16,
+  "decimal_38_8_representation_rejections": 0,
+  "observed_max_scale": 6,
+  "observed_max_integer_digits": 13,
+  "scope": "Independent local amount audit; not a full execution of preparation v2 or an inspection of every cloud Parquet object"
+}

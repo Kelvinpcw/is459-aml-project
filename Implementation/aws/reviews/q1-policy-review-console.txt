@@ -1,0 +1,64 @@
+Step 1
+Specify permissions
+Step 2
+Review and create
+Review and create
+ 
+Info
+
+Review the permissions, specify details, and tags.
+
+Policy details
+Policy name
+Enter a meaningful name to identify this policy.
+Maximum 128 characters. Use alphanumeric and '+=,.@-_' characters.
+Description - optional
+Add a short explanation for this policy.
+Maximum 1,000 characters. Use alphanumeric and '+=,.@-_' characters.
+Permissions defined in this policy
+ 
+Info
+Edit
+
+Permissions defined in this policy document specify which actions are allowed or denied. To define permissions for an IAM identity (user, user group, or role), attach a policy to it
+
+(2)
+Allow (2 of 478 services)
+Show remaining 476 services
+Service
+	
+Access level
+	
+Resource
+	
+Request condition
+
+
+CloudWatch Logs
+	
+Limited: Write
+	
+region| string like |us-east-1, LogGroupName| string like |/is459/aml/q1/*
+	
+None
+
+
+S3
+	
+Limited: List, Read, Write
+	
+Multiple
+	
+s3:prefix| string like |curated/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/transactions,curated/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/transactions/*,references/labels/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/transactions,references/labels/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/transactions/*,quality/preparation/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2,quality/preparation/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/*,scripts/q1,scripts/q1/*,gold/risk/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2,gold/risk/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/*,quality/q1/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2,quality/q1/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/*,temporary/q1,temporary/q1/*
+Add tags - optional
+ 
+Info
+
+Tags are key-value pairs that you can add to AWS resources to help identify, organize, or search for resources.
+
+No tags associated with the resource.
+Add new tag
+You can add up to 50 more tags.
+Cancel
+Previous
+Create policy

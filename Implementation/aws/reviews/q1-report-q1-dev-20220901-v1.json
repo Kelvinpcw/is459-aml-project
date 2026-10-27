@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "stage": "q1",
+  "status": "PASSED",
+  "dataset_version": "ibm-hi-medium-b1b99c68b765580f",
+  "run_id": "dev-20220901-v2",
+  "analysis_id": "q1-dev-20220901-v1",
+  "preparation_report": "s3://is459-aml-g2team7-160885259244-us-east-1/quality/preparation/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/report.json",
+  "totals": {
+    "transactions": 4465985,
+    "labelled_laundering": 1056
+  },
+  "grain": [
+    "dataset_version",
+    "run_id",
+    "event_date",
+    "sender_bank",
+    "receiver_bank",
+    "payment_format",
+    "payment_currency",
+    "receiving_currency"
+  ],
+  "outputs": {
+    "daily_counts": "s3://is459-aml-g2team7-160885259244-us-east-1/gold/risk/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/analysis_id=q1-dev-20220901-v1/daily_counts/"
+  },
+  "rate_policy": "Filter first, sum counts across dates, then divide. Never average daily rates.",
+  "currency_policy": "Keep both currency dimensions. Paid and received totals retain their own units.",
+  "finished_at_utc": "2026-10-26T08:29:13.358323+00:00"
+}

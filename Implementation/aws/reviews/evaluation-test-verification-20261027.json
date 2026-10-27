@@ -1,0 +1,21 @@
+{
+  "completed_at_singapore": "2026-10-27T15:33:59.595655+08:00",
+  "initial_full_suite": {
+    "tests": 46,
+    "status": "PASSED",
+    "seconds": 23.832
+  },
+  "final_evaluator_suite": {
+    "tests": 19,
+    "status": "PASSED",
+    "seconds": 15.529
+  },
+  "targeted_final_amount_format_test": {
+    "tests": 1,
+    "status": "PASSED"
+  },
+  "total_current_tests_covered": 49,
+  "local_replay": "PASSED",
+  "source_sha256": "0416846ba0c00b93b77c122c4d663051d8480131de89b0f6cd2cc2b35639a9ec",
+  "scope": "Local only; no new AWS compute or queries."
+}

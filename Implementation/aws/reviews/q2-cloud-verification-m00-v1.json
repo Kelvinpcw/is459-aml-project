@@ -1,0 +1,92 @@
+{
+  "status": "VERIFIED",
+  "analysis_id": "q2-dev-20220901-m00-v1",
+  "cloud_quality_status": "PASSED",
+  "config_and_statistics_match": true,
+  "full_prepared_rows": 4465985,
+  "scoped_rows": 43681,
+  "case_count": 15,
+  "all_bundle_content_matches": true,
+  "all_canonical_bundle_hashes_match": true,
+  "evidence_rows_including_overlap": 840,
+  "case_index_physical_read_validated": true,
+  "note": "All complete case bundles and every Athena-read index field match the frozen replay.",
+  "cases": [
+    {
+      "case_id": "0d86e8fcb45d92b772733bb3940e99a48480d817577a21b5c1129e0e5372884d",
+      "canonical_sha256": "8dfe7c582fa2f8da7b46e6dc263c1d30fc0ae2d883f5ea21a36f8b0730c1ae1b",
+      "evidence_transactions": 28
+    },
+    {
+      "case_id": "28b3a5f52c4bb323681841548c3d63213ddc09a57a4f2dacb9118aaad5142671",
+      "canonical_sha256": "1dcfd3f8bab46427eb060814252fa9625620bd8cf7a6ad34379022b3fc4059b0",
+      "evidence_transactions": 34
+    },
+    {
+      "case_id": "2cfe2b2b8cf78c88ab498cd348722e6bee99a487da8e5ce20641cf5f6f62d93d",
+      "canonical_sha256": "67b3ebadf67c768a04671535a4798bcc542f5c0bda98d65a757988b4c6f99f0d",
+      "evidence_transactions": 14
+    },
+    {
+      "case_id": "67f5f2006b1f3d9c75bc7c49788ac2d78061794439491b6209bdc5a875587aed",
+      "canonical_sha256": "48e934901fbc54ef9c37e806d65bb50a2ce20fad2cf222fab453eb6bf2032060",
+      "evidence_transactions": 20
+    },
+    {
+      "case_id": "6b37f698237a077d038e0cbd34cf313e10cd18ead959a27073e2a34b90fb7add",
+      "canonical_sha256": "15e59a10efb5204455feccbe155808241b604b30739befd13577b72dc7dc0a5e",
+      "evidence_transactions": 31
+    },
+    {
+      "case_id": "7db19685b27dcbd54f58eff753d74afd04b620d6d2f02bc85d5d2a888d7e27ab",
+      "canonical_sha256": "3f7766e98f7d991f6411bcf3b980754b271c9429d408455d0e962d4a0c8594b0",
+      "evidence_transactions": 16
+    },
+    {
+      "case_id": "88407951cc2b24dd5811a62d97e7f218761f215035133ecbc4d87f825ded5531",
+      "canonical_sha256": "e91952fe6dd98c388bca0d52e6b29b1ecf50f87af5d511aa9800aa093948f627",
+      "evidence_transactions": 29
+    },
+    {
+      "case_id": "a21d0cf9c5f0fc346e70c3f956c95f95b4e2d8e15e74b41c3095b41d97af1287",
+      "canonical_sha256": "e3285576868afde483f3c95df5bd70311445b072f92f947a0a67afad60fe4320",
+      "evidence_transactions": 184
+    },
+    {
+      "case_id": "af903b5064ecb5f413b778532b644cd7ad764ebd47e0c7e520c01df8518749ee",
+      "canonical_sha256": "1bff4850fc577d86f07da9acf8838e4ed912cc3640fde835f1f1d55e472a452c",
+      "evidence_transactions": 20
+    },
+    {
+      "case_id": "b8a3a7860557ebb60910f2235bccdeefc87a6fb369bf5c134e6b6ad23266b548",
+      "canonical_sha256": "68a72fb4937c66b95b35b50864e956a18a535dd6e20091fa9a2c41284aa2dae5",
+      "evidence_transactions": 25
+    },
+    {
+      "case_id": "b95f933ebd3f2e5fedc86522856c59ceb4aa264def203a68d65dc3de5ae0d22c",
+      "canonical_sha256": "2f7f4aeb8e22ed4ee792071458f74b46e2c2ff0630e92e22732694c9cd00a5bf",
+      "evidence_transactions": 60
+    },
+    {
+      "case_id": "bf64028bb2e3fdd21e94636e3389207c555420ec51085922a159d78ab3162c56",
+      "canonical_sha256": "381ff8673900d214fb5648cfca781171d5895e786c10a7cc3f992e5dd6544a52",
+      "evidence_transactions": 18
+    },
+    {
+      "case_id": "bfda7282ee321a001dda5c07d00006dd336ce1a21292fc3dfc2a2b0664a93e93",
+      "canonical_sha256": "2fcf9733de755118a3f67ac6fcf196c6d540315c32d549f2f1be88b582079725",
+      "evidence_transactions": 28
+    },
+    {
+      "case_id": "c689ea7720494340220fb76070dd8d3c8f28b4e668d8caf60a3e0c80bec6de99",
+      "canonical_sha256": "d4331d9cf1b7e6822329b1a8da503d44cde6a26aa60a2c096a9a0bab0343cd18",
+      "evidence_transactions": 23
+    },
+    {
+      "case_id": "cbf152d84559ea49ec9de4d0603cfe5ad9ef2162d2c8b869764fd1d46d7436eb",
+      "canonical_sha256": "e39ee956da866908840279f9c217c8cd6d59c9c0573d4e41817b0b1e57e59c6f",
+      "evidence_transactions": 310
+    }
+  ],
+  "index_rows_all_fields_match": 15
+}

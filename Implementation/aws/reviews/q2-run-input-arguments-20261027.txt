@@ -1,0 +1,379 @@
+- navigation:
+  - 'img "Account color: Unset"'
+  - navigation "Global":
+    - link "Skip to Main Content":
+      - /url: "#c"
+    - link "AWS Console Home":
+      - /url: https://160885259244-oguqcgmi.us-east-1.console.aws.amazon.com/console/home?region=us-east-1
+    - button "Amazon Q":
+    - button "Services":
+    - img "Search":
+    - searchbox
+    - combobox "Search"
+    - button "Ask Amazon Q":
+    - generic: "[Option+S]"
+    - status
+    - link "CloudShell":
+      - /url: https://160885259244-oguqcgmi.us-east-1.console.aws.amazon.com/cloudshell/home?region=us-east-1
+    - button "Notifications (none available)":
+      - img "Notifications":
+    - img "Notifications":
+    - list:
+      - button "Help & support":
+        - img "Support":
+      - button "Settings":
+      - combobox "Regions (United States (N. Virginia))":
+        - generic: United States (N. Virginia)
+      - button "g2team7 @ 1608-8525-9244":
+        - 'generic "Account color: Unset"':
+          - generic: g2_team7admin (160885259244)
+        - generic: g2team7
+  - list
+- region "Notifications alt+T":
+  - list
+- button "Open side navigation" [expanded]:
+- region "Drawers":
+  - toolbar "Drawers":
+    - button "Open help panel":
+- navigation "Side navigation":
+  - button "Close side navigation":
+  - heading "AWS Glue" [level=2]:
+    - link "AWS Glue":
+      - /url: https://160885259244-oguqcgmi.us-east-1.console.aws.amazon.com/glue/home?region=us-east-1#/v2/service-landing
+      - generic: AWS Glue
+  - list:
+    - link "Getting started":
+      - /url: https://160885259244-oguqcgmi.us-east-1.console.aws.amazon.com/glue/home?region=us-east-1#/v2/getting-started
+      - generic: Getting started
+    - link "SageMaker Unified StudioOpens in a new tab":
+      - /url: https://160885259244-oguqcgmi.us-east-1.console.aws.amazon.com/datazone/home?region=us-east-1#/create-domain
+      - text: SageMaker Unified Studio
+      - img "Opens in a new tab":
+    - link "ETL jobs":
+      - /url: https://160885259244-oguqcgmi.us-east-1.console.aws.amazon.com/gluestudio/home?region=us-east-1#/jobs
+      - generic: ETL jobs
+    - list:
+      - link "Visual ETL":
+        - /url: https://160885259244-oguqcgmi.us-east-1.console.aws.amazon.com/gluestudio/home?region=us-east-1#/jobs?selectedInterface=source_and_target
+        - generic: Visual ETL
+      - link "Notebooks":
+        - /url: https://160885259244-oguqcgmi.us-east-1.console.aws.amazon.com/gluestudio/home?region=us-east-1#/jobs?selectedInterface=notebook
+        - generic: Notebooks
+      - link "Job run monitoring":
+        - /url: https://160885259244-oguqcgmi.us-east-1.console.aws.amazon.com/gluestudio/home?region=us-east-1#/monitoring
+        - generic: Job run monitoring
+    - link "Data Catalog tables":
+      - /url: https://160885259244-oguqcgmi.us-east-1.console.aws.amazon.com/glue/home?region=us-east-1#/v2/data-catalog/tables
+      - generic: Data Catalog tables
+    - link "Data connections":
+      - /url: https://160885259244-oguqcgmi.us-east-1.console.aws.amazon.com/gluestudio/home?region=us-east-1#/connectors
+      - generic: Data connections
+    - link "Workflows (orchestration)":
+      - /url: https://160885259244-oguqcgmi.us-east-1.console.aws.amazon.com/glue/home?region=us-east-1#/v2/etl-configuration/workflows
+      - generic: Workflows (orchestration)
+    - link "Zero-ETL integrations":
+      - /url: https://160885259244-oguqcgmi.us-east-1.console.aws.amazon.com/gluestudio/home?region=us-east-1#/zero-etl-integrations
+      - generic: Zero-ETL integrations
+    - button "Data Catalog":
+      - generic: Data Catalog
+    - button "Data Integration and ETL":
+      - generic: Data Integration and ETL
+  - separator
+  - list:
+    - link "What's NewWhat's new (opens in new tab)":
+      - /url: https://aws.amazon.com/about-aws/whats-new/analytics/?whats-new-content.sort-by=item.additionalFields.postDateTime&whats-new-content.sort-order=desc&awsf.whats-new-products=general-products%23aws-glue
+      - text: What's New
+      - img "What's new (opens in new tab)":
+    - link "DocumentationDocumentation (opens in new tab)":
+      - /url: https://docs.aws.amazon.com/glue/index.html
+      - text: Documentation
+      - img "Documentation (opens in new tab)":
+    - link "AWS Marketplace":
+      - /url: https://160885259244-oguqcgmi.us-east-1.console.aws.amazon.com/gluestudio/home?region=us-east-1#/marketplace
+      - generic: AWS Marketplace
+  - checkbox "Enable compact mode" [checked]
+  - generic: Enable compact mode
+  - checkbox "Enable new navigation" [checked]
+  - generic: Enable new navigation
+- main:
+  - list "Notifications":
+    - group "Info AWS now provides personalized help through Amazon Q Click Q help to receive personalized guidance for console tasks through Q Chat. To deactivate, click Deactivate Q help Opens in a new tab to access your console settings. Once deactivated, you'll receive static help content when available.":
+      - img "Info":
+      - generic: AWS now provides personalized help through Amazon Q
+      - text: Click Q help to receive personalized guidance for console tasks through Q Chat. To deactivate, click
+      - link "Deactivate Q help Opens in a new tab":
+        - /url: https://us-east-1.console.aws.amazon.com/settings/settings_management/edit?region=us-east-1
+        - text: Deactivate Q help
+        - img "Opens in a new tab":
+      - text: to access your console settings. Once deactivated, you'll receive static help content when available.
+    - button "Launch Q help"
+    - button "Dismiss":
+  - heading "is459-aml-q2-dev" [level=2]
+  - generic: Last modified on 10/27/2026, 3:44:57 AM
+  - button "Actions":
+    - text: Actions
+  - button "Save"
+  - button "Run"
+  - tablist:
+    - tab "Script":
+      - generic: Script
+    - tab "Job details":
+      - generic: Job details
+    - tab "Runs" [selected]:
+      - generic: Runs
+    - tab "Data quality":
+      - generic: Data quality
+    - tab "Schedules":
+      - generic: Schedules
+    - tab "Version Control":
+      - generic: Version Control
+  - tabpanel "Runs":
+    - heading "Job runs (1/1)" [level=2]:
+      - text: Job runs
+      - heading "(1/1)" [level=2]
+    - button "More information for 'Job runs' (shows in sidebar).":
+      - generic: Q help
+    - text: Last updated (UTC)
+    - text: October 26, 2026 at 19:46:37
+    - button "Refresh job runs":
+    - button "View details"
+    - button "Stop job run for job is459-aml-q2-dev with ID jr_3b40b2a7f316355a065f2df49bf430c50ca60d4d389bb49f12ba4ee4bfc35687": Stop job run
+    - button "Automatically debug is459-aml-q2-dev with ID jr_3b40b2a7f316355a065f2df49bf430c50ca60d4d389bb49f12ba4ee4bfc35687" [disabled]:
+      - text: Troubleshoot with AI
+    - toolbar "Default segmented control":
+      - button "Table View" [pressed]:
+        - generic: Table View
+      - button "Card View":
+        - generic: Card View
+    - combobox "Filter job runs by property"
+    - list:
+      - button "Previous page" [disabled]:
+      - button "Page 1 of all pages": "1"
+      - button "Next page" [disabled]:
+    - button "Preferences":
+    - table:
+      - rowgroup:
+        - row:
+          - columnheader
+          - columnheader:
+            - button:
+              - generic: Run status
+            - button
+            - slider
+          - columnheader:
+            - button:
+              - generic: Retries
+            - button
+            - slider
+          - columnheader:
+            - button:
+              - generic: Start time (Local)
+            - button
+            - slider
+          - columnheader:
+            - button:
+              - generic: End time (Local)
+            - button
+            - slider
+          - columnheader:
+            - button:
+              - generic: Duration
+            - button
+            - slider
+          - columnheader:
+            - button:
+              - generic: Capacity (DPUs)
+            - button
+            - slider
+          - columnheader:
+            - button:
+              - generic: Worker type
+            - button
+            - slider
+          - columnheader:
+            - button:
+              - generic: Glue version
+            - button
+            - slider
+    - region "Job runs (1/1)":
+      - table "Job runs (1/1)":
+        - rowgroup:
+          - row "Run status Retries Start time (Local) End time (Local) Duration Capacity (DPUs) Worker type Glue version":
+            - columnheader
+            - columnheader "Run status":
+              - button "Run status":
+                - generic: Run status
+              - button "Run status"
+              - slider
+            - columnheader "Retries":
+              - button "Retries":
+                - generic: Retries
+              - button "Retries"
+              - slider
+            - columnheader "Start time (Local)":
+              - button "Start time (Local)":
+                - generic: Start time (Local)
+              - button "Start time (Local)"
+              - slider
+            - columnheader "End time (Local)":
+              - button "End time (Local)":
+                - generic: End time (Local)
+              - button "End time (Local)"
+              - slider
+            - columnheader "Duration":
+              - button "Duration":
+                - generic: Duration
+              - button "Duration"
+              - slider
+            - columnheader "Capacity (DPUs)":
+              - button "Capacity (DPUs)":
+                - generic: Capacity (DPUs)
+              - button "Capacity (DPUs)"
+              - slider
+            - columnheader "Worker type":
+              - button "Worker type":
+                - generic: Worker type
+              - button "Worker type"
+              - slider
+            - columnheader "Glue version":
+              - button "Glue version":
+                - generic: Glue version
+              - button "Glue version"
+              - slider
+        - rowgroup:
+          - row "is459-aml-q2-dev run started on Tue Oct 27 2026 03:45:28 GMT+0800 (Singapore Standard Time) (Run jr_3b40b2a7f316355a065f2df49bf430c50ca60d4d389bb49f12ba4ee4bfc35687) Running 0 10/27/2026 03:45:28 - 59 s 2 DPUs G.1X 5.1":
+            - cell "is459-aml-q2-dev run started on Tue Oct 27 2026 03:45:28 GMT+0800 (Singapore Standard Time) (Run jr_3b40b2a7f316355a065f2df49bf430c50ca60d4d389bb49f12ba4ee4bfc35687)":
+              - generic "is459-aml-q2-dev run started on Tue Oct 27 2026 03:45:28 GMT+0800 (Singapore Standard Time) (Run jr_3b40b2a7f316355a065f2df49bf430c50ca60d4d389bb49f12ba4ee4bfc35687)":
+                - radio "is459-aml-q2-dev run started on Tue Oct 27 2026 03:45:28 GMT+0800 (Singapore Standard Time) (Run jr_3b40b2a7f316355a065f2df49bf430c50ca60d4d389bb49f12ba4ee4bfc35687)" [checked]
+            - cell "Running":
+              - text: Running
+            - cell "0":
+              - generic: "0"
+            - cell "10/27/2026 03:45:28":
+              - generic: 10/27/2026 03:45:28
+            - cell "-":
+              - generic: "-"
+            - cell "59 s":
+              - generic: 59 s
+            - cell "2 DPUs":
+              - generic: 2 DPUs
+            - cell "G.1X":
+              - generic: G.1X
+            - cell "5.1":
+              - generic: "5.1"
+    - generic: Finished loading job run detailsFinished loading job run details
+  - separator:
+  - button "Restore bottom panel":
+  - button "Maximize bottom panel":
+  - button "Stop job run for job is459-aml-q2-dev with ID jr_3b40b2a7f316355a065f2df49bf430c50ca60d4d389bb49f12ba4ee4bfc35687": Stop job run
+  - tablist:
+    - tab "Run details":
+      - generic: Run details
+    - tab "Input arguments (14)" [active] [selected]:
+      - generic: Input arguments (14)
+    - tab "Logs":
+      - generic: Logs
+    - tab "Run insights":
+      - generic: Run insights
+    - tab "Metrics":
+      - generic: Metrics
+    - tab "Troubleshooting analysis":
+      - generic: Troubleshooting analysis
+    - tab "Spark UI":
+      - generic: Spark UI
+  - tabpanel "Input arguments (14)":
+    - heading "Job run input arguments" [level=3]
+    - region:
+      - table:
+        - rowgroup:
+          - row "Key Value":
+            - columnheader "Key":
+              - generic: Key
+            - columnheader "Value":
+              - generic: Value
+        - rowgroup:
+          - row "--window-end 2022-09-01T00:01:00":
+            - cell "--window-end":
+              - generic: "--window-end"
+            - cell "2022-09-01T00:01:00":
+              - generic: 2022-09-01T00:01:00
+          - row "--input-manifest s3://is459-aml-g2team7-160885259244-us-east-1/manifests/detector-inputs/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/manifest.json":
+            - cell "--input-manifest":
+              - generic: "--input-manifest"
+            - cell "s3://is459-aml-g2team7-160885259244-us-east-1/manifests/detector-inputs/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/manifest.json":
+              - generic: s3://is459-aml-g2team7-160885259244-us-east-1/manifests/detector-inputs/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/manifest.json
+          - row "--snapshot-cutoff 2022-09-01T00:01:00":
+            - cell "--snapshot-cutoff":
+              - generic: "--snapshot-cutoff"
+            - cell "2022-09-01T00:01:00":
+              - generic: 2022-09-01T00:01:00
+          - row "--job-bookmark-option job-bookmark-disable":
+            - cell "--job-bookmark-option":
+              - generic: "--job-bookmark-option"
+            - cell "job-bookmark-disable":
+              - generic: job-bookmark-disable
+          - row "--window-start 2022-09-01T00:00:00":
+            - cell "--window-start":
+              - generic: "--window-start"
+            - cell "2022-09-01T00:00:00":
+              - generic: 2022-09-01T00:00:00
+          - row "--TempDir s3://is459-aml-g2team7-160885259244-us-east-1/temporary/q2/":
+            - cell "--TempDir":
+              - generic: "--TempDir"
+            - cell "s3://is459-aml-g2team7-160885259244-us-east-1/temporary/q2/":
+              - generic: s3://is459-aml-g2team7-160885259244-us-east-1/temporary/q2/
+          - row "--encryption-type sse-s3":
+            - cell "--encryption-type":
+              - generic: "--encryption-type"
+            - cell "sse-s3":
+              - generic: sse-s3
+          - row "--spark-event-logs-path s3://aws-glue-assets-160885259244-us-east-1/sparkHistoryLogs/":
+            - cell "--spark-event-logs-path":
+              - generic: "--spark-event-logs-path"
+            - cell "s3://aws-glue-assets-160885259244-us-east-1/sparkHistoryLogs/":
+              - generic: s3://aws-glue-assets-160885259244-us-east-1/sparkHistoryLogs/
+          - row "--enable-job-insights false":
+            - cell "--enable-job-insights":
+              - generic: "--enable-job-insights"
+            - cell "false":
+              - generic: "false"
+          - row "--output-root s3://is459-aml-g2team7-160885259244-us-east-1":
+            - cell "--output-root":
+              - generic: "--output-root"
+            - cell "s3://is459-aml-g2team7-160885259244-us-east-1":
+              - generic: s3://is459-aml-g2team7-160885259244-us-east-1
+          - row "--custom-logGroup-prefix /is459/aml/q2":
+            - cell "--custom-logGroup-prefix":
+              - generic: "--custom-logGroup-prefix"
+            - cell "/is459/aml/q2":
+              - generic: /is459/aml/q2
+          - row "--conf spark.sql.catalog.glue_catalog.glue.skip-name-validation=true":
+            - cell "--conf":
+              - generic: "--conf"
+            - cell "spark.sql.catalog.glue_catalog.glue.skip-name-validation=true":
+              - generic: spark.sql.catalog.glue_catalog.glue.skip-name-validation=true
+          - row "--job-language python":
+            - cell "--job-language":
+              - generic: "--job-language"
+            - cell "python":
+              - generic: python
+          - row "--analysis-id q2-dev-20220901-m00-v1":
+            - cell "--analysis-id":
+              - generic: "--analysis-id"
+            - cell "q2-dev-20220901-m00-v1":
+              - generic: q2-dev-20220901-m00-v1
+- contentinfo:
+  - button "CloudShell":
+    - generic: CloudShell
+  - button "Agent Toolkit for AWS":
+    - text: Agent Toolkit for AWS
+  - button "Feedback"
+  - button "Console Mobile App":
+    - generic: Console Mobile App
+  - generic: © 2026, Amazon Web Services, Inc. or its affiliates.
+  - list:
+    - link "Privacy":
+      - /url: https://aws.amazon.com/privacy/
+    - link "Terms":
+      - /url: https://aws.amazon.com/terms/
+    - button "Cookie preferences"

@@ -1,0 +1,57 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "LocateProjectBucket",
+      "Effect": "Allow",
+      "Action": "s3:GetBucketLocation",
+      "Resource": "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1"
+    },
+    {
+      "Sid": "ListPreparationPrefixes",
+      "Effect": "Allow",
+      "Action": "s3:ListBucket",
+      "Resource": "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1",
+      "Condition": {
+        "StringLike": {
+          "s3:prefix": [
+            "raw", "raw/*",
+            "scripts/preparation", "scripts/preparation/*",
+            "curated", "curated/*",
+            "references/labels", "references/labels/*",
+            "quarantine/preparation", "quarantine/preparation/*",
+            "quality/preparation", "quality/preparation/*",
+            "temporary/preparation", "temporary/preparation/*"
+          ]
+        }
+      }
+    },
+    {
+      "Sid": "ReadOriginalInputsAndPreparationCode",
+      "Effect": "Allow",
+      "Action": "s3:GetObject",
+      "Resource": [
+        "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/raw/*",
+        "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/scripts/preparation/*"
+      ]
+    },
+    {
+      "Sid": "ManagePreparationOutputsOnly",
+      "Effect": "Allow",
+      "Action": ["s3:GetObject", "s3:PutObject", "s3:DeleteObject", "s3:AbortMultipartUpload"],
+      "Resource": [
+        "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/curated/*",
+        "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/references/labels/*",
+        "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/quarantine/preparation/*",
+        "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/quality/preparation/*",
+        "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/temporary/preparation/*"
+      ]
+    },
+    {
+      "Sid": "WritePreparationLogsOnly",
+      "Effect": "Allow",
+      "Action": ["logs:CreateLogGroup", "logs:CreateLogStream", "logs:PutLogEvents"],
+      "Resource": "arn:aws:logs:us-east-1:160885259244:log-group:/is459/aml/preparation/*"
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "verification_source": "Saved console configuration, exact editor source comparison and actual run arguments; not an API export.",
+  "job": {
+    "Name": "is459-aml-q2-dev",
+    "Description": "IS459 AML Q2 label-free structural leads. One approved first-minute development test with explicit fail-on-limit guards.",
+    "Role": "arn:aws:iam::160885259244:role/AWSGlueServiceRole-is459-aml-q2",
+    "Command": {
+      "Name": "glueetl",
+      "ScriptLocation": "s3://is459-aml-g2team7-160885259244-us-east-1/scripts/q2/q2_detect-v1.py",
+      "PythonVersion": "3"
+    },
+    "GlueVersion": "5.1",
+    "WorkerType": "G.1X",
+    "NumberOfWorkers": 2,
+    "ExecutionClass": "STANDARD",
+    "ExecutionProperty": {
+      "MaxConcurrentRuns": 1
+    },
+    "JobRunQueuingEnabled": false,
+    "MaxRetries": 0,
+    "Timeout": 15,
+    "DefaultArguments": {
+      "--window-end": "2022-09-01T00:01:00",
+      "--input-manifest": "s3://is459-aml-g2team7-160885259244-us-east-1/manifests/detector-inputs/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/manifest.json",
+      "--snapshot-cutoff": "2022-09-01T00:01:00",
+      "--job-bookmark-option": "job-bookmark-disable",
+      "--window-start": "2022-09-01T00:00:00",
+      "--TempDir": "s3://is459-aml-g2team7-160885259244-us-east-1/temporary/q2/",
+      "--encryption-type": "sse-s3",
+      "--spark-event-logs-path": "s3://aws-glue-assets-160885259244-us-east-1/sparkHistoryLogs/",
+      "--enable-job-insights": "false",
+      "--output-root": "s3://is459-aml-g2team7-160885259244-us-east-1",
+      "--custom-logGroup-prefix": "/is459/aml/q2",
+      "--conf": "spark.sql.catalog.glue_catalog.glue.skip-name-validation=true",
+      "--job-language": "python",
+      "--analysis-id": "q2-dev-20220901-m00-v1"
+    },
+    "Tags": {
+      "Project": "is459-aml",
+      "Environment": "development"
+    }
+  },
+  "features_disabled": [
+    "job metrics",
+    "observability metrics",
+    "Spark UI",
+    "interactive sessions",
+    "VPC connections",
+    "auto scaling",
+    "job queueing",
+    "automatic retries"
+  ],
+  "studio_defaults_note": "Studio restored --conf skip-name-validation and an unused spark-event-logs-path despite removal. Catalog metastore and Spark UI remained disabled; no extra role grants or assets writes."
+}

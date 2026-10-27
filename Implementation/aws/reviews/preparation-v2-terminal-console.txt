@@ -1,0 +1,45 @@
+Job name
+is459-aml-prepare-dev
+Start time (Local)
+10/26/2026 10:15:05
+DPU Hours
+0.194722
+Glue version
+5.1
+Last modified on (Local)
+10/26/2026 10:21:29
+Id
+jr_bede7c68199d9eeec1e051d1b1a69bf9d9842aad199e097915f604c8ad246f08
+End time (Local)
+10/26/2026 10:21:29
+Worker type
+G.1X
+Log group name
+/is459/aml/preparation
+Run status
+Succeeded
+Start-up time
+33 seconds
+Max capacity
+2 DPUs
+Number of workers
+2
+Retry attempt number
+Initial run
+Execution time
+5 minutes 50 seconds
+Execution class
+Standard
+Timeout
+15 minutes
+Trigger name
+-
+Security configuration
+-
+Cloudwatch logs
+Output logs 
+Error logs 
+Usage profile
+-
+Job run queuing
+False

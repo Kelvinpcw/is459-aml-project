@@ -1,0 +1,800 @@
+- navigation:
+  - 'img "Account color: Unset"'
+  - navigation "Global":
+    - link "Skip to Main Content":
+      - /url: "#c"
+    - link "AWS Console Home":
+      - /url: https://160885259244-oguqcgmi.us-east-1.console.aws.amazon.com/console/home?region=us-east-1
+    - button "Amazon Q":
+    - button "Services":
+    - img "Search":
+    - searchbox
+    - combobox "Search"
+    - button "Ask Amazon Q":
+    - generic: "[Option+S]"
+    - status
+    - link "CloudShell":
+      - /url: https://160885259244-oguqcgmi.us-east-1.console.aws.amazon.com/cloudshell/home?region=us-east-1
+    - button "Notifications (none available)":
+      - img "Notifications":
+    - img "Notifications":
+    - list:
+      - button "Help & support":
+        - img "Support":
+      - button "Settings":
+      - combobox "Regions (United States (N. Virginia))":
+        - generic: United States (N. Virginia)
+      - button "g2team7 @ 1608-8525-9244":
+        - 'generic "Account color: Unset"':
+          - generic: g2_team7admin (160885259244)
+        - generic: g2team7
+  - list
+- navigation "Side navigation":
+  - button "Open side navigation":
+- navigation "breadcrumb":
+  - list:
+    - link "Amazon Athena":
+      - /url: "#/landing-page"
+      - generic: Amazon Athena
+    - link "Query editor" [disabled]:
+      - generic: Query editor
+  - list:
+    - link:
+      - /url: "#/landing-page"
+      - generic: Amazon Athena
+    - generic: Query editor
+- region "Drawers":
+  - toolbar "Drawers":
+    - button "Open help panel":
+    - button "Console-to-Code":
+- main:
+  - region "Notifications":
+    - list
+  - generic: Workgroup
+  - button "is459-aml-dev":
+    - generic: is459-aml-dev
+  - tablist "Query editor tabs":
+    - tab "Editor" [selected]:
+      - generic: Editor
+    - tab "Recent queries":
+      - generic: Recent queries
+    - tab "Saved queries":
+      - generic: Saved queries
+    - tab "Query settings":
+      - generic: Query settings
+  - tabpanel "Editor":
+    - heading "Data" [level=2]
+    - button "Refresh resources":
+    - button "Close resources navigator":
+    - generic: Data source
+    - button "Data source Choose a data source AwsDataCatalog":
+      - generic: AwsDataCatalog
+    - generic: Catalog
+    - button "Catalog Choose a catalog None":
+      - generic: None
+    - generic: Database
+    - button "Database Choose a database is459_aml_dev":
+      - generic: is459_aml_dev
+    - heading "Tables and views" [level=3]
+    - button "Create":
+      - text: Create
+    - button "Preferences":
+    - searchbox "Filter tables and views"
+    - button "Collapse Tables" [expanded]:
+    - heading "Tables (2)" [level=4]
+    - list "pagination region":
+      - button "Previous page" [disabled]:
+      - button "Page 1 of all pages": "1"
+      - button "Next page" [disabled]:
+    - list:
+      - button "Expand q1_daily_counts_dev20220901_v2":
+      - generic: q1_daily_counts_dev20220901_v2
+      - generic: Partitioned
+      - button "q1_daily_counts_dev20220901_v2 actions":
+      - button "Expand q2_case_index_dev20220901_m00_v1":
+      - generic: q2_case_index_dev20220901_m00_v1
+      - generic: Partitioned
+      - button "q2_case_index_dev20220901_m00_v1 actions":
+    - button "Expand Views" [disabled]:
+    - heading "Views (0)" [level=4]
+    - list "pagination region":
+      - button "Previous page" [disabled]:
+      - button "Page 1 of all pages": "1"
+      - button "Next page" [disabled]:
+    - tablist:
+      - tab "Query 1":
+        - generic: Query 1
+      - button "Query 1 Actions":
+      - button "Close Query 1":
+      - tab "Query 2" [selected]:
+        - generic: Query 2
+      - button "Query 2 Actions":
+      - button "Close Query 2":
+    - button "Add a tab to add a new query":
+    - button "show all tabs":
+    - group "Code editor":
+      - textbox "Cursor at row 3": ORDER BY case_id;
+      - group "Editor gutter, press Enter to interact with controls using arrow keys, press Escape to exit":
+        - generic: "1"
+        - generic: "2"
+        - generic: "3"
+        - generic: "4"
+        - generic: "5"
+        - generic: "6"
+        - generic: "7"
+        - generic: "8"
+        - generic: "9"
+        - generic: "10"
+        - generic: "11"
+      - group "Editor content, press Enter to start editing, press Escape to exit":
+        - generic: "-- Run only after the cloud Q2 report passes, using is459-aml-dev (50 MB/query)."
+        - generic: "-- Read all 15 bounded prototype index rows; compare every field with the frozen"
+        - generic: "-- local case bundles, including S3 destinations, counts and time boundaries."
+        - generic: SELECT dataset_version, run_id, analysis_id, case_id, pattern_type, bundle_uri,
+        - generic: participant_count, unique_edge_count, evidence_transaction_count,
+        - generic: window_start, window_end, snapshot_cutoff, first_event_time, last_event_time,
+        - generic: window_date
+        - generic: FROM is459_aml_dev.q2_case_index_dev20220901_m00_v1
+        - generic: WHERE window_date = DATE '2022-09-01'
+        - generic: ORDER BY case_id;
+    - slider "Resize code editor"
+    - group "Status bar":
+      - generic: SQL
+      - generic: Ln 11, Col 1
+      - button "Format code":
+      - button "Keyboard shortcuts":
+      - button "Code editor preferences":
+    - button "Run again"
+    - button:
+    - button "Explain Opens in a new tab":
+      - text: Explain
+      - img "Opens in a new tab":
+    - button "Cancel" [disabled]
+    - button "Clear query editor": Clear
+    - button "Create":
+      - text: Create
+    - checkbox "Reuse query results"
+    - generic: Reuse query results
+    - text: up to 60 minutes ago
+    - button "Edit reuse time":
+    - tablist "Query results tabs":
+      - tab "Query results" [selected]:
+        - generic: Query results
+      - tab "Query stats":
+        - generic: Query stats
+    - tabpanel "Query results":
+      - img "Success":
+      - text: Completed
+      - generic: "Time in queue:"
+      - generic: 94 ms
+      - generic: "Run time:"
+      - generic: 637 ms
+      - generic: "Data scanned:"
+      - generic: 5.75 KB
+      - heading "Results (15)" [level=2]:
+        - generic: Results
+        - generic: (15)
+      - button "Copy":
+        - text: Copy
+      - button "Download results CSV":
+        - generic: Download results CSV
+      - searchbox "Search rows"
+      - list "pagination region":
+        - button "Previous page" [disabled]:
+        - button "Page 1 of all pages": "1"
+        - button "Next page" [disabled]:
+      - button "Preferences":
+      - table:
+        - rowgroup:
+          - row:
+            - columnheader:
+              - button:
+                - generic: "#"
+            - columnheader:
+              - button:
+                - generic: dataset_version
+            - columnheader:
+              - button:
+                - generic: run_id
+            - columnheader:
+              - button:
+                - generic: analysis_id
+            - columnheader:
+              - button:
+                - generic: case_id
+            - columnheader:
+              - button:
+                - generic: pattern_type
+            - columnheader:
+              - button:
+                - generic: bundle_uri
+            - columnheader:
+              - button:
+                - generic: participant_count
+            - columnheader:
+              - button:
+                - generic: unique_edge_count
+            - columnheader:
+              - button:
+                - generic: evidence_transaction_count
+            - columnheader:
+              - button:
+                - generic: window_start
+            - columnheader:
+              - button:
+                - generic: window_end
+            - columnheader:
+              - button:
+                - generic: snapshot_cutoff
+            - columnheader:
+              - button:
+                - generic: first_event_time
+            - columnheader:
+              - button:
+                - generic: last_event_time
+            - columnheader:
+              - button:
+                - generic: window_date
+      - region "Results":
+        - table "Results":
+          - rowgroup:
+            - row "# dataset_version run_id analysis_id case_id pattern_type bundle_uri participant_count unique_edge_count evidence_transaction_count window_start window_end snapshot_cutoff first_event_time last_event_time window_date":
+              - columnheader "#":
+                - button "#":
+                  - generic: "#"
+              - columnheader "dataset_version":
+                - button "dataset_version":
+                  - generic: dataset_version
+              - columnheader "run_id":
+                - button "run_id":
+                  - generic: run_id
+              - columnheader "analysis_id":
+                - button "analysis_id":
+                  - generic: analysis_id
+              - columnheader "case_id":
+                - button "case_id":
+                  - generic: case_id
+              - columnheader "pattern_type":
+                - button "pattern_type":
+                  - generic: pattern_type
+              - columnheader "bundle_uri":
+                - button "bundle_uri":
+                  - generic: bundle_uri
+              - columnheader "participant_count":
+                - button "participant_count":
+                  - generic: participant_count
+              - columnheader "unique_edge_count":
+                - button "unique_edge_count":
+                  - generic: unique_edge_count
+              - columnheader "evidence_transaction_count":
+                - button "evidence_transaction_count":
+                  - generic: evidence_transaction_count
+              - columnheader "window_start":
+                - button "window_start":
+                  - generic: window_start
+              - columnheader "window_end":
+                - button "window_end":
+                  - generic: window_end
+              - columnheader "snapshot_cutoff":
+                - button "snapshot_cutoff":
+                  - generic: snapshot_cutoff
+              - columnheader "first_event_time":
+                - button "first_event_time":
+                  - generic: first_event_time
+              - columnheader "last_event_time":
+                - button "last_event_time":
+                  - generic: last_event_time
+              - columnheader "window_date":
+                - button "window_date":
+                  - generic: window_date
+          - rowgroup:
+            - row "1 ibm-hi-medium-b1b99c68b765580f dev-20220901-v2 q2-dev-20220901-m00-v1 0d86e8fcb45d92b772733bb3940e99a48480d817577a21b5c1129e0e5372884d fan_out s3://is459-aml-g2team7-160885259244-us-east-1/gold/cases/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/analysis_id=q2-dev-20220901-m00-v1/bundles/0d86e8fcb45d92b772733bb3940e99a48480d817577a21b5c1129e0e5372884d.json 28 27 28 2022-09-01 00:00:00.000 2022-09-01 00:01:00.000 2022-09-01 00:01:00.000 2022-09-01 00:00:00.000 2022-09-01 00:00:00.000 2022-09-01":
+              - cell "1":
+                - generic: "1"
+              - cell "ibm-hi-medium-b1b99c68b765580f":
+                - generic: ibm-hi-medium-b1b99c68b765580f
+              - cell "dev-20220901-v2":
+                - generic: dev-20220901-v2
+              - cell "q2-dev-20220901-m00-v1":
+                - generic: q2-dev-20220901-m00-v1
+              - cell "0d86e8fcb45d92b772733bb3940e99a48480d817577a21b5c1129e0e5372884d":
+                - generic: 0d86e8fcb45d92b772733bb3940e99a48480d817577a21b5c1129e0e5372884d
+              - cell "fan_out":
+                - generic: fan_out
+              - cell "s3://is459-aml-g2team7-160885259244-us-east-1/gold/cases/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/analysis_id=q2-dev-20220901-m00-v1/bundles/0d86e8fcb45d92b772733bb3940e99a48480d817577a21b5c1129e0e5372884d.json":
+                - generic: s3://is459-aml-g2team7-160885259244-us-east-1/gold/cases/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/analysis_id=q2-dev-20220901-m00-v1/bundles/0d86e8fcb45d92b772733bb3940e99a48480d817577a21b5c1129e0e5372884d.json
+              - cell "28":
+                - generic: "28"
+              - cell "27":
+                - generic: "27"
+              - cell "28":
+                - generic: "28"
+              - cell "2022-09-01 00:00:00.000":
+                - generic: 2022-09-01 00:00:00.000
+              - cell "2022-09-01 00:01:00.000":
+                - generic: 2022-09-01 00:01:00.000
+              - cell "2022-09-01 00:01:00.000":
+                - generic: 2022-09-01 00:01:00.000
+              - cell "2022-09-01 00:00:00.000":
+                - generic: 2022-09-01 00:00:00.000
+              - cell "2022-09-01 00:00:00.000":
+                - generic: 2022-09-01 00:00:00.000
+              - cell "2022-09-01":
+                - generic: 2022-09-01
+            - row "2 ibm-hi-medium-b1b99c68b765580f dev-20220901-v2 q2-dev-20220901-m00-v1 28b3a5f52c4bb323681841548c3d63213ddc09a57a4f2dacb9118aaad5142671 fan_out s3://is459-aml-g2team7-160885259244-us-east-1/gold/cases/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/analysis_id=q2-dev-20220901-m00-v1/bundles/28b3a5f52c4bb323681841548c3d63213ddc09a57a4f2dacb9118aaad5142671.json 34 33 34 2022-09-01 00:00:00.000 2022-09-01 00:01:00.000 2022-09-01 00:01:00.000 2022-09-01 00:00:00.000 2022-09-01 00:00:00.000 2022-09-01":
+              - cell "2":
+                - generic: "2"
+              - cell "ibm-hi-medium-b1b99c68b765580f":
+                - generic: ibm-hi-medium-b1b99c68b765580f
+              - cell "dev-20220901-v2":
+                - generic: dev-20220901-v2
+              - cell "q2-dev-20220901-m00-v1":
+                - generic: q2-dev-20220901-m00-v1
+              - cell "28b3a5f52c4bb323681841548c3d63213ddc09a57a4f2dacb9118aaad5142671":
+                - generic: 28b3a5f52c4bb323681841548c3d63213ddc09a57a4f2dacb9118aaad5142671
+              - cell "fan_out":
+                - generic: fan_out
+              - cell "s3://is459-aml-g2team7-160885259244-us-east-1/gold/cases/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/analysis_id=q2-dev-20220901-m00-v1/bundles/28b3a5f52c4bb323681841548c3d63213ddc09a57a4f2dacb9118aaad5142671.json":
+                - generic: s3://is459-aml-g2team7-160885259244-us-east-1/gold/cases/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/analysis_id=q2-dev-20220901-m00-v1/bundles/28b3a5f52c4bb323681841548c3d63213ddc09a57a4f2dacb9118aaad5142671.json
+              - cell "34":
+                - generic: "34"
+              - cell "33":
+                - generic: "33"
+              - cell "34":
+                - generic: "34"
+              - cell "2022-09-01 00:00:00.000":
+                - generic: 2022-09-01 00:00:00.000
+              - cell "2022-09-01 00:01:00.000":
+                - generic: 2022-09-01 00:01:00.000
+              - cell "2022-09-01 00:01:00.000":
+                - generic: 2022-09-01 00:01:00.000
+              - cell "2022-09-01 00:00:00.000":
+                - generic: 2022-09-01 00:00:00.000
+              - cell "2022-09-01 00:00:00.000":
+                - generic: 2022-09-01 00:00:00.000
+              - cell "2022-09-01":
+                - generic: 2022-09-01
+            - row "3 ibm-hi-medium-b1b99c68b765580f dev-20220901-v2 q2-dev-20220901-m00-v1 2cfe2b2b8cf78c88ab498cd348722e6bee99a487da8e5ce20641cf5f6f62d93d fan_out s3://is459-aml-g2team7-160885259244-us-east-1/gold/cases/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/analysis_id=q2-dev-20220901-m00-v1/bundles/2cfe2b2b8cf78c88ab498cd348722e6bee99a487da8e5ce20641cf5f6f62d93d.json 14 13 14 2022-09-01 00:00:00.000 2022-09-01 00:01:00.000 2022-09-01 00:01:00.000 2022-09-01 00:00:00.000 2022-09-01 00:00:00.000 2022-09-01":
+              - cell "3":
+                - generic: "3"
+              - cell "ibm-hi-medium-b1b99c68b765580f":
+                - generic: ibm-hi-medium-b1b99c68b765580f
+              - cell "dev-20220901-v2":
+                - generic: dev-20220901-v2
+              - cell "q2-dev-20220901-m00-v1":
+                - generic: q2-dev-20220901-m00-v1
+              - cell "2cfe2b2b8cf78c88ab498cd348722e6bee99a487da8e5ce20641cf5f6f62d93d":
+                - generic: 2cfe2b2b8cf78c88ab498cd348722e6bee99a487da8e5ce20641cf5f6f62d93d
+              - cell "fan_out":
+                - generic: fan_out
+              - cell "s3://is459-aml-g2team7-160885259244-us-east-1/gold/cases/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/analysis_id=q2-dev-20220901-m00-v1/bundles/2cfe2b2b8cf78c88ab498cd348722e6bee99a487da8e5ce20641cf5f6f62d93d.json":
+                - generic: s3://is459-aml-g2team7-160885259244-us-east-1/gold/cases/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/analysis_id=q2-dev-20220901-m00-v1/bundles/2cfe2b2b8cf78c88ab498cd348722e6bee99a487da8e5ce20641cf5f6f62d93d.json
+              - cell "14":
+                - generic: "14"
+              - cell "13":
+                - generic: "13"
+              - cell "14":
+                - generic: "14"
+              - cell "2022-09-01 00:00:00.000":
+                - generic: 2022-09-01 00:00:00.000
+              - cell "2022-09-01 00:01:00.000":
+                - generic: 2022-09-01 00:01:00.000
+              - cell "2022-09-01 00:01:00.000":
+                - generic: 2022-09-01 00:01:00.000
+              - cell "2022-09-01 00:00:00.000":
+                - generic: 2022-09-01 00:00:00.000
+              - cell "2022-09-01 00:00:00.000":
+                - generic: 2022-09-01 00:00:00.000
+              - cell "2022-09-01":
+                - generic: 2022-09-01
+            - row "4 ibm-hi-medium-b1b99c68b765580f dev-20220901-v2 q2-dev-20220901-m00-v1 67f5f2006b1f3d9c75bc7c49788ac2d78061794439491b6209bdc5a875587aed fan_out s3://is459-aml-g2team7-160885259244-us-east-1/gold/cases/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/analysis_id=q2-dev-20220901-m00-v1/bundles/67f5f2006b1f3d9c75bc7c49788ac2d78061794439491b6209bdc5a875587aed.json 18 17 20 2022-09-01 00:00:00.000 2022-09-01 00:01:00.000 2022-09-01 00:01:00.000 2022-09-01 00:00:00.000 2022-09-01 00:00:00.000 2022-09-01":
+              - cell "4":
+                - generic: "4"
+              - cell "ibm-hi-medium-b1b99c68b765580f":
+                - generic: ibm-hi-medium-b1b99c68b765580f
+              - cell "dev-20220901-v2":
+                - generic: dev-20220901-v2
+              - cell "q2-dev-20220901-m00-v1":
+                - generic: q2-dev-20220901-m00-v1
+              - cell "67f5f2006b1f3d9c75bc7c49788ac2d78061794439491b6209bdc5a875587aed":
+                - generic: 67f5f2006b1f3d9c75bc7c49788ac2d78061794439491b6209bdc5a875587aed
+              - cell "fan_out":
+                - generic: fan_out
+              - cell "s3://is459-aml-g2team7-160885259244-us-east-1/gold/cases/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/analysis_id=q2-dev-20220901-m00-v1/bundles/67f5f2006b1f3d9c75bc7c49788ac2d78061794439491b6209bdc5a875587aed.json":
+                - generic: s3://is459-aml-g2team7-160885259244-us-east-1/gold/cases/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/analysis_id=q2-dev-20220901-m00-v1/bundles/67f5f2006b1f3d9c75bc7c49788ac2d78061794439491b6209bdc5a875587aed.json
+              - cell "18":
+                - generic: "18"
+              - cell "17":
+                - generic: "17"
+              - cell "20":
+                - generic: "20"
+              - cell "2022-09-01 00:00:00.000":
+                - generic: 2022-09-01 00:00:00.000
+              - cell "2022-09-01 00:01:00.000":
+                - generic: 2022-09-01 00:01:00.000
+              - cell "2022-09-01 00:01:00.000":
+                - generic: 2022-09-01 00:01:00.000
+              - cell "2022-09-01 00:00:00.000":
+                - generic: 2022-09-01 00:00:00.000
+              - cell "2022-09-01 00:00:00.000":
+                - generic: 2022-09-01 00:00:00.000
+              - cell "2022-09-01":
+                - generic: 2022-09-01
+            - row "5 ibm-hi-medium-b1b99c68b765580f dev-20220901-v2 q2-dev-20220901-m00-v1 6b37f698237a077d038e0cbd34cf313e10cd18ead959a27073e2a34b90fb7add fan_out s3://is459-aml-g2team7-160885259244-us-east-1/gold/cases/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/analysis_id=q2-dev-20220901-m00-v1/bundles/6b37f698237a077d038e0cbd34cf313e10cd18ead959a27073e2a34b90fb7add.json 32 31 31 2022-09-01 00:00:00.000 2022-09-01 00:01:00.000 2022-09-01 00:01:00.000 2022-09-01 00:00:00.000 2022-09-01 00:00:00.000 2022-09-01":
+              - cell "5":
+                - generic: "5"
+              - cell "ibm-hi-medium-b1b99c68b765580f":
+                - generic: ibm-hi-medium-b1b99c68b765580f
+              - cell "dev-20220901-v2":
+                - generic: dev-20220901-v2
+              - cell "q2-dev-20220901-m00-v1":
+                - generic: q2-dev-20220901-m00-v1
+              - cell "6b37f698237a077d038e0cbd34cf313e10cd18ead959a27073e2a34b90fb7add":
+                - generic: 6b37f698237a077d038e0cbd34cf313e10cd18ead959a27073e2a34b90fb7add
+              - cell "fan_out":
+                - generic: fan_out
+              - cell "s3://is459-aml-g2team7-160885259244-us-east-1/gold/cases/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/analysis_id=q2-dev-20220901-m00-v1/bundles/6b37f698237a077d038e0cbd34cf313e10cd18ead959a27073e2a34b90fb7add.json":
+                - generic: s3://is459-aml-g2team7-160885259244-us-east-1/gold/cases/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/analysis_id=q2-dev-20220901-m00-v1/bundles/6b37f698237a077d038e0cbd34cf313e10cd18ead959a27073e2a34b90fb7add.json
+              - cell "32":
+                - generic: "32"
+              - cell "31":
+                - generic: "31"
+              - cell "31":
+                - generic: "31"
+              - cell "2022-09-01 00:00:00.000":
+                - generic: 2022-09-01 00:00:00.000
+              - cell "2022-09-01 00:01:00.000":
+                - generic: 2022-09-01 00:01:00.000
+              - cell "2022-09-01 00:01:00.000":
+                - generic: 2022-09-01 00:01:00.000
+              - cell "2022-09-01 00:00:00.000":
+                - generic: 2022-09-01 00:00:00.000
+              - cell "2022-09-01 00:00:00.000":
+                - generic: 2022-09-01 00:00:00.000
+              - cell "2022-09-01":
+                - generic: 2022-09-01
+            - row "6 ibm-hi-medium-b1b99c68b765580f dev-20220901-v2 q2-dev-20220901-m00-v1 7db19685b27dcbd54f58eff753d74afd04b620d6d2f02bc85d5d2a888d7e27ab fan_out s3://is459-aml-g2team7-160885259244-us-east-1/gold/cases/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/analysis_id=q2-dev-20220901-m00-v1/bundles/7db19685b27dcbd54f58eff753d74afd04b620d6d2f02bc85d5d2a888d7e27ab.json 17 16 16 2022-09-01 00:00:00.000 2022-09-01 00:01:00.000 2022-09-01 00:01:00.000 2022-09-01 00:00:00.000 2022-09-01 00:00:00.000 2022-09-01":
+              - cell "6":
+                - generic: "6"
+              - cell "ibm-hi-medium-b1b99c68b765580f":
+                - generic: ibm-hi-medium-b1b99c68b765580f
+              - cell "dev-20220901-v2":
+                - generic: dev-20220901-v2
+              - cell "q2-dev-20220901-m00-v1":
+                - generic: q2-dev-20220901-m00-v1
+              - cell "7db19685b27dcbd54f58eff753d74afd04b620d6d2f02bc85d5d2a888d7e27ab":
+                - generic: 7db19685b27dcbd54f58eff753d74afd04b620d6d2f02bc85d5d2a888d7e27ab
+              - cell "fan_out":
+                - generic: fan_out
+              - cell "s3://is459-aml-g2team7-160885259244-us-east-1/gold/cases/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/analysis_id=q2-dev-20220901-m00-v1/bundles/7db19685b27dcbd54f58eff753d74afd04b620d6d2f02bc85d5d2a888d7e27ab.json":
+                - generic: s3://is459-aml-g2team7-160885259244-us-east-1/gold/cases/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/analysis_id=q2-dev-20220901-m00-v1/bundles/7db19685b27dcbd54f58eff753d74afd04b620d6d2f02bc85d5d2a888d7e27ab.json
+              - cell "17":
+                - generic: "17"
+              - cell "16":
+                - generic: "16"
+              - cell "16":
+                - generic: "16"
+              - cell "2022-09-01 00:00:00.000":
+                - generic: 2022-09-01 00:00:00.000
+              - cell "2022-09-01 00:01:00.000":
+                - generic: 2022-09-01 00:01:00.000
+              - cell "2022-09-01 00:01:00.000":
+                - generic: 2022-09-01 00:01:00.000
+              - cell "2022-09-01 00:00:00.000":
+                - generic: 2022-09-01 00:00:00.000
+              - cell "2022-09-01 00:00:00.000":
+                - generic: 2022-09-01 00:00:00.000
+              - cell "2022-09-01":
+                - generic: 2022-09-01
+            - row "7 ibm-hi-medium-b1b99c68b765580f dev-20220901-v2 q2-dev-20220901-m00-v1 88407951cc2b24dd5811a62d97e7f218761f215035133ecbc4d87f825ded5531 fan_out s3://is459-aml-g2team7-160885259244-us-east-1/gold/cases/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/analysis_id=q2-dev-20220901-m00-v1/bundles/88407951cc2b24dd5811a62d97e7f218761f215035133ecbc4d87f825ded5531.json 29 28 29 2022-09-01 00:00:00.000 2022-09-01 00:01:00.000 2022-09-01 00:01:00.000 2022-09-01 00:00:00.000 2022-09-01 00:00:00.000 2022-09-01":
+              - cell "7":
+                - generic: "7"
+              - cell "ibm-hi-medium-b1b99c68b765580f":
+                - generic: ibm-hi-medium-b1b99c68b765580f
+              - cell "dev-20220901-v2":
+                - generic: dev-20220901-v2
+              - cell "q2-dev-20220901-m00-v1":
+                - generic: q2-dev-20220901-m00-v1
+              - cell "88407951cc2b24dd5811a62d97e7f218761f215035133ecbc4d87f825ded5531":
+                - generic: 88407951cc2b24dd5811a62d97e7f218761f215035133ecbc4d87f825ded5531
+              - cell "fan_out":
+                - generic: fan_out
+              - cell "s3://is459-aml-g2team7-160885259244-us-east-1/gold/cases/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/analysis_id=q2-dev-20220901-m00-v1/bundles/88407951cc2b24dd5811a62d97e7f218761f215035133ecbc4d87f825ded5531.json":
+                - generic: s3://is459-aml-g2team7-160885259244-us-east-1/gold/cases/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/analysis_id=q2-dev-20220901-m00-v1/bundles/88407951cc2b24dd5811a62d97e7f218761f215035133ecbc4d87f825ded5531.json
+              - cell "29":
+                - generic: "29"
+              - cell "28":
+                - generic: "28"
+              - cell "29":
+                - generic: "29"
+              - cell "2022-09-01 00:00:00.000":
+                - generic: 2022-09-01 00:00:00.000
+              - cell "2022-09-01 00:01:00.000":
+                - generic: 2022-09-01 00:01:00.000
+              - cell "2022-09-01 00:01:00.000":
+                - generic: 2022-09-01 00:01:00.000
+              - cell "2022-09-01 00:00:00.000":
+                - generic: 2022-09-01 00:00:00.000
+              - cell "2022-09-01 00:00:00.000":
+                - generic: 2022-09-01 00:00:00.000
+              - cell "2022-09-01":
+                - generic: 2022-09-01
+            - row "8 ibm-hi-medium-b1b99c68b765580f dev-20220901-v2 q2-dev-20220901-m00-v1 a21d0cf9c5f0fc346e70c3f956c95f95b4e2d8e15e74b41c3095b41d97af1287 fan_out s3://is459-aml-g2team7-160885259244-us-east-1/gold/cases/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/analysis_id=q2-dev-20220901-m00-v1/bundles/a21d0cf9c5f0fc346e70c3f956c95f95b4e2d8e15e74b41c3095b41d97af1287.json 180 179 184 2022-09-01 00:00:00.000 2022-09-01 00:01:00.000 2022-09-01 00:01:00.000 2022-09-01 00:00:00.000 2022-09-01 00:00:00.000 2022-09-01":
+              - cell "8":
+                - generic: "8"
+              - cell "ibm-hi-medium-b1b99c68b765580f":
+                - generic: ibm-hi-medium-b1b99c68b765580f
+              - cell "dev-20220901-v2":
+                - generic: dev-20220901-v2
+              - cell "q2-dev-20220901-m00-v1":
+                - generic: q2-dev-20220901-m00-v1
+              - cell "a21d0cf9c5f0fc346e70c3f956c95f95b4e2d8e15e74b41c3095b41d97af1287":
+                - generic: a21d0cf9c5f0fc346e70c3f956c95f95b4e2d8e15e74b41c3095b41d97af1287
+              - cell "fan_out":
+                - generic: fan_out
+              - cell "s3://is459-aml-g2team7-160885259244-us-east-1/gold/cases/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/analysis_id=q2-dev-20220901-m00-v1/bundles/a21d0cf9c5f0fc346e70c3f956c95f95b4e2d8e15e74b41c3095b41d97af1287.json":
+                - generic: s3://is459-aml-g2team7-160885259244-us-east-1/gold/cases/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/analysis_id=q2-dev-20220901-m00-v1/bundles/a21d0cf9c5f0fc346e70c3f956c95f95b4e2d8e15e74b41c3095b41d97af1287.json
+              - cell "180":
+                - generic: "180"
+              - cell "179":
+                - generic: "179"
+              - cell "184":
+                - generic: "184"
+              - cell "2022-09-01 00:00:00.000":
+                - generic: 2022-09-01 00:00:00.000
+              - cell "2022-09-01 00:01:00.000":
+                - generic: 2022-09-01 00:01:00.000
+              - cell "2022-09-01 00:01:00.000":
+                - generic: 2022-09-01 00:01:00.000
+              - cell "2022-09-01 00:00:00.000":
+                - generic: 2022-09-01 00:00:00.000
+              - cell "2022-09-01 00:00:00.000":
+                - generic: 2022-09-01 00:00:00.000
+              - cell "2022-09-01":
+                - generic: 2022-09-01
+            - row "9 ibm-hi-medium-b1b99c68b765580f dev-20220901-v2 q2-dev-20220901-m00-v1 af903b5064ecb5f413b778532b644cd7ad764ebd47e0c7e520c01df8518749ee fan_out s3://is459-aml-g2team7-160885259244-us-east-1/gold/cases/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/analysis_id=q2-dev-20220901-m00-v1/bundles/af903b5064ecb5f413b778532b644cd7ad764ebd47e0c7e520c01df8518749ee.json 20 19 20 2022-09-01 00:00:00.000 2022-09-01 00:01:00.000 2022-09-01 00:01:00.000 2022-09-01 00:00:00.000 2022-09-01 00:00:00.000 2022-09-01":
+              - cell "9":
+                - generic: "9"
+              - cell "ibm-hi-medium-b1b99c68b765580f":
+                - generic: ibm-hi-medium-b1b99c68b765580f
+              - cell "dev-20220901-v2":
+                - generic: dev-20220901-v2
+              - cell "q2-dev-20220901-m00-v1":
+                - generic: q2-dev-20220901-m00-v1
+              - cell "af903b5064ecb5f413b778532b644cd7ad764ebd47e0c7e520c01df8518749ee":
+                - generic: af903b5064ecb5f413b778532b644cd7ad764ebd47e0c7e520c01df8518749ee
+              - cell "fan_out":
+                - generic: fan_out
+              - cell "s3://is459-aml-g2team7-160885259244-us-east-1/gold/cases/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/analysis_id=q2-dev-20220901-m00-v1/bundles/af903b5064ecb5f413b778532b644cd7ad764ebd47e0c7e520c01df8518749ee.json":
+                - generic: s3://is459-aml-g2team7-160885259244-us-east-1/gold/cases/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/analysis_id=q2-dev-20220901-m00-v1/bundles/af903b5064ecb5f413b778532b644cd7ad764ebd47e0c7e520c01df8518749ee.json
+              - cell "20":
+                - generic: "20"
+              - cell "19":
+                - generic: "19"
+              - cell "20":
+                - generic: "20"
+              - cell "2022-09-01 00:00:00.000":
+                - generic: 2022-09-01 00:00:00.000
+              - cell "2022-09-01 00:01:00.000":
+                - generic: 2022-09-01 00:01:00.000
+              - cell "2022-09-01 00:01:00.000":
+                - generic: 2022-09-01 00:01:00.000
+              - cell "2022-09-01 00:00:00.000":
+                - generic: 2022-09-01 00:00:00.000
+              - cell "2022-09-01 00:00:00.000":
+                - generic: 2022-09-01 00:00:00.000
+              - cell "2022-09-01":
+                - generic: 2022-09-01
+            - row "10 ibm-hi-medium-b1b99c68b765580f dev-20220901-v2 q2-dev-20220901-m00-v1 b8a3a7860557ebb60910f2235bccdeefc87a6fb369bf5c134e6b6ad23266b548 fan_out s3://is459-aml-g2team7-160885259244-us-east-1/gold/cases/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/analysis_id=q2-dev-20220901-m00-v1/bundles/b8a3a7860557ebb60910f2235bccdeefc87a6fb369bf5c134e6b6ad23266b548.json 25 24 25 2022-09-01 00:00:00.000 2022-09-01 00:01:00.000 2022-09-01 00:01:00.000 2022-09-01 00:00:00.000 2022-09-01 00:00:00.000 2022-09-01":
+              - cell "10":
+                - generic: "10"
+              - cell "ibm-hi-medium-b1b99c68b765580f":
+                - generic: ibm-hi-medium-b1b99c68b765580f
+              - cell "dev-20220901-v2":
+                - generic: dev-20220901-v2
+              - cell "q2-dev-20220901-m00-v1":
+                - generic: q2-dev-20220901-m00-v1
+              - cell "b8a3a7860557ebb60910f2235bccdeefc87a6fb369bf5c134e6b6ad23266b548":
+                - generic: b8a3a7860557ebb60910f2235bccdeefc87a6fb369bf5c134e6b6ad23266b548
+              - cell "fan_out":
+                - generic: fan_out
+              - cell "s3://is459-aml-g2team7-160885259244-us-east-1/gold/cases/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/analysis_id=q2-dev-20220901-m00-v1/bundles/b8a3a7860557ebb60910f2235bccdeefc87a6fb369bf5c134e6b6ad23266b548.json":
+                - generic: s3://is459-aml-g2team7-160885259244-us-east-1/gold/cases/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/analysis_id=q2-dev-20220901-m00-v1/bundles/b8a3a7860557ebb60910f2235bccdeefc87a6fb369bf5c134e6b6ad23266b548.json
+              - cell "25":
+                - generic: "25"
+              - cell "24":
+                - generic: "24"
+              - cell "25":
+                - generic: "25"
+              - cell "2022-09-01 00:00:00.000":
+                - generic: 2022-09-01 00:00:00.000
+              - cell "2022-09-01 00:01:00.000":
+                - generic: 2022-09-01 00:01:00.000
+              - cell "2022-09-01 00:01:00.000":
+                - generic: 2022-09-01 00:01:00.000
+              - cell "2022-09-01 00:00:00.000":
+                - generic: 2022-09-01 00:00:00.000
+              - cell "2022-09-01 00:00:00.000":
+                - generic: 2022-09-01 00:00:00.000
+              - cell "2022-09-01":
+                - generic: 2022-09-01
+            - row "11 ibm-hi-medium-b1b99c68b765580f dev-20220901-v2 q2-dev-20220901-m00-v1 b95f933ebd3f2e5fedc86522856c59ceb4aa264def203a68d65dc3de5ae0d22c fan_out s3://is459-aml-g2team7-160885259244-us-east-1/gold/cases/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/analysis_id=q2-dev-20220901-m00-v1/bundles/b95f933ebd3f2e5fedc86522856c59ceb4aa264def203a68d65dc3de5ae0d22c.json 58 57 60 2022-09-01 00:00:00.000 2022-09-01 00:01:00.000 2022-09-01 00:01:00.000 2022-09-01 00:00:00.000 2022-09-01 00:00:00.000 2022-09-01":
+              - cell "11":
+                - generic: "11"
+              - cell "ibm-hi-medium-b1b99c68b765580f":
+                - generic: ibm-hi-medium-b1b99c68b765580f
+              - cell "dev-20220901-v2":
+                - generic: dev-20220901-v2
+              - cell "q2-dev-20220901-m00-v1":
+                - generic: q2-dev-20220901-m00-v1
+              - cell "b95f933ebd3f2e5fedc86522856c59ceb4aa264def203a68d65dc3de5ae0d22c":
+                - generic: b95f933ebd3f2e5fedc86522856c59ceb4aa264def203a68d65dc3de5ae0d22c
+              - cell "fan_out":
+                - generic: fan_out
+              - cell "s3://is459-aml-g2team7-160885259244-us-east-1/gold/cases/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/analysis_id=q2-dev-20220901-m00-v1/bundles/b95f933ebd3f2e5fedc86522856c59ceb4aa264def203a68d65dc3de5ae0d22c.json":
+                - generic: s3://is459-aml-g2team7-160885259244-us-east-1/gold/cases/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/analysis_id=q2-dev-20220901-m00-v1/bundles/b95f933ebd3f2e5fedc86522856c59ceb4aa264def203a68d65dc3de5ae0d22c.json
+              - cell "58":
+                - generic: "58"
+              - cell "57":
+                - generic: "57"
+              - cell "60":
+                - generic: "60"
+              - cell "2022-09-01 00:00:00.000":
+                - generic: 2022-09-01 00:00:00.000
+              - cell "2022-09-01 00:01:00.000":
+                - generic: 2022-09-01 00:01:00.000
+              - cell "2022-09-01 00:01:00.000":
+                - generic: 2022-09-01 00:01:00.000
+              - cell "2022-09-01 00:00:00.000":
+                - generic: 2022-09-01 00:00:00.000
+              - cell "2022-09-01 00:00:00.000":
+                - generic: 2022-09-01 00:00:00.000
+              - cell "2022-09-01":
+                - generic: 2022-09-01
+            - row "12 ibm-hi-medium-b1b99c68b765580f dev-20220901-v2 q2-dev-20220901-m00-v1 bf64028bb2e3fdd21e94636e3389207c555420ec51085922a159d78ab3162c56 fan_out s3://is459-aml-g2team7-160885259244-us-east-1/gold/cases/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/analysis_id=q2-dev-20220901-m00-v1/bundles/bf64028bb2e3fdd21e94636e3389207c555420ec51085922a159d78ab3162c56.json 18 17 18 2022-09-01 00:00:00.000 2022-09-01 00:01:00.000 2022-09-01 00:01:00.000 2022-09-01 00:00:00.000 2022-09-01 00:00:00.000 2022-09-01":
+              - cell "12":
+                - generic: "12"
+              - cell "ibm-hi-medium-b1b99c68b765580f":
+                - generic: ibm-hi-medium-b1b99c68b765580f
+              - cell "dev-20220901-v2":
+                - generic: dev-20220901-v2
+              - cell "q2-dev-20220901-m00-v1":
+                - generic: q2-dev-20220901-m00-v1
+              - cell "bf64028bb2e3fdd21e94636e3389207c555420ec51085922a159d78ab3162c56":
+                - generic: bf64028bb2e3fdd21e94636e3389207c555420ec51085922a159d78ab3162c56
+              - cell "fan_out":
+                - generic: fan_out
+              - cell "s3://is459-aml-g2team7-160885259244-us-east-1/gold/cases/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/analysis_id=q2-dev-20220901-m00-v1/bundles/bf64028bb2e3fdd21e94636e3389207c555420ec51085922a159d78ab3162c56.json":
+                - generic: s3://is459-aml-g2team7-160885259244-us-east-1/gold/cases/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/analysis_id=q2-dev-20220901-m00-v1/bundles/bf64028bb2e3fdd21e94636e3389207c555420ec51085922a159d78ab3162c56.json
+              - cell "18":
+                - generic: "18"
+              - cell "17":
+                - generic: "17"
+              - cell "18":
+                - generic: "18"
+              - cell "2022-09-01 00:00:00.000":
+                - generic: 2022-09-01 00:00:00.000
+              - cell "2022-09-01 00:01:00.000":
+                - generic: 2022-09-01 00:01:00.000
+              - cell "2022-09-01 00:01:00.000":
+                - generic: 2022-09-01 00:01:00.000
+              - cell "2022-09-01 00:00:00.000":
+                - generic: 2022-09-01 00:00:00.000
+              - cell "2022-09-01 00:00:00.000":
+                - generic: 2022-09-01 00:00:00.000
+              - cell "2022-09-01":
+                - generic: 2022-09-01
+            - row "13 ibm-hi-medium-b1b99c68b765580f dev-20220901-v2 q2-dev-20220901-m00-v1 bfda7282ee321a001dda5c07d00006dd336ce1a21292fc3dfc2a2b0664a93e93 fan_out s3://is459-aml-g2team7-160885259244-us-east-1/gold/cases/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/analysis_id=q2-dev-20220901-m00-v1/bundles/bfda7282ee321a001dda5c07d00006dd336ce1a21292fc3dfc2a2b0664a93e93.json 29 28 28 2022-09-01 00:00:00.000 2022-09-01 00:01:00.000 2022-09-01 00:01:00.000 2022-09-01 00:00:00.000 2022-09-01 00:00:00.000 2022-09-01":
+              - cell "13":
+                - generic: "13"
+              - cell "ibm-hi-medium-b1b99c68b765580f":
+                - generic: ibm-hi-medium-b1b99c68b765580f
+              - cell "dev-20220901-v2":
+                - generic: dev-20220901-v2
+              - cell "q2-dev-20220901-m00-v1":
+                - generic: q2-dev-20220901-m00-v1
+              - cell "bfda7282ee321a001dda5c07d00006dd336ce1a21292fc3dfc2a2b0664a93e93":
+                - generic: bfda7282ee321a001dda5c07d00006dd336ce1a21292fc3dfc2a2b0664a93e93
+              - cell "fan_out":
+                - generic: fan_out
+              - cell "s3://is459-aml-g2team7-160885259244-us-east-1/gold/cases/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/analysis_id=q2-dev-20220901-m00-v1/bundles/bfda7282ee321a001dda5c07d00006dd336ce1a21292fc3dfc2a2b0664a93e93.json":
+                - generic: s3://is459-aml-g2team7-160885259244-us-east-1/gold/cases/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/analysis_id=q2-dev-20220901-m00-v1/bundles/bfda7282ee321a001dda5c07d00006dd336ce1a21292fc3dfc2a2b0664a93e93.json
+              - cell "29":
+                - generic: "29"
+              - cell "28":
+                - generic: "28"
+              - cell "28":
+                - generic: "28"
+              - cell "2022-09-01 00:00:00.000":
+                - generic: 2022-09-01 00:00:00.000
+              - cell "2022-09-01 00:01:00.000":
+                - generic: 2022-09-01 00:01:00.000
+              - cell "2022-09-01 00:01:00.000":
+                - generic: 2022-09-01 00:01:00.000
+              - cell "2022-09-01 00:00:00.000":
+                - generic: 2022-09-01 00:00:00.000
+              - cell "2022-09-01 00:00:00.000":
+                - generic: 2022-09-01 00:00:00.000
+              - cell "2022-09-01":
+                - generic: 2022-09-01
+            - row "14 ibm-hi-medium-b1b99c68b765580f dev-20220901-v2 q2-dev-20220901-m00-v1 c689ea7720494340220fb76070dd8d3c8f28b4e668d8caf60a3e0c80bec6de99 fan_out s3://is459-aml-g2team7-160885259244-us-east-1/gold/cases/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/analysis_id=q2-dev-20220901-m00-v1/bundles/c689ea7720494340220fb76070dd8d3c8f28b4e668d8caf60a3e0c80bec6de99.json 22 21 23 2022-09-01 00:00:00.000 2022-09-01 00:01:00.000 2022-09-01 00:01:00.000 2022-09-01 00:00:00.000 2022-09-01 00:00:00.000 2022-09-01":
+              - cell "14":
+                - generic: "14"
+              - cell "ibm-hi-medium-b1b99c68b765580f":
+                - generic: ibm-hi-medium-b1b99c68b765580f
+              - cell "dev-20220901-v2":
+                - generic: dev-20220901-v2
+              - cell "q2-dev-20220901-m00-v1":
+                - generic: q2-dev-20220901-m00-v1
+              - cell "c689ea7720494340220fb76070dd8d3c8f28b4e668d8caf60a3e0c80bec6de99":
+                - generic: c689ea7720494340220fb76070dd8d3c8f28b4e668d8caf60a3e0c80bec6de99
+              - cell "fan_out":
+                - generic: fan_out
+              - cell "s3://is459-aml-g2team7-160885259244-us-east-1/gold/cases/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/analysis_id=q2-dev-20220901-m00-v1/bundles/c689ea7720494340220fb76070dd8d3c8f28b4e668d8caf60a3e0c80bec6de99.json":
+                - generic: s3://is459-aml-g2team7-160885259244-us-east-1/gold/cases/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/analysis_id=q2-dev-20220901-m00-v1/bundles/c689ea7720494340220fb76070dd8d3c8f28b4e668d8caf60a3e0c80bec6de99.json
+              - cell "22":
+                - generic: "22"
+              - cell "21":
+                - generic: "21"
+              - cell "23":
+                - generic: "23"
+              - cell "2022-09-01 00:00:00.000":
+                - generic: 2022-09-01 00:00:00.000
+              - cell "2022-09-01 00:01:00.000":
+                - generic: 2022-09-01 00:01:00.000
+              - cell "2022-09-01 00:01:00.000":
+                - generic: 2022-09-01 00:01:00.000
+              - cell "2022-09-01 00:00:00.000":
+                - generic: 2022-09-01 00:00:00.000
+              - cell "2022-09-01 00:00:00.000":
+                - generic: 2022-09-01 00:00:00.000
+              - cell "2022-09-01":
+                - generic: 2022-09-01
+            - row "15 ibm-hi-medium-b1b99c68b765580f dev-20220901-v2 q2-dev-20220901-m00-v1 cbf152d84559ea49ec9de4d0603cfe5ad9ef2162d2c8b869764fd1d46d7436eb fan_out s3://is459-aml-g2team7-160885259244-us-east-1/gold/cases/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/analysis_id=q2-dev-20220901-m00-v1/bundles/cbf152d84559ea49ec9de4d0603cfe5ad9ef2162d2c8b869764fd1d46d7436eb.json 302 301 310 2022-09-01 00:00:00.000 2022-09-01 00:01:00.000 2022-09-01 00:01:00.000 2022-09-01 00:00:00.000 2022-09-01 00:00:00.000 2022-09-01":
+              - cell "15":
+                - generic: "15"
+              - cell "ibm-hi-medium-b1b99c68b765580f":
+                - generic: ibm-hi-medium-b1b99c68b765580f
+              - cell "dev-20220901-v2":
+                - generic: dev-20220901-v2
+              - cell "q2-dev-20220901-m00-v1":
+                - generic: q2-dev-20220901-m00-v1
+              - cell "cbf152d84559ea49ec9de4d0603cfe5ad9ef2162d2c8b869764fd1d46d7436eb":
+                - generic: cbf152d84559ea49ec9de4d0603cfe5ad9ef2162d2c8b869764fd1d46d7436eb
+              - cell "fan_out":
+                - generic: fan_out
+              - cell "s3://is459-aml-g2team7-160885259244-us-east-1/gold/cases/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/analysis_id=q2-dev-20220901-m00-v1/bundles/cbf152d84559ea49ec9de4d0603cfe5ad9ef2162d2c8b869764fd1d46d7436eb.json":
+                - generic: s3://is459-aml-g2team7-160885259244-us-east-1/gold/cases/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/analysis_id=q2-dev-20220901-m00-v1/bundles/cbf152d84559ea49ec9de4d0603cfe5ad9ef2162d2c8b869764fd1d46d7436eb.json
+              - cell "302":
+                - generic: "302"
+              - cell "301":
+                - generic: "301"
+              - cell "310":
+                - generic: "310"
+              - cell "2022-09-01 00:00:00.000":
+                - generic: 2022-09-01 00:00:00.000
+              - cell "2022-09-01 00:01:00.000":
+                - generic: 2022-09-01 00:01:00.000
+              - cell "2022-09-01 00:01:00.000":
+                - generic: 2022-09-01 00:01:00.000
+              - cell "2022-09-01 00:00:00.000":
+                - generic: 2022-09-01 00:00:00.000
+              - cell "2022-09-01 00:00:00.000":
+                - generic: 2022-09-01 00:00:00.000
+              - cell "2022-09-01":
+                - generic: 2022-09-01
+- contentinfo:
+  - button "CloudShell":
+    - generic: CloudShell
+  - button "Agent Toolkit for AWS":
+    - text: Agent Toolkit for AWS
+  - button "Feedback"
+  - button "Console Mobile App":
+    - generic: Console Mobile App
+  - generic: © 2026, Amazon Web Services, Inc. or its affiliates.
+  - list:
+    - link "Privacy":
+      - /url: https://aws.amazon.com/privacy/
+    - link "Terms":
+      - /url: https://aws.amazon.com/terms/
+    - button "Cookie preferences"

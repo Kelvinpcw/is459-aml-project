@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "stage": "detector_inputs",
+  "preparation_status": "PASSED",
+  "dataset_version": "ibm-hi-medium-b1b99c68b765580f",
+  "run_id": "dev-20220901-v2",
+  "accepted_rows": 4465985,
+  "fact_columns": [
+    "source_id",
+    "source_record_ordinal",
+    "dataset_version",
+    "run_id",
+    "event_time",
+    "event_date",
+    "timestamp_raw",
+    "from_bank_raw",
+    "to_bank_raw",
+    "sender_bank",
+    "sender_account",
+    "receiver_bank",
+    "receiver_account",
+    "amount_paid_raw",
+    "amount_paid",
+    "payment_currency",
+    "amount_received_raw",
+    "amount_received",
+    "receiving_currency",
+    "payment_format",
+    "sender_entity_id",
+    "sender_entity_name",
+    "receiver_entity_id",
+    "receiver_entity_name",
+    "sender_entity_unknown",
+    "receiver_entity_unknown"
+  ],
+  "amount_policy": {
+    "precision": 38,
+    "scale": 8
+  },
+  "inputs": {
+    "transactions": "s3://is459-aml-g2team7-160885259244-us-east-1/curated/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/transactions/"
+  },
+  "timestamp_policy": "dataset-local event time; UTC used only as a fixed internal parsing convention"
+}

@@ -1,0 +1,13 @@
+{
+  "status": "VERIFIED",
+  "transactions": 4465985,
+  "positive_labels": 1056,
+  "summary_rows": 1628879,
+  "formats": 7,
+  "all_format_counts_match_source_manifest": true,
+  "invalid_count_rows": 0,
+  "missing_amount_rows": 0,
+  "paid_and_received_types": "decimal(38,8)",
+  "fractional_bitcoin_groups": 11050,
+  "scope": "Athena physically read the Q1 Parquet amount/count columns and reconciled the full accepted population."
+}

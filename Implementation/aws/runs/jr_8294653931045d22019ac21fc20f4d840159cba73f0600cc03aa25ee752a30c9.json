@@ -1,0 +1,22 @@
+{
+  "service": "glue-job-run",
+  "job_name": "is459-aml-q1-dev",
+  "run_id": "jr_8294653931045d22019ac21fc20f4d840159cba73f0600cc03aa25ee752a30c9",
+  "analysis_id": "q1-dev-20220901-v1",
+  "status": "SUCCEEDED",
+  "started_at_singapore": "2026-10-26 16:26:28",
+  "workers": 2,
+  "worker_type": "G.1X",
+  "timeout_minutes": 15,
+  "automatic_retries": 0,
+  "compute_still_running": false,
+  "quality_report_reviewed": true,
+  "ended_at_singapore": "2026-10-26 16:29:25",
+  "execution_seconds": 169,
+  "startup_seconds": 8,
+  "dpu_hours": 0.094167,
+  "estimated_glue_compute_usd": 0.041433,
+  "report_status": "PASSED",
+  "transactions": 4465985,
+  "labelled_laundering": 1056
+}

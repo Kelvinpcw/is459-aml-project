@@ -1,0 +1,274 @@
+- navigation:
+  - 'img "Account color: Unset"'
+  - navigation "Global":
+    - link "Skip to Main Content":
+      - /url: "#c"
+    - link "AWS Console Home":
+      - /url: https://160885259244-oguqcgmi.us-east-1.console.aws.amazon.com/console/home?region=us-east-1
+    - button "Amazon Q":
+    - button "Services":
+    - img "Search":
+    - searchbox
+    - combobox "Search"
+    - button "Ask Amazon Q":
+    - generic: "[Option+S]"
+    - status
+    - link "CloudShell":
+      - /url: https://160885259244-oguqcgmi.us-east-1.console.aws.amazon.com/cloudshell/home?region=us-east-1
+    - button "Notifications (none available)":
+      - img "Notifications":
+    - img "Notifications":
+    - list:
+      - button "Help & support":
+        - img "Support":
+      - button "Settings":
+      - combobox "Regions (Global)":
+        - generic: Global
+      - button "g2team7 @ 1608-8525-9244":
+        - 'generic "Account color: Unset"':
+          - generic: g2_team7admin (160885259244)
+        - generic: g2team7
+  - list
+- button "Open side navigation" [expanded]:
+- navigation "Breadcrumbs":
+  - list:
+    - link "IAM":
+      - /url: "#/home"
+      - generic: IAM
+    - link "Roles":
+      - /url: "#/roles"
+      - generic: Roles
+    - link "AWSGlueServiceRole-is459-aml-evaluation" [disabled]:
+      - generic: AWSGlueServiceRole-is459-aml-evaluation
+  - list:
+    - link:
+      - /url: "#/home"
+      - generic: IAM
+    - link:
+      - /url: "#/roles"
+      - generic: Roles
+    - generic: AWSGlueServiceRole-is459-aml-evaluation
+- region "Drawers":
+  - toolbar "Drawers":
+    - button "Open help panel":
+- navigation "Side navigation":
+  - button "Close side navigation":
+  - heading "Identity and Access Management (IAM)" [level=2]:
+    - link "Identity and Access Management (IAM)":
+      - /url: "#/home"
+      - generic: Identity and Access Management (IAM)
+  - searchbox "Search IAM"
+  - list:
+    - link "Dashboard":
+      - /url: "#/home"
+      - generic: Dashboard
+    - button "Access Management" [expanded]:
+      - generic: Access Management
+    - group "Access Management":
+      - list:
+        - link "Roles":
+          - /url: "#/roles"
+          - generic: Roles
+        - link "Policies":
+          - /url: "#/policies"
+          - generic: Policies
+        - link "IAM users":
+          - /url: "#/users"
+          - generic: IAM users
+        - link "IAM user groups":
+          - /url: "#/groups"
+          - generic: IAM user groups
+        - link "Identity providers":
+          - /url: "#/identity_providers"
+          - generic: Identity providers
+        - link "Account settings":
+          - /url: "#/account_settings"
+          - generic: Account settings
+        - link "Root access management":
+          - /url: "#/organizations/root-access-management"
+          - generic: Root access management
+        - link "Temporary delegation requests":
+          - /url: "#/account-access-requests"
+          - generic: Temporary delegation requests
+    - button "Access reports" [expanded]:
+      - generic: Access reports
+    - group "Access reports":
+      - list:
+        - link "Access Analyzer":
+          - /url: https://160885259244-oguqcgmi.us-east-1.console.aws.amazon.com/access-analyzer/home?region=us-east-1#/
+          - generic: Access Analyzer
+        - list:
+          - link "Resource analysis":
+            - /url: https://160885259244-oguqcgmi.us-east-1.console.aws.amazon.com/access-analyzer/home?region=us-east-1#/resource-analysis
+            - generic: Resource analysis
+          - link "Unused access":
+            - /url: https://160885259244-oguqcgmi.us-east-1.console.aws.amazon.com/access-analyzer/home?region=us-east-1#/unused-access-findings
+            - generic: Unused access
+          - link "Analyzer settings":
+            - /url: https://160885259244-oguqcgmi.us-east-1.console.aws.amazon.com/access-analyzer/home?region=us-east-1#/settings
+            - generic: Analyzer settings
+        - link "Policy simulator":
+          - /url: "#/policysim"
+          - generic: Policy simulator
+        - link "Credential report":
+          - /url: "#/credential_report"
+          - generic: Credential report
+    - button "Multi-account access" [expanded]:
+      - generic: Multi-account access
+    - group "Multi-account access":
+      - list:
+        - link "Account access manager":
+          - /url: https://160885259244-oguqcgmi.us-east-1.console.aws.amazon.com/account-access/home?region=us-east-1#/
+          - generic: Account access manager
+        - link "Organization activity":
+          - /url: "#/organizations/ServiceActivity"
+          - generic: Organization activity
+        - link "Service control policies":
+          - /url: "#/organizations/ServiceControlPolicies"
+          - generic: Service control policies
+        - link "Resource control policies":
+          - /url: "#/organizations/ResourceControlPolicies"
+          - generic: Resource control policies
+  - separator
+  - list:
+    - heading "Related consoles" [level=4]:
+      - generic: Related consoles
+    - link "IAM Identity CenterOpens in a new tab":
+      - /url: /singlesignon/home?region=us-east-1#/dashboard
+      - text: IAM Identity Center
+      - img "Opens in a new tab":
+    - link "AWS OrganizationsOpens in a new tab":
+      - /url: /organizations
+      - text: AWS Organizations
+      - img "Opens in a new tab":
+- main:
+  - region "Notifications":
+    - list:
+      - group "Success Role AWSGlueServiceRole-is459-aml-evaluation created.":
+        - img "Success":
+        - generic: Role AWSGlueServiceRole-is459-aml-evaluation created.
+      - button "View role AWSGlueServiceRole-is459-aml-evaluation" [active]: View role
+      - button "Dismiss":
+  - heading "AWSGlueServiceRole-is459-aml-evaluation" [level=1]
+  - button "Info AWSGlueServiceRole-is459-aml-evaluation":
+    - generic: Info
+  - button "Delete":
+    - generic: Delete
+  - heading "Summary" [level=2]:
+    - generic: Summary
+  - button "Edit role summary for AWSGlueServiceRole-is459-aml-evaluation":
+    - generic: Edit
+  - generic: Creation date
+  - generic: October 27, 2026, 15:37 (UTC+08:00)
+  - generic: ARN
+  - button "Copy ARN":
+  - generic: arn:aws:iam::160885259244:role/AWSGlueServiceRole-is459-aml-evaluation
+  - generic: Last activity
+  - generic: "-"
+  - generic: Maximum session duration
+  - generic: 1 hour
+  - tablist:
+    - tab "Permissions" [selected]:
+      - generic: Permissions
+    - tab "Trust relationships":
+      - generic: Trust relationships
+    - tab "Tags":
+      - generic: Tags
+    - tab "Last Accessed":
+      - generic: Last Accessed
+    - tab "Revoke sessions":
+      - generic: Revoke sessions
+  - tabpanel "Permissions":
+    - heading "Permissions policies (1)" [level=2]:
+      - text: Permissions policies
+      - generic: (1)
+    - button "Info Permissions policies":
+      - generic: Info
+    - button "Refresh policies":
+    - button "Simulate Opens in a new tab":
+      - generic: Simulate
+      - img "Opens in a new tab":
+    - button "Remove" [disabled]:
+      - generic: Remove
+    - button "Add permissions":
+      - generic: Add permissions
+    - paragraph: You can attach up to 20 managed policies.
+    - searchbox "Search items"
+    - generic: Filter by Type
+    - button "Filter by Type All types":
+      - generic: All types
+    - list:
+      - button "Previous page" [disabled]:
+      - button "Page 1 of all pages": "1"
+      - button "Next page" [disabled]:
+    - button "Preferences":
+    - table "Policies table":
+      - rowgroup:
+        - row "All items Policy name All links below open in a new tab Type Attached entities":
+          - columnheader "All items":
+            - generic "All items":
+              - checkbox "All items"
+          - columnheader "Policy name All links below open in a new tab":
+            - button "Policy name All links below open in a new tab":
+              - text: Policy name
+              - img "All links below open in a new tab":
+            - button "Policy name All links below open in a new tab"
+            - slider
+          - columnheader "Type":
+            - button "Type":
+              - generic: Type
+            - button "Type"
+            - slider
+          - columnheader "Attached entities":
+            - button "Attached entities":
+              - generic: Attached entities
+            - button "Attached entities"
+            - slider
+      - rowgroup:
+        - row "is459-aml-evaluation-data-access Toggle open the preview of this policy with name is459-aml-evaluation-data-access is459-aml-evaluation-data-access - Opens in a new tab Customer managed 1":
+          - cell "is459-aml-evaluation-data-access":
+            - generic "is459-aml-evaluation-data-access":
+              - checkbox "is459-aml-evaluation-data-access"
+          - cell "Toggle open the preview of this policy with name is459-aml-evaluation-data-access is459-aml-evaluation-data-access - Opens in a new tab":
+            - button "Toggle open the preview of this policy with name is459-aml-evaluation-data-access":
+            - link "is459-aml-evaluation-data-access - Opens in a new tab":
+              - /url: "#/policies/details/arn%3Aaws%3Aiam%3A%3A160885259244%3Apolicy%2Fis459-aml-evaluation-data-access"
+              - text: is459-aml-evaluation-data-access
+          - cell "Customer managed":
+            - generic: Customer managed
+          - cell "1":
+            - button "1"
+    - heading "Permissions boundary (not set)" [level=2]:
+      - button "Permissions boundary":
+        - text: Permissions boundary
+      - generic: (not set)
+    - heading "Generate policy based on CloudTrail events" [level=2]:
+      - button "Generate policy based on CloudTrail events" [expanded]:
+        - text: Generate policy based on CloudTrail events
+    - group "Generate policy based on CloudTrail events":
+      - text: You can generate a new policy based on the access activity for this role, then customize, create, and attach it to this role. AWS uses your CloudTrail events to identify the services and actions used and generate a policy.
+      - link "Learn more Opens in a new tab":
+        - /url: https://docs.aws.amazon.com//console/IAM/gen-pol
+        - text: Learn more
+        - img "Opens in a new tab":
+      - button "Generate policy"
+      - generic: No requests to generate a policy in the past 7 days.
+- contentinfo:
+  - button "CloudShell":
+    - generic: CloudShell
+  - button "Agent Toolkit for AWS":
+    - text: Agent Toolkit for AWS
+  - button "Feedback"
+  - button "Console Mobile App":
+    - generic: Console Mobile App
+  - generic: © 2026, Amazon Web Services, Inc. or its affiliates.
+  - list:
+    - link "Privacy":
+      - /url: https://aws.amazon.com/privacy/
+    - link "Terms":
+      - /url: https://aws.amazon.com/terms/
+    - button "Cookie preferences"
+- generic: exiting highlight
+- generic: 1 diagnostic message in the gutter.
+- generic: You can add up to 50 more tags.
+- generic: Table is displaying one result

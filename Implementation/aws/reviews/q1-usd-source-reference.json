@@ -1,0 +1,263 @@
+{
+  "source_input_sha256": "b137bcacba9727b98d356f6756935f93904ee8b3999d2281ee5819b38bf51de2",
+  "source_rows": 4465985,
+  "payment_currency": "US Dollar",
+  "baseline_n": 1634628,
+  "baseline_l": 382,
+  "support_threshold": 1000,
+  "eligible_segments": 57,
+  "eligible_segment_positive_labels": 0,
+  "eligible_segment_transactions": 75388,
+  "format_counts": {
+    "ACH": {
+      "n": 134032,
+      "l": 259
+    },
+    "Bitcoin": {
+      "n": 12,
+      "l": 0
+    },
+    "Cash": {
+      "n": 99382,
+      "l": 24
+    },
+    "Cheque": {
+      "n": 378885,
+      "l": 60
+    },
+    "Credit Card": {
+      "n": 251232,
+      "l": 39
+    },
+    "Reinvestment": {
+      "n": 733158,
+      "l": 0
+    },
+    "Wire": {
+      "n": 37927,
+      "l": 0
+    }
+  },
+  "top_20": [
+    {
+      "sender_bank": "0",
+      "receiver_bank": "0",
+      "payment_format": "Reinvestment",
+      "n": 3334,
+      "l": 0,
+      "baseline_n": 1634628,
+      "baseline_l": 382,
+      "laundering_rate": 0.0,
+      "risk_lift": 0.0
+    },
+    {
+      "sender_bank": "20",
+      "receiver_bank": "20",
+      "payment_format": "Reinvestment",
+      "n": 3252,
+      "l": 0,
+      "baseline_n": 1634628,
+      "baseline_l": 382,
+      "laundering_rate": 0.0,
+      "risk_lift": 0.0
+    },
+    {
+      "sender_bank": "11",
+      "receiver_bank": "11",
+      "payment_format": "Reinvestment",
+      "n": 1679,
+      "l": 0,
+      "baseline_n": 1634628,
+      "baseline_l": 382,
+      "laundering_rate": 0.0,
+      "risk_lift": 0.0
+    },
+    {
+      "sender_bank": "1208",
+      "receiver_bank": "1208",
+      "payment_format": "Reinvestment",
+      "n": 1635,
+      "l": 0,
+      "baseline_n": 1634628,
+      "baseline_l": 382,
+      "laundering_rate": 0.0,
+      "risk_lift": 0.0
+    },
+    {
+      "sender_bank": "2310",
+      "receiver_bank": "2310",
+      "payment_format": "Reinvestment",
+      "n": 1616,
+      "l": 0,
+      "baseline_n": 1634628,
+      "baseline_l": 382,
+      "laundering_rate": 0.0,
+      "risk_lift": 0.0
+    },
+    {
+      "sender_bank": "214",
+      "receiver_bank": "214",
+      "payment_format": "Reinvestment",
+      "n": 1592,
+      "l": 0,
+      "baseline_n": 1634628,
+      "baseline_l": 382,
+      "laundering_rate": 0.0,
+      "risk_lift": 0.0
+    },
+    {
+      "sender_bank": "2597",
+      "receiver_bank": "2597",
+      "payment_format": "Reinvestment",
+      "n": 1581,
+      "l": 0,
+      "baseline_n": 1634628,
+      "baseline_l": 382,
+      "laundering_rate": 0.0,
+      "risk_lift": 0.0
+    },
+    {
+      "sender_bank": "544",
+      "receiver_bank": "544",
+      "payment_format": "Reinvestment",
+      "n": 1554,
+      "l": 0,
+      "baseline_n": 1634628,
+      "baseline_l": 382,
+      "laundering_rate": 0.0,
+      "risk_lift": 0.0
+    },
+    {
+      "sender_bank": "1818",
+      "receiver_bank": "1818",
+      "payment_format": "Reinvestment",
+      "n": 1531,
+      "l": 0,
+      "baseline_n": 1634628,
+      "baseline_l": 382,
+      "laundering_rate": 0.0,
+      "risk_lift": 0.0
+    },
+    {
+      "sender_bank": "1601",
+      "receiver_bank": "1601",
+      "payment_format": "Reinvestment",
+      "n": 1523,
+      "l": 0,
+      "baseline_n": 1634628,
+      "baseline_l": 382,
+      "laundering_rate": 0.0,
+      "risk_lift": 0.0
+    },
+    {
+      "sender_bank": "741",
+      "receiver_bank": "741",
+      "payment_format": "Reinvestment",
+      "n": 1490,
+      "l": 0,
+      "baseline_n": 1634628,
+      "baseline_l": 382,
+      "laundering_rate": 0.0,
+      "risk_lift": 0.0
+    },
+    {
+      "sender_bank": "2776",
+      "receiver_bank": "2776",
+      "payment_format": "Reinvestment",
+      "n": 1469,
+      "l": 0,
+      "baseline_n": 1634628,
+      "baseline_l": 382,
+      "laundering_rate": 0.0,
+      "risk_lift": 0.0
+    },
+    {
+      "sender_bank": "1924",
+      "receiver_bank": "1924",
+      "payment_format": "Reinvestment",
+      "n": 1456,
+      "l": 0,
+      "baseline_n": 1634628,
+      "baseline_l": 382,
+      "laundering_rate": 0.0,
+      "risk_lift": 0.0
+    },
+    {
+      "sender_bank": "11032",
+      "receiver_bank": "11032",
+      "payment_format": "Reinvestment",
+      "n": 1450,
+      "l": 0,
+      "baseline_n": 1634628,
+      "baseline_l": 382,
+      "laundering_rate": 0.0,
+      "risk_lift": 0.0
+    },
+    {
+      "sender_bank": "11081",
+      "receiver_bank": "11081",
+      "payment_format": "Reinvestment",
+      "n": 1435,
+      "l": 0,
+      "baseline_n": 1634628,
+      "baseline_l": 382,
+      "laundering_rate": 0.0,
+      "risk_lift": 0.0
+    },
+    {
+      "sender_bank": "1046",
+      "receiver_bank": "1046",
+      "payment_format": "Reinvestment",
+      "n": 1411,
+      "l": 0,
+      "baseline_n": 1634628,
+      "baseline_l": 382,
+      "laundering_rate": 0.0,
+      "risk_lift": 0.0
+    },
+    {
+      "sender_bank": "718",
+      "receiver_bank": "718",
+      "payment_format": "Reinvestment",
+      "n": 1408,
+      "l": 0,
+      "baseline_n": 1634628,
+      "baseline_l": 382,
+      "laundering_rate": 0.0,
+      "risk_lift": 0.0
+    },
+    {
+      "sender_bank": "867",
+      "receiver_bank": "867",
+      "payment_format": "Reinvestment",
+      "n": 1384,
+      "l": 0,
+      "baseline_n": 1634628,
+      "baseline_l": 382,
+      "laundering_rate": 0.0,
+      "risk_lift": 0.0
+    },
+    {
+      "sender_bank": "2954",
+      "receiver_bank": "2954",
+      "payment_format": "Reinvestment",
+      "n": 1376,
+      "l": 0,
+      "baseline_n": 1634628,
+      "baseline_l": 382,
+      "laundering_rate": 0.0,
+      "risk_lift": 0.0
+    },
+    {
+      "sender_bank": "11304",
+      "receiver_bank": "11304",
+      "payment_format": "Reinvestment",
+      "n": 1371,
+      "l": 0,
+      "baseline_n": 1634628,
+      "baseline_l": 382,
+      "laundering_rate": 0.0,
+      "risk_lift": 0.0
+    }
+  ]
+}

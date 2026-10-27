@@ -1,0 +1,81 @@
+Notifications
+0
+0
+2
+1
+0
+Workgroup was updated successfully.
+Workgroup is459-aml-dev was updated successfully.
+is459-aml-dev
+Delete
+Turn off
+Details
+Edit details
+Workgroup name
+is459-aml-dev
+Description
+IS459 AML development summaries. Private S3 results and bounded scans.
+Query engine version
+Athena engine version 3
+Workgroup state
+Turned on
+Authentication
+AWS Identity and Access Management (IAM)
+Created on
+2026-10-26T16:29:11.353+08:00
+Query engine version status
+Manual
+Override client side settings
+Turned on
+Queries with requester pays buckets
+Turned off
+Workgroup ARN
+arn:aws:athena:us-east-1:160885259244:workgroup/is459-aml-dev
+Publish metrics to Amazon CloudWatch
+Turned off
+Location of query result
+s3://is459-aml-g2team7-160885259244-us-east-1/query-results/q1/ 
+Encrypt query results
+SSE_S3
+Minimum encryption
+Turned off
+Expected bucket owner
+160885259244
+Assign bucket owner full control over query results
+Turned off
+Execution controls
+Tags
+Execution controls
+ 
+Info
+Edit controls
+
+Set limits and control query execution behavior for the workgroup. Controls apply to all queries in the workgroup unless overridden.
+
+1
+Control Name
+	
+Value
+	
+Unit
+
+
+Data scanned limit
+	
+50
+	
+Megabytes MB
+
+
+Min DPU per query
+	
+-
+	
+-
+
+
+Max DPU per query
+	
+-
+	
+-

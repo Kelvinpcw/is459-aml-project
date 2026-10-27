@@ -1,0 +1,182 @@
+- navigation:
+  - 'img "Account color: Unset"'
+  - navigation "Global":
+    - link "Skip to Main Content":
+      - /url: "#c"
+    - link "AWS Console Home":
+      - /url: https://160885259244-oguqcgmi.us-east-1.console.aws.amazon.com/console/home?region=us-east-1
+    - button "Amazon Q":
+    - button "Services":
+    - img "Search":
+    - searchbox
+    - combobox "Search"
+    - button "Ask Amazon Q":
+    - generic: "[Option+S]"
+    - status
+    - link "CloudShell":
+      - /url: https://160885259244-oguqcgmi.us-east-1.console.aws.amazon.com/cloudshell/home?region=us-east-1
+    - button "Notifications (none available)":
+      - img "Notifications":
+    - img "Notifications":
+    - list:
+      - button "Help & support":
+        - img "Support":
+      - button "Settings":
+      - combobox "Regions (Global)":
+        - generic: Global
+      - button "g2team7 @ 1608-8525-9244":
+        - 'generic "Account color: Unset"':
+          - generic: g2_team7admin (160885259244)
+        - generic: g2team7
+  - list
+- navigation "Side navigation":
+  - button "Open side navigation":
+- navigation "Breadcrumbs":
+  - list:
+    - link "IAM":
+      - /url: "#/home"
+      - generic: IAM
+    - link "Roles":
+      - /url: "#/roles"
+      - generic: Roles
+    - link "Create role" [disabled]:
+      - generic: Create role
+  - list:
+    - link:
+      - /url: "#/home"
+      - generic: IAM
+    - link:
+      - /url: "#/roles"
+      - generic: Roles
+    - generic: Create role
+- region "Drawers":
+  - toolbar "Drawers":
+    - button "Open help panel":
+- main:
+  - region "Notifications":
+    - list
+  - form:
+    - navigation "Steps":
+      - list:
+        - separator
+        - generic: Step 1
+        - 'button "Step 1: Select trusted entity"':
+          - generic: Select trusted entity
+        - separator
+        - generic: Step 2
+        - 'button "Step 2: Add permissions"':
+          - generic: Add permissions
+        - separator
+        - generic: Step 3
+        - 'button "Step 3: Name, review, and create"':
+          - generic: Name, review, and create
+    - heading "Name, review, and create" [active] [level=1]:
+      - generic: Name, review, and create
+    - heading "Role details" [level=3]
+    - generic: Role name
+    - generic: Enter a meaningful name to identify this role.
+    - textbox "Role name": AWSGlueServiceRole-is459-aml-q2
+    - generic: Maximum 64 characters. Use alphanumeric and '+=,.@-_' characters.
+    - generic: Description
+    - generic: Add a short explanation for this role.
+    - textbox "Description": Glue-only Q2 label-free development detector. First minute prototype with bounded output and no label access.
+    - generic: "Maximum 1000 characters. Use letters (A-Z and a-z), numbers (0-9), tabs, new lines, or any of the following characters: _+=,. @-/\\[{}]!#$%^*():;\"'`"
+    - 'heading "Step 1: Select trusted entities" [level=2]'
+    - button "Edit trust policy": Edit
+    - heading "Trust policy" [level=3]:
+      - generic: Trust policy
+    - region "Trust policy":
+      - code: "1"
+      - code:
+        - generic: "{"
+      - code: "2"
+      - code:
+        - generic: "\"Version\": \"2012-10-17\","
+      - code: "3"
+      - code:
+        - generic: "\"Statement\": ["
+      - code: "4"
+      - code:
+        - generic: "{"
+      - code: "5"
+      - code:
+        - generic: "\"Effect\": \"Allow\","
+      - code: "6"
+      - code:
+        - generic: "\"Principal\": {"
+      - code: "7"
+      - code:
+        - generic: "\"Service\": \"glue.amazonaws.com\""
+      - code: "8"
+      - code:
+        - generic: "},"
+      - code: "9"
+      - code:
+        - generic: "\"Action\": \"sts:AssumeRole\""
+      - code: "10"
+      - code:
+        - generic: "}"
+      - code: "11"
+      - code:
+        - generic: "]"
+      - code: "12"
+      - code:
+        - generic: "}"
+    - 'heading "Step 2: Add permissions" [level=2]'
+    - button "Edit permissions": Edit
+    - heading "Permissions policy summary" [level=3]
+    - table "Permissions policy summary":
+      - rowgroup:
+        - row "Policy name All links below open in a new tab Type Attached as":
+          - columnheader "Policy name All links below open in a new tab":
+            - button "Policy name All links below open in a new tab":
+              - text: Policy name
+              - img "All links below open in a new tab":
+          - columnheader "Type":
+            - button "Type":
+              - generic: Type
+          - columnheader "Attached as":
+            - button "Attached as":
+              - generic: Attached as
+      - rowgroup:
+        - row "is459-aml-q2-data-access - Opens in a new tab Customer managed Permissions policy":
+          - cell "is459-aml-q2-data-access - Opens in a new tab":
+            - link "is459-aml-q2-data-access - Opens in a new tab":
+              - /url: "#/policies/details/arn%3Aaws%3Aiam%3A%3A160885259244%3Apolicy%2Fis459-aml-q2-data-access"
+              - text: is459-aml-q2-data-access
+          - cell "Customer managed":
+            - generic: Customer managed
+          - cell "Permissions policy":
+            - generic: Permissions policy
+    - 'heading "Step 3: Add tags" [level=2]'
+    - heading "Add tags - optional" [level=3]:
+      - generic: Add tags - optional
+    - button "Info about tags": Info
+    - paragraph: Tags are key-value pairs that you can add to AWS resources to help identify, organize, or search for resources.
+    - generic: No tags associated with the resource.
+    - button "Add new tag"
+    - generic: You can add up to 50 more tags.
+    - button "Cancel"
+    - button "Previous"
+    - button "Create role"
+- contentinfo:
+  - button "CloudShell":
+    - generic: CloudShell
+  - button "Agent Toolkit for AWS":
+    - text: Agent Toolkit for AWS
+  - button "Feedback"
+  - button "Console Mobile App":
+    - generic: Console Mobile App
+  - generic: © 2026, Amazon Web Services, Inc. or its affiliates.
+  - list:
+    - link "Privacy":
+      - /url: https://aws.amazon.com/privacy/
+    - link "Terms":
+      - /url: https://aws.amazon.com/terms/
+    - button "Cookie preferences"
+- generic: exiting highlight
+- generic: 2 diagnostic messages in the gutter.
+- generic: You can add up to 50 more tags.
+- generic: exiting highlight
+- generic: 1 diagnostic message in the gutter.
+- generic: You can add up to 50 more tags.

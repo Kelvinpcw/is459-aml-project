@@ -1,0 +1,37 @@
+{
+  "Name": "is459-aml-evaluation-dev",
+  "Description": "Isolated Q2 development evaluator. Full input reconciliation, bounded first-minute scoring, no holdout-performance claim.",
+  "Role": "arn:aws:iam::160885259244:role/AWSGlueServiceRole-is459-aml-evaluation",
+  "Command": {
+    "Name": "glueetl",
+    "ScriptLocation": "s3://is459-aml-g2team7-160885259244-us-east-1/scripts/evaluation/evaluate_q2-v1.py",
+    "PythonVersion": "3"
+  },
+  "GlueVersion": "5.1",
+  "WorkerType": "G.1X",
+  "NumberOfWorkers": 2,
+  "ExecutionClass": "STANDARD",
+  "ExecutionProperty": {
+    "MaxConcurrentRuns": 1
+  },
+  "JobRunQueuingEnabled": false,
+  "MaxRetries": 0,
+  "Timeout": 15,
+  "DefaultArguments": {
+    "--job-language": "python",
+    "--job-bookmark-option": "job-bookmark-disable",
+    "--enable-metrics": "false",
+    "--enable-observability-metrics": "false",
+    "--enable-job-insights": "false",
+    "--enable-spark-ui": "false",
+    "--output-root": "s3://is459-aml-g2team7-160885259244-us-east-1",
+    "--custom-logGroup-prefix": "/is459/aml/evaluation",
+    "--TempDir": "s3://is459-aml-g2team7-160885259244-us-east-1/temporary/evaluation/",
+    "--input-manifest": "s3://is459-aml-g2team7-160885259244-us-east-1/manifests/evaluator-inputs/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/analysis_id=q2-dev-20220901-m00-v1/manifest.json",
+    "--evaluation-id": "eval-dev-20220901-m00-v1"
+  },
+  "Tags": {
+    "Project": "is459-aml",
+    "Environment": "development"
+  }
+}

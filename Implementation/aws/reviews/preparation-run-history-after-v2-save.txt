@@ -1,0 +1,300 @@
+- navigation:
+  - 'img "Account color: Unset"'
+  - navigation "Global":
+    - link "Skip to Main Content":
+      - /url: "#c"
+    - link "AWS Console Home":
+      - /url: https://160885259244-oguqcgmi.us-east-1.console.aws.amazon.com/console/home?region=us-east-1
+    - button "Amazon Q":
+    - button "Services":
+    - img "Search":
+    - searchbox
+    - combobox "Search"
+    - button "Ask Amazon Q":
+    - generic: "[Option+S]"
+    - status
+    - link "CloudShell":
+      - /url: https://160885259244-oguqcgmi.us-east-1.console.aws.amazon.com/cloudshell/home?region=us-east-1
+    - button "Notifications (none available)":
+      - img "Notifications":
+    - img "Notifications":
+    - list:
+      - button "Help & support":
+        - img "Support":
+      - button "Settings":
+      - combobox "Regions (United States (N. Virginia))":
+        - generic: United States (N. Virginia)
+      - button "g2team7 @ 1608-8525-9244":
+        - 'generic "Account color: Unset"':
+          - generic: g2_team7admin (160885259244)
+        - generic: g2team7
+  - list
+- region "Notifications alt+T":
+  - list
+- navigation "Side navigation":
+  - button "Open side navigation":
+- region "Drawers":
+  - toolbar "Drawers":
+    - button "Open help panel":
+- main:
+  - list "Notifications":
+    - group "Info AWS now provides personalized help through Amazon Q Click Q help to receive personalized guidance for console tasks through Q Chat. To deactivate, click Deactivate Q help Opens in a new tab to access your console settings. Once deactivated, you'll receive static help content when available.":
+      - img "Info":
+      - generic: AWS now provides personalized help through Amazon Q
+      - text: Click Q help to receive personalized guidance for console tasks through Q Chat. To deactivate, click
+      - link "Deactivate Q help Opens in a new tab":
+        - /url: https://us-east-1.console.aws.amazon.com/settings/settings_management/edit?region=us-east-1
+        - text: Deactivate Q help
+        - img "Opens in a new tab":
+      - text: to access your console settings. Once deactivated, you'll receive static help content when available.
+    - button "Launch Q help"
+    - button "Dismiss":
+  - heading "is459-aml-prepare-dev" [level=2]
+  - generic: Last modified on 10/26/2026, 10:06:31 AM
+  - button "Actions":
+    - text: Actions
+  - button "Save"
+  - button "Run"
+  - tablist:
+    - tab "Script":
+      - generic: Script
+    - tab "Job details":
+      - generic: Job details
+    - tab "Runs" [selected]:
+      - generic: Runs
+    - tab "Data quality":
+      - generic: Data quality
+    - tab "Schedules":
+      - generic: Schedules
+    - tab "Version Control":
+      - generic: Version Control
+  - tabpanel "Runs":
+    - heading "Job runs (1/1 )" [level=2]:
+      - text: Job runs
+      - heading "(1/1 )" [level=2]:
+        - text: (1/1
+        - text: )
+    - button "More information for 'Job runs' (shows in sidebar).":
+      - generic: Q help
+    - text: Last updated (UTC)
+    - text: October 26, 2026 at 02:05:18
+    - button "Refresh job runs" [disabled]
+    - button "View details"
+    - button "Stop job run for job is459-aml-prepare-dev with ID jr_ab63943d9cb2bfe3f8e7b96be19b04f1542190619123946ae313ef7d1a2f872d" [disabled]: Stop job run
+    - button "Automatically debug is459-aml-prepare-dev with ID jr_ab63943d9cb2bfe3f8e7b96be19b04f1542190619123946ae313ef7d1a2f872d" [disabled]:
+      - text: Troubleshoot with AI
+    - toolbar "Default segmented control":
+      - button "Table View" [pressed]:
+        - generic: Table View
+      - button "Card View":
+        - generic: Card View
+    - combobox "Filter job runs by property"
+    - list:
+      - button "Previous page" [disabled]:
+      - button "Page 1 of all pages": "1"
+      - button "Next page" [disabled]:
+    - button "Preferences":
+    - table:
+      - rowgroup:
+        - row:
+          - columnheader
+          - columnheader:
+            - button:
+              - generic: Run status
+            - button
+            - slider
+          - columnheader:
+            - button:
+              - generic: Retries
+            - button
+            - slider
+          - columnheader:
+            - button:
+              - generic: Start time (Local)
+            - button
+            - slider
+          - columnheader:
+            - button:
+              - generic: End time (Local)
+            - button
+            - slider
+          - columnheader:
+            - button:
+              - generic: Duration
+            - button
+            - slider
+          - columnheader:
+            - button:
+              - generic: Capacity (DPUs)
+            - button
+            - slider
+          - columnheader:
+            - button:
+              - generic: Worker type
+            - button
+            - slider
+          - columnheader:
+            - button:
+              - generic: Glue version
+            - button
+            - slider
+    - table "Job runs (1/1 )":
+      - rowgroup:
+        - row "Run status Retries Start time (Local) End time (Local) Duration Capacity (DPUs) Worker type Glue version":
+          - columnheader
+          - columnheader "Run status":
+            - button "Run status":
+              - generic: Run status
+            - button "Run status"
+            - slider
+          - columnheader "Retries":
+            - button "Retries":
+              - generic: Retries
+            - button "Retries"
+            - slider
+          - columnheader "Start time (Local)":
+            - button "Start time (Local)":
+              - generic: Start time (Local)
+            - button "Start time (Local)"
+            - slider
+          - columnheader "End time (Local)":
+            - button "End time (Local)":
+              - generic: End time (Local)
+            - button "End time (Local)"
+            - slider
+          - columnheader "Duration":
+            - button "Duration":
+              - generic: Duration
+            - button "Duration"
+            - slider
+          - columnheader "Capacity (DPUs)":
+            - button "Capacity (DPUs)":
+              - generic: Capacity (DPUs)
+            - button "Capacity (DPUs)"
+            - slider
+          - columnheader "Worker type":
+            - button "Worker type":
+              - generic: Worker type
+            - button "Worker type"
+            - slider
+          - columnheader "Glue version":
+            - button "Glue version":
+              - generic: Glue version
+            - button "Glue version"
+            - slider
+      - rowgroup:
+        - row "is459-aml-prepare-dev run started on Mon Oct 26 2026 03:03:35 GMT+0800 (Singapore Standard Time) (Run jr_ab63943d9cb2bfe3f8e7b96be19b04f1542190619123946ae313ef7d1a2f872d) Succeeded 0 10/26/2026 03:03:35 10/26/2026 03:09:14 5 m 30 s 2 DPUs G.1X 5.1":
+          - cell "is459-aml-prepare-dev run started on Mon Oct 26 2026 03:03:35 GMT+0800 (Singapore Standard Time) (Run jr_ab63943d9cb2bfe3f8e7b96be19b04f1542190619123946ae313ef7d1a2f872d)":
+            - generic "is459-aml-prepare-dev run started on Mon Oct 26 2026 03:03:35 GMT+0800 (Singapore Standard Time) (Run jr_ab63943d9cb2bfe3f8e7b96be19b04f1542190619123946ae313ef7d1a2f872d)":
+              - radio "is459-aml-prepare-dev run started on Mon Oct 26 2026 03:03:35 GMT+0800 (Singapore Standard Time) (Run jr_ab63943d9cb2bfe3f8e7b96be19b04f1542190619123946ae313ef7d1a2f872d)" [checked]
+          - cell "Succeeded":
+            - text: Succeeded
+          - cell "0":
+            - generic: "0"
+          - cell "10/26/2026 03:03:35":
+            - generic: 10/26/2026 03:03:35
+          - cell "10/26/2026 03:09:14":
+            - generic: 10/26/2026 03:09:14
+          - cell "5 m 30 s":
+            - generic: 5 m 30 s
+          - cell "2 DPUs":
+            - generic: 2 DPUs
+          - cell "G.1X":
+            - generic: G.1X
+          - cell "5.1":
+            - generic: "5.1"
+  - separator:
+  - button "Restore bottom panel":
+  - button "Maximize bottom panel":
+  - tablist:
+    - tab "Run details" [selected]:
+      - generic: Run details
+    - tab "Input arguments (11)":
+      - generic: Input arguments (11)
+    - tab "Logs":
+      - generic: Logs
+    - tab "Run insights":
+      - generic: Run insights
+    - tab "Metrics":
+      - generic: Metrics
+    - tab "Troubleshooting analysis":
+      - generic: Troubleshooting analysis
+    - tab "Spark UI":
+      - generic: Spark UI
+  - tabpanel "Run details":
+    - term: Job name
+    - definition:
+      - link "is459-aml-prepare-dev":
+        - /url: "#/editor/job/is459-aml-prepare-dev/details"
+    - term: Start time (Local)
+    - definition: 10/26/2026 03:03:35
+    - term: DPU Hours
+    - definition: "0.183333"
+    - term: Glue version
+    - definition: "5.1"
+    - term: Last modified on (Local)
+    - definition: 10/26/2026 03:09:14
+    - term: Id
+    - definition:
+      - link "jr_ab63943d9cb2bfe3f8e7b96be19b04f1542190619123946ae313ef7d1a2f872d":
+        - /url: "#/job/is459-aml-prepare-dev/run/jr_ab63943d9cb2bfe3f8e7b96be19b04f1542190619123946ae313ef7d1a2f872d"
+      - button "Copy job run ID":
+    - term: End time (Local)
+    - definition: 10/26/2026 03:09:14
+    - term: Worker type
+    - definition: G.1X
+    - term: Log group name
+    - definition: /is459/aml/preparation
+    - term: Run status
+    - definition:
+      - text: Succeeded
+    - term: Start-up time
+    - definition:
+      - generic: 8 seconds
+    - term: Max capacity
+    - definition: 2 DPUs
+    - term: Number of workers
+    - definition: "2"
+    - term: Retry attempt number
+    - definition: Initial run
+    - term: Execution time
+    - definition:
+      - generic: 5 minutes 30 seconds
+    - term: Execution class
+    - definition: Standard
+    - term: Timeout
+    - definition: 15 minutes
+    - term: Trigger name
+    - definition: "-"
+    - term: Security configuration
+    - definition: "-"
+    - term: Cloudwatch logs
+    - definition:
+      - list:
+        - link "Output logs (opens in new tab)":
+          - /url: https://160885259244-oguqcgmi.us-east-1.console.aws.amazon.com/cloudwatch/home#logStream:group=/is459/aml/preparation/output;prefix=jr_ab63943d9cb2bfe3f8e7b96be19b04f1542190619123946ae313ef7d1a2f872d;streamFilter=typeLogStreamPrefix
+          - text: Output logs
+          - img "(opens in new tab)":
+        - link "Error logs (opens in new tab)":
+          - /url: https://160885259244-oguqcgmi.us-east-1.console.aws.amazon.com/cloudwatch/home#logStream:group=/is459/aml/preparation/error;prefix=jr_ab63943d9cb2bfe3f8e7b96be19b04f1542190619123946ae313ef7d1a2f872d;streamFilter=typeLogStreamPrefix
+          - text: Error logs
+          - img "(opens in new tab)":
+    - term: Usage profile
+    - definition: "-"
+    - term: Job run queuing
+    - definition: "False"
+- contentinfo:
+  - button "CloudShell":
+    - generic: CloudShell
+  - button "Agent Toolkit for AWS":
+    - text: Agent Toolkit for AWS
+  - button "Feedback"
+  - button "Console Mobile App":
+    - generic: Console Mobile App
+  - generic: © 2026, Amazon Web Services, Inc. or its affiliates.
+  - list:
+    - link "Privacy":
+      - /url: https://aws.amazon.com/privacy/
+    - link "Terms":
+      - /url: https://aws.amazon.com/terms/
+    - button "Cookie preferences"

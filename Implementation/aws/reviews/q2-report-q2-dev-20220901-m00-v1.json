@@ -1,0 +1,146 @@
+{
+  "schema_version": 1,
+  "stage": "q2",
+  "status": "PASSED",
+  "config": {
+    "dataset_version": "ibm-hi-medium-b1b99c68b765580f",
+    "run_id": "dev-20220901-v2",
+    "analysis_id": "q2-dev-20220901-m00-v1",
+    "window_start": "2022-09-01T00:00:00",
+    "window_end": "2022-09-01T00:01:00",
+    "snapshot_cutoff": "2022-09-01T00:01:00",
+    "min_counterparties": 5,
+    "max_window_rows": 50000,
+    "max_edges": 20000,
+    "max_cycle_expansions": 250000,
+    "max_cases": 500,
+    "max_case_nodes": 1000,
+    "max_case_evidence": 2000,
+    "max_total_evidence": 100000,
+    "max_bundle_bytes": 2000000
+  },
+  "input_manifest": "s3://is459-aml-g2team7-160885259244-us-east-1/manifests/detector-inputs/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/manifest.json",
+  "full_prepared_rows": 4465985,
+  "scope": "Bounded development window only; not full-day or full-dataset detection",
+  "statistics": {
+    "scoped_rows": 43681,
+    "outside_window_rows": 0,
+    "after_cutoff_rows": 0,
+    "self_transaction_rows": 31702,
+    "nonself_transaction_rows": 11979,
+    "distinct_nonself_edges": 11760,
+    "observed_nodes": 53557,
+    "unknown_entity_nodes": 0,
+    "nontrivial_scc_count": 0,
+    "cycle_expansions": 0,
+    "case_count": 15,
+    "case_counts_by_pattern": {
+      "fan_out": 15
+    },
+    "case_evidence_rows_including_case_overlap": 840,
+    "complete_for_declared_window": true,
+    "truncated": false
+  },
+  "case_index_schema": {
+    "type": "struct",
+    "fields": [
+      {
+        "name": "dataset_version",
+        "type": "string",
+        "nullable": false,
+        "metadata": {}
+      },
+      {
+        "name": "run_id",
+        "type": "string",
+        "nullable": false,
+        "metadata": {}
+      },
+      {
+        "name": "analysis_id",
+        "type": "string",
+        "nullable": false,
+        "metadata": {}
+      },
+      {
+        "name": "case_id",
+        "type": "string",
+        "nullable": false,
+        "metadata": {}
+      },
+      {
+        "name": "pattern_type",
+        "type": "string",
+        "nullable": false,
+        "metadata": {}
+      },
+      {
+        "name": "bundle_uri",
+        "type": "string",
+        "nullable": false,
+        "metadata": {}
+      },
+      {
+        "name": "participant_count",
+        "type": "integer",
+        "nullable": false,
+        "metadata": {}
+      },
+      {
+        "name": "unique_edge_count",
+        "type": "integer",
+        "nullable": false,
+        "metadata": {}
+      },
+      {
+        "name": "evidence_transaction_count",
+        "type": "integer",
+        "nullable": false,
+        "metadata": {}
+      },
+      {
+        "name": "window_start",
+        "type": "timestamp",
+        "nullable": false,
+        "metadata": {}
+      },
+      {
+        "name": "window_end",
+        "type": "timestamp",
+        "nullable": false,
+        "metadata": {}
+      },
+      {
+        "name": "snapshot_cutoff",
+        "type": "timestamp",
+        "nullable": false,
+        "metadata": {}
+      },
+      {
+        "name": "first_event_time",
+        "type": "timestamp",
+        "nullable": false,
+        "metadata": {}
+      },
+      {
+        "name": "last_event_time",
+        "type": "timestamp",
+        "nullable": false,
+        "metadata": {}
+      },
+      {
+        "name": "window_date",
+        "type": "date",
+        "nullable": false,
+        "metadata": {}
+      }
+    ]
+  },
+  "outputs": {
+    "case_index": "s3://is459-aml-g2team7-160885259244-us-east-1/gold/cases/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/analysis_id=q2-dev-20220901-m00-v1/case_index/",
+    "bundles": "s3://is459-aml-g2team7-160885259244-us-east-1/gold/cases/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/analysis_id=q2-dev-20220901-m00-v1/bundles/"
+  },
+  "detector_received_labels": false,
+  "rule_version": "structural-v1",
+  "finished_at_utc": "2026-10-26T19:47:50.775866Z"
+}

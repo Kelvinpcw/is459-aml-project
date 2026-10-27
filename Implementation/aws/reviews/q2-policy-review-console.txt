@@ -1,0 +1,201 @@
+- navigation:
+  - 'img "Account color: Unset"'
+  - navigation "Global":
+    - link "Skip to Main Content":
+      - /url: "#c"
+    - link "AWS Console Home":
+      - /url: https://160885259244-oguqcgmi.us-east-1.console.aws.amazon.com/console/home?region=us-east-1
+    - button "Amazon Q":
+    - button "Services":
+    - img "Search":
+    - searchbox
+    - combobox "Search"
+    - button "Ask Amazon Q":
+    - generic: "[Option+S]"
+    - status
+    - link "CloudShell":
+      - /url: https://160885259244-oguqcgmi.us-east-1.console.aws.amazon.com/cloudshell/home?region=us-east-1
+    - button "Notifications (none available)":
+      - img "Notifications":
+    - img "Notifications":
+    - list:
+      - button "Help & support":
+        - img "Support":
+      - button "Settings":
+      - combobox "Regions (Global)":
+        - generic: Global
+      - button "g2team7 @ 1608-8525-9244":
+        - 'generic "Account color: Unset"':
+          - generic: g2_team7admin (160885259244)
+        - generic: g2team7
+  - list
+- navigation "Side navigation":
+  - button "Open side navigation":
+- navigation "Breadcrumbs":
+  - list:
+    - link "IAM":
+      - /url: "#/home"
+      - generic: IAM
+    - link "Policies":
+      - /url: "#/policies"
+      - generic: Policies
+    - link "Create policy" [disabled]:
+      - generic: Create policy
+  - list:
+    - link:
+      - /url: "#/home"
+      - generic: IAM
+    - link:
+      - /url: "#/policies"
+      - generic: Policies
+    - generic: Create policy
+- region "Drawers":
+  - toolbar "Drawers":
+    - button "Open help panel":
+- main:
+  - region "Notifications":
+    - list
+  - navigation "Steps":
+    - list:
+      - separator
+      - generic: Step 1
+      - 'button "Step 1: Specify permissions"':
+        - generic: Specify permissions
+      - separator
+      - generic: Step 2
+      - 'button "Step 2: Review and create"':
+        - generic: Review and create
+  - heading "Review and create" [active] [level=1]:
+    - generic: Review and create
+  - button "Info Review and create":
+    - generic: Info
+  - paragraph: Review the permissions, specify details, and tags.
+  - heading "Policy details" [level=2]:
+    - generic: Policy details
+  - generic: Policy name
+  - generic: Enter a meaningful name to identify this policy.
+  - textbox "Policy name": is459-aml-q2-data-access
+  - generic: Maximum 128 characters. Use alphanumeric and '+=,.@-_' characters.
+  - text: Description -
+  - generic: optional
+  - generic: Add a short explanation for this policy.
+  - textbox "Description - optional": Label-free Q2 first-minute prototype. Read v2 facts and exact handoff and code. Write only reviewed Q2 analysis and logs. Deny labels and reports.
+  - generic: Maximum 1,000 characters. Use alphanumeric and '+=,.@-_' characters.
+  - heading "Permissions defined in this policy Info Edit policy permissions Permissions defined in this policy document specify which actions are allowed or denied. To define permissions for an IAM identity (user, user group, or role), attach a policy to it (1)" [level=2]:
+    - heading "Permissions defined in this policy" [level=2]
+    - button "Info Permissions defined in this policy":
+      - generic: Info
+    - button "Edit policy permissions":
+      - generic: Edit
+    - paragraph: Permissions defined in this policy document specify which actions are allowed or denied. To define permissions for an IAM identity (user, user group, or role), attach a policy to it
+    - generic: (1)
+  - searchbox "Search items"
+  - heading "Explicit deny (1 of 478 services)" [level=3]:
+    - generic: Explicit deny (1 of 478 services)
+  - table "Policy services table":
+    - rowgroup:
+      - row "Service Access level Resource Request condition":
+        - columnheader "Service":
+          - button "Service":
+            - generic: Service
+          - button "Service"
+          - slider
+        - columnheader "Access level":
+          - button "Access level":
+            - generic: Access level
+          - button "Access level"
+          - slider
+        - columnheader "Resource":
+          - generic: Resource
+          - button "Resource"
+          - slider
+        - columnheader "Request condition":
+          - generic: Request condition
+          - button "Request condition"
+          - slider
+    - rowgroup:
+      - 'row "S3 Limited: Read Multiple None"':
+        - cell "S3":
+          - button "S3"
+        - 'cell "Limited: Read"':
+          - generic: "Limited: Read"
+        - cell "Multiple":
+          - generic: Multiple
+        - cell "None":
+          - generic: None
+  - heading "Allow (2 of 478 services) Show remaining 476 services (2)" [level=2]:
+    - heading "Allow (2 of 478 services)" [level=3]:
+      - generic: Allow (2 of 478 services)
+    - checkbox "Show remaining 476 services"
+    - generic: Show remaining 476 services
+    - generic: (2)
+  - table "Policy services table":
+    - rowgroup:
+      - row "Service Access level Resource Request condition":
+        - columnheader "Service":
+          - button "Service":
+            - generic: Service
+          - button "Service"
+          - slider
+        - columnheader "Access level":
+          - button "Access level":
+            - generic: Access level
+          - button "Access level"
+          - slider
+        - columnheader "Resource":
+          - generic: Resource
+          - button "Resource"
+          - slider
+        - columnheader "Request condition":
+          - generic: Request condition
+          - button "Request condition"
+          - slider
+    - rowgroup:
+      - 'row "CloudWatch Logs Limited: Write region| string like |us-east-1, LogGroupName| string like |/is459/aml/q2/* None"':
+        - cell "CloudWatch Logs":
+          - button "CloudWatch Logs"
+        - 'cell "Limited: Write"':
+          - generic: "Limited: Write"
+        - cell "region| string like |us-east-1, LogGroupName| string like |/is459/aml/q2/*":
+          - generic: region| string like |us-east-1, LogGroupName| string like |/is459/aml/q2/*
+        - cell "None":
+          - generic: None
+      - row:
+        - cell "S3":
+          - button "S3"
+        - 'cell "Limited: List, Read, Write"':
+          - generic: "Limited: List, Read, Write"
+        - cell "Multiple":
+          - generic: Multiple
+        - cell:
+          - generic: s3:prefix| string like |curated/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/transactions,curated/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/transactions/*,manifests/detector-inputs/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/manifest.json,manifests/detector-inputs/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/manifest.json/*,scripts/q2/q2_detect-v1.py,scripts/q2/q2_detect-v1.py/*,gold/cases/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/analysis_id=q2-dev-20220901-m00-v1,gold/cases/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/analysis_id=q2-dev-20220901-m00-v1/*,quality/q2/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/analysis_id=q2-dev-20220901-m00-v1,quality/q2/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/analysis_id=q2-dev-20220901-m00-v1/*,temporary/q2,temporary/q2/*
+  - heading "Add tags - optional" [level=2]:
+    - generic: Add tags - optional
+  - button "Info about tags": Info
+  - paragraph: Tags are key-value pairs that you can add to AWS resources to help identify, organize, or search for resources.
+  - generic: No tags associated with the resource.
+  - button "Add new tag"
+  - generic: You can add up to 50 more tags.
+  - button "Cancel"
+  - button "Previous"
+  - button "Create policy"
+- contentinfo:
+  - button "CloudShell":
+    - generic: CloudShell
+  - button "Agent Toolkit for AWS":
+    - text: Agent Toolkit for AWS
+  - button "Feedback"
+  - button "Console Mobile App":
+    - generic: Console Mobile App
+  - generic: © 2026, Amazon Web Services, Inc. or its affiliates.
+  - list:
+    - link "Privacy":
+      - /url: https://aws.amazon.com/privacy/
+    - link "Terms":
+      - /url: https://aws.amazon.com/terms/
+    - button "Cookie preferences"
+- generic: exiting highlight
+- generic: 2 diagnostic messages in the gutter.
+- generic: You can add up to 50 more tags.
+- generic: Table is displaying one result
+- generic: Table is displaying results from item number 1 to item number 2, and there are 2 items to view

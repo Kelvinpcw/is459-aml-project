@@ -1,0 +1,73 @@
+{
+  "verified_at_singapore": "2026-10-27T03:55:26.095877+08:00",
+  "account_id": "160885259244",
+  "region": "us-east-1",
+  "job_name": "is459-aml-q2-dev",
+  "run_id": "jr_3b40b2a7f316355a065f2df49bf430c50ca60d4d389bb49f12ba4ee4bfc35687",
+  "run_status": "SUCCEEDED",
+  "start_time_singapore": "2026-10-27 03:45:28",
+  "end_time_singapore": "2026-10-27 03:48:02",
+  "execution_seconds": 145,
+  "startup_seconds": 9,
+  "dpu_hours": 0.080556,
+  "active_project_compute": false,
+  "active_project_queries": false,
+  "paused": true,
+  "role": "AWSGlueServiceRole-is459-aml-q2",
+  "role_trust": "glue.amazonaws.com only",
+  "attached_policy_count": 1,
+  "policy": "is459-aml-q2-data-access",
+  "script": "scripts/q2/q2_detect-v1.py",
+  "quality_report_status": "PASSED",
+  "all_15_bundles_match": true,
+  "case_index_all_fields_match": true,
+  "athena_queries": [
+    {
+      "label": "create_q2_case_index_table",
+      "query_id": "4be2b02b-1167-4d58-9730-71a0f997bd7c",
+      "status": "SUCCEEDED"
+    },
+    {
+      "label": "add_q2_case_index_partition",
+      "query_id": "1b1c5ad1-8a57-4cb5-add7-f7c0a6257a85",
+      "status": "SUCCEEDED"
+    },
+    {
+      "label": "read_complete_q2_case_index",
+      "query_id": "ec566c8f-4f0a-4011-aab2-c12a5a5d72c2",
+      "status": "SUCCEEDED",
+      "displayed_data_scanned": "5.75 KB"
+    }
+  ],
+  "next_action": "Resume unsaved evaluator job configuration, save/verify and run once using existing unconsumed specific approval.",
+  "audit_scope": "Known project resources only; not a fresh account-wide inventory/billing audit.",
+  "paused_at_singapore": "2026-10-27T15:47:03.623179+08:00",
+  "pause_reason": "User requested checkpoint before paid evaluator run.",
+  "evaluation_policy_review": {
+    "verified_at_singapore": "2026-10-27T15:33:59.595655+08:00",
+    "account_id": "160885259244",
+    "policy": "is459-aml-evaluation-data-access",
+    "linter_security": 0,
+    "linter_errors": 0,
+    "linter_warnings": 0,
+    "linter_suggestions": 0,
+    "source_matches_local": true,
+    "created": false,
+    "proposed_role": "AWSGlueServiceRole-is459-aml-evaluation",
+    "run_started": false
+  },
+  "evaluation_deployment": {
+    "verified_at_singapore": "2026-10-27T15:47:03.623179+08:00",
+    "account_id": "160885259244",
+    "policy_created": true,
+    "role_created": true,
+    "role_trust": "glue.amazonaws.com only",
+    "attached_policy_count": 1,
+    "manifest_upload": "Succeeded",
+    "annotations_upload": "Succeeded,2.2MB displayed",
+    "job_saved": false,
+    "script_editor_matches_frozen": true,
+    "run_started": false,
+    "new_compute_started_this_turn": false
+  }
+}

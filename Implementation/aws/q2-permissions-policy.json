@@ -1,0 +1,84 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "LocateProjectBucket",
+      "Effect": "Allow",
+      "Action": "s3:GetBucketLocation",
+      "Resource": "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1"
+    },
+    {
+      "Sid": "ListOnlyQ2InputsAndAttempt",
+      "Effect": "Allow",
+      "Action": "s3:ListBucket",
+      "Resource": "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1",
+      "Condition": {
+        "StringLike": {
+          "s3:prefix": [
+            "curated/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/transactions",
+            "curated/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/transactions/*",
+            "manifests/detector-inputs/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/manifest.json",
+            "manifests/detector-inputs/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/manifest.json/*",
+            "scripts/q2/q2_detect-v1.py",
+            "scripts/q2/q2_detect-v1.py/*",
+            "gold/cases/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/analysis_id=q2-dev-20220901-m00-v1",
+            "gold/cases/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/analysis_id=q2-dev-20220901-m00-v1/*",
+            "quality/q2/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/analysis_id=q2-dev-20220901-m00-v1",
+            "quality/q2/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/analysis_id=q2-dev-20220901-m00-v1/*",
+            "temporary/q2",
+            "temporary/q2/*"
+          ]
+        }
+      }
+    },
+    {
+      "Sid": "ReadLabelFreeFactsManifestAndCode",
+      "Effect": "Allow",
+      "Action": "s3:GetObject",
+      "Resource": [
+        "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/curated/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/transactions",
+        "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/curated/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/transactions/*",
+        "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/manifests/detector-inputs/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/manifest.json",
+        "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/scripts/q2/q2_detect-v1.py"
+      ]
+    },
+    {
+      "Sid": "ManageOnlyQ2AttemptAndTemp",
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetObject",
+        "s3:PutObject",
+        "s3:DeleteObject",
+        "s3:AbortMultipartUpload"
+      ],
+      "Resource": [
+        "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/gold/cases/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/analysis_id=q2-dev-20220901-m00-v1/*",
+        "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/quality/q2/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/analysis_id=q2-dev-20220901-m00-v1/*",
+        "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/temporary/q2/*"
+      ]
+    },
+    {
+      "Sid": "DenyReferenceAndLabelledReports",
+      "Effect": "Deny",
+      "Action": "s3:GetObject*",
+      "Resource": [
+        "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/raw/*",
+        "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/references/*",
+        "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/quality/preparation/*",
+        "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/quality/q1/*",
+        "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/gold/risk/*",
+        "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/evaluation/*"
+      ]
+    },
+    {
+      "Sid": "WriteQ2Logs",
+      "Effect": "Allow",
+      "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+      ],
+      "Resource": "arn:aws:logs:us-east-1:160885259244:log-group:/is459/aml/q2/*"
+    }
+  ]
+}

@@ -1,0 +1,430 @@
+- navigation:
+  - 'img "Account color: Unset"'
+  - navigation "Global":
+    - link "Skip to Main Content":
+      - /url: "#c"
+    - link "AWS Console Home":
+      - /url: https://160885259244-oguqcgmi.us-east-1.console.aws.amazon.com/console/home?region=us-east-1
+    - button "Amazon Q":
+    - button "Services":
+    - img "Search":
+    - searchbox
+    - combobox "Search"
+    - button "Ask Amazon Q":
+    - generic: "[Option+S]"
+    - status
+    - link "CloudShell":
+      - /url: https://160885259244-oguqcgmi.us-east-1.console.aws.amazon.com/cloudshell/home?region=us-east-1
+    - button "Notifications (none available)":
+      - img "Notifications":
+    - img "Notifications":
+    - list:
+      - button "Help & support":
+        - img "Support":
+      - button "Settings":
+      - combobox "Regions (United States (N. Virginia))":
+        - generic: United States (N. Virginia)
+      - button "g2team7 @ 1608-8525-9244":
+        - 'generic "Account color: Unset"':
+          - generic: g2_team7admin (160885259244)
+        - generic: g2team7
+  - list
+- region "Notifications alt+T":
+  - list
+- button "Open side navigation" [expanded]:
+- region "Drawers":
+  - toolbar "Drawers":
+    - button "Open help panel":
+- navigation "Side navigation":
+  - button "Close side navigation":
+  - heading "AWS Glue" [level=2]:
+    - link "AWS Glue":
+      - /url: https://160885259244-oguqcgmi.us-east-1.console.aws.amazon.com/glue/home?region=us-east-1#/v2/service-landing
+      - generic: AWS Glue
+  - list:
+    - link "Getting started":
+      - /url: https://160885259244-oguqcgmi.us-east-1.console.aws.amazon.com/glue/home?region=us-east-1#/v2/getting-started
+      - generic: Getting started
+    - link "SageMaker Unified StudioOpens in a new tab":
+      - /url: https://160885259244-oguqcgmi.us-east-1.console.aws.amazon.com/datazone/home?region=us-east-1#/create-domain
+      - text: SageMaker Unified Studio
+      - img "Opens in a new tab":
+    - link "ETL jobs":
+      - /url: https://160885259244-oguqcgmi.us-east-1.console.aws.amazon.com/gluestudio/home?region=us-east-1#/jobs
+      - generic: ETL jobs
+    - list:
+      - link "Visual ETL":
+        - /url: https://160885259244-oguqcgmi.us-east-1.console.aws.amazon.com/gluestudio/home?region=us-east-1#/jobs?selectedInterface=source_and_target
+        - generic: Visual ETL
+      - link "Notebooks":
+        - /url: https://160885259244-oguqcgmi.us-east-1.console.aws.amazon.com/gluestudio/home?region=us-east-1#/jobs?selectedInterface=notebook
+        - generic: Notebooks
+      - link "Job run monitoring":
+        - /url: https://160885259244-oguqcgmi.us-east-1.console.aws.amazon.com/gluestudio/home?region=us-east-1#/monitoring
+        - generic: Job run monitoring
+    - link "Data Catalog tables":
+      - /url: https://160885259244-oguqcgmi.us-east-1.console.aws.amazon.com/glue/home?region=us-east-1#/v2/data-catalog/tables
+      - generic: Data Catalog tables
+    - link "Data connections":
+      - /url: https://160885259244-oguqcgmi.us-east-1.console.aws.amazon.com/gluestudio/home?region=us-east-1#/connectors
+      - generic: Data connections
+    - link "Workflows (orchestration)":
+      - /url: https://160885259244-oguqcgmi.us-east-1.console.aws.amazon.com/glue/home?region=us-east-1#/v2/etl-configuration/workflows
+      - generic: Workflows (orchestration)
+    - link "Zero-ETL integrations":
+      - /url: https://160885259244-oguqcgmi.us-east-1.console.aws.amazon.com/gluestudio/home?region=us-east-1#/zero-etl-integrations
+      - generic: Zero-ETL integrations
+    - button "Data Catalog":
+      - generic: Data Catalog
+    - button "Data Integration and ETL":
+      - generic: Data Integration and ETL
+  - separator
+  - list:
+    - link "What's NewWhat's new (opens in new tab)":
+      - /url: https://aws.amazon.com/about-aws/whats-new/analytics/?whats-new-content.sort-by=item.additionalFields.postDateTime&whats-new-content.sort-order=desc&awsf.whats-new-products=general-products%23aws-glue
+      - text: What's New
+      - img "What's new (opens in new tab)":
+    - link "DocumentationDocumentation (opens in new tab)":
+      - /url: https://docs.aws.amazon.com/glue/index.html
+      - text: Documentation
+      - img "Documentation (opens in new tab)":
+    - link "AWS Marketplace":
+      - /url: https://160885259244-oguqcgmi.us-east-1.console.aws.amazon.com/gluestudio/home?region=us-east-1#/marketplace
+      - generic: AWS Marketplace
+  - checkbox "Enable compact mode" [checked]
+  - generic: Enable compact mode
+  - checkbox "Enable new navigation" [checked]
+  - generic: Enable new navigation
+- main:
+  - status:
+    - heading "Notifications" [level=2]
+    - generic "Error":
+      - img "Error":
+    - text: "0"
+    - generic "Warning":
+      - img "Warning":
+    - text: "0"
+    - generic "Success":
+      - img "Success":
+    - text: "1"
+    - generic "Info":
+      - img "Info":
+    - text: "1"
+    - generic "In progress":
+      - img "In progress":
+    - text: "0"
+  - button "All notifications":
+  - list "Notifications":
+    - group "Success Successfully updated job Successfully updated job is459-aml-q2-dev. To run the job choose the Run Job button.":
+      - img "Success":
+      - generic: Successfully updated job
+      - text: Successfully updated job is459-aml-q2-dev. To run the job choose the
+      - strong: Run
+      - text: Job button.
+    - button "Dismiss successfully updated job notification":
+  - heading "is459-aml-q2-dev" [level=2]
+  - generic: Last modified on 10/27/2026, 3:44:57 AM
+  - button "Actions":
+    - text: Actions
+  - button "Save" [active]
+  - button "Run"
+  - tablist:
+    - tab "Script":
+      - generic: Script
+    - tab "Job details" [selected]:
+      - generic: Job details
+    - tab "Runs":
+      - generic: Runs
+    - tab "Data quality":
+      - generic: Data quality
+    - tab "Schedules":
+      - generic: Schedules
+    - tab "Version Control":
+      - generic: Version Control
+  - tabpanel "Job details":
+    - heading "Basic properties" [level=2]
+    - button "More information for 'Basic properties' (shows in sidebar).":
+      - generic: Q help
+    - generic: Name
+    - paragraph: is459-aml-q2-dev
+    - generic: Description - optional
+    - textbox "Description - optional": IS459 AML Q2 label-free structural leads. One approved first-minute development test with explicit fail-on-limit guards.
+    - generic: Descriptions can be up to 2048 characters long.
+    - heading "IAM role" [level=4]
+    - generic: To access other AWS services and resources your Glue ETL job needs an IAM role. Choose a role with the right permissions for your Glue ETL job.
+    - button "AWSGlueServiceRole-is459-aml-q2":
+      - generic: AWSGlueServiceRole-is459-aml-q2
+    - button "Refresh roles":
+    - button "Create new role"
+    - button "Edit role"
+    - button "View role details in IAM, Opens in a new tab":
+      - text: View role details in IAM
+    - generic: Type
+    - generic: The type of ETL job. This is set automatically based on the types of data sources you have selected.
+    - button "Type ETL job type selector Spark":
+      - generic "Spark":
+        - generic: Spark
+    - text: Glue version
+    - button "More information for 'Glue version' (shows in sidebar).":
+      - generic: Q help
+    - button "Glue version Job version selector Glue 5.1 - Supports spark 3.5, Scala 2, Python 3":
+      - generic "Glue 5.1 - Supports spark 3.5, Scala 2, Python 3":
+        - generic: Glue 5.1 - Supports spark 3.5, Scala 2, Python 3
+    - generic: Language
+    - button "Language Language selector Python 3":
+      - generic "Python 3":
+        - generic: Python 3
+    - generic: Worker type
+    - generic: Set the type of predefined worker that is allowed when a job runs.
+    - button "Worker type Worker type selector G 1X (4vCPU and 16GB RAM)":
+      - generic "G 1X":
+        - generic: G 1X
+        - generic: (4vCPU and 16GB RAM)
+    - generic: Automatically scale the number of workers
+    - checkbox "Automatically scale the number of workers"
+    - generic: AWS Glue will optimize costs and resource usage by dynamically scaling the number of workers up and down throughout the job run. Requires Glue 3.0 or later.
+    - generic: Requested number of workers
+    - generic: The number of workers you want AWS Glue to allocate to this job.
+    - textbox "Requested number of workers": "2"
+    - generic: Generate job insights
+    - checkbox "Generate job insights"
+    - generic: AWS Glue will analyze your job runs and provide insights on how to optimize your jobs and the reasons for job failures.
+    - generic: Generate lineage events
+    - checkbox "Generate lineage events"
+    - generic: AWS Glue will capture Spark lineage events from your job runs and send them to Amazon DataZone or next generation of Amazon Sagemaker to visualize the table and column lineage.
+    - text: Job bookmark
+    - button "More information for 'Job bookmark' (shows in sidebar).":
+      - generic: Q help
+    - generic: Specifies how AWS Glue processes job bookmark when the job runs. It can remember previously processed data (Enable), update state information (Pause), or ignore state information (Disable).
+    - button "Job bookmark Job bookmark selector Disable":
+      - generic "Disable":
+        - generic: Disable
+    - generic: Job Run Queuing
+    - checkbox "Job Run Queuing"
+    - generic: Enable job runs to be queued to run later when they cannot run immediately due to service quotas
+    - text: Flex execution
+    - button "More information for 'Flex execution' (shows in sidebar).":
+      - generic: Q help
+    - checkbox "Flex execution"
+    - generic: Reduce costs by running this job on spare capacity. Ideal for non-urgent workloads that don't require fast jobs start times or consistent execution times. See recommendations, limitations and pricing in the help panel by clicking on the Info link above.
+    - generic: Number of retries
+    - textbox "Number of retries": "0"
+    - generic: Job timeout (minutes)
+    - generic: Set the maximum execution time. The default is 480 minutes (8 hours) for a Glue 5.0 ETL job and 2,880 minutes (48 hours) for Glue 4.0 and below. No job timeout is defaulted for a Glue Streaming job.
+    - textbox "Job timeout (minutes)": "15"
+    - generic: Usage profile
+    - generic: "-"
+    - button "Advanced properties" [expanded]:
+      - generic: Advanced properties
+    - group "Advanced properties":
+      - generic: Script filename
+      - textbox "Input field": q2_detect-v1.py
+      - generic: Script path
+      - generic: S3 location of the script. Path must be in the form s3://bucket/prefix/path/. It must end with a slash (/) and not include any files.
+      - group "Script path":
+        - searchbox "Script path": s3://is459-aml-g2team7-160885259244-us-east-1/scripts/q2/
+        - button "Clear S3 URL":
+        - link "View (opens in a new tab)":
+          - /url: https://160885259244-oguqcgmi.us-east-1.console.aws.amazon.com/s3/buckets/is459-aml-g2team7-160885259244-us-east-1?prefix=scripts/q2/&region=us-east-1
+          - text: View
+        - button "Browse S3"
+      - text: Job metrics
+      - button "More information for 'Job metrics' (shows in sidebar).":
+        - generic: Q help
+      - checkbox "Job metrics"
+      - generic: Enable the creation of CloudWatch metrics when this job runs.
+      - text: Job observability metrics
+      - button "More information for 'Job observability metrics' (shows in sidebar).":
+        - generic: Q help
+      - checkbox "Job observability metrics"
+      - generic: Enable the creation of additional observability CloudWatch metrics when this job runs.
+      - text: Continuous logging
+      - button "More information for 'Continuous logging' (shows in sidebar).":
+        - generic: Q help
+      - checkbox "Continuous logging"
+      - generic: Enable logs in CloudWatch.
+      - text: Spark UI
+      - button "More information for 'Spark UI' (shows in sidebar).":
+        - generic: Q help
+      - checkbox "Spark UI"
+      - generic: Write Spark UI logs to Amazon S3.
+      - generic: Maximum concurrency
+      - generic: Sets the maximum number of concurrent runs that are allowed for this job. An error is returned when this threshold is reached.
+      - textbox "Maximum concurrency": "1"
+      - generic: Temporary path
+      - generic: Working directory. Path must be in the form s3://bucket/prefix/path/. It must end with a slash (/) and not include any files.
+      - group "Temporary path":
+        - searchbox "Temporary path": s3://is459-aml-g2team7-160885259244-us-east-1/temporary/q2/
+        - button "Clear S3 URL":
+        - link "View (opens in a new tab)":
+          - /url: https://160885259244-oguqcgmi.us-east-1.console.aws.amazon.com/s3/buckets/is459-aml-g2team7-160885259244-us-east-1?prefix=temporary/q2/&region=us-east-1
+          - text: View
+        - button "Browse S3"
+      - text: Delay notification threshold (minutes)
+      - button "More information for 'Delay notification threshold (minutes)' (shows in sidebar).":
+        - generic: Q help
+      - generic: Set a delay threshold in minutes. If the job runs longer than the specified time Glue will send a delay notification via CloudWatch.
+      - textbox "Delay notification threshold (minutes)"
+      - generic: Security configuration
+      - generic: Defines the encryption options of the ETL job. The security configuration specifies how the script is encrypted using server-side encryption with AWS KMS-managed keys (SSE-KMS) or Amazon S3-managed encryption keys (SSE-S3).
+      - button "Security configuration Security configuration selector None":
+        - generic "None":
+          - generic: None
+      - generic: Server-side encryption
+      - checkbox "Server-side encryption" [checked]
+      - text: Select this option to enable S3-SSE encryption on both your data target and any data that is written to an S3 temporary directory. Ignored if a security configuration is specified
+      - link "Learn more on using server side encryption (opens in new tab)":
+        - /url: https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingServerSideEncryption.html
+        - generic: Learn More
+        - img "Opens in a new tab":
+      - generic: Use Glue data catalog as the Hive metastore
+      - checkbox "Use Glue data catalog as the Hive metastore"
+      - generic: To use Glue data catalog as the Hive metastore, the IAM role used for the job should have glue:CreateDatabase permissions. A database called "default" is created in the Glue data catalog if it does not exist.
+      - heading "Connections" [level=3]:
+        - heading "Connections" [level=3]
+      - text: Additional network connections
+      - button "More information for 'Additional network connections' (shows in sidebar).":
+        - generic: Q help
+      - text: Choose a VPC configuration to access Amazon S3 data sources located in your virtual private cloud (VPC). You can create and manage Network connections in
+      - link "AWS Glue. (opens in new tab)":
+        - /url: https://console.aws.amazon.com/glue/home#catalog:tab=connections
+        - text: AWS Glue.
+        - img "(opens in new tab)":
+      - button "Additional network connections Choose options":
+        - generic: Choose options
+      - generic: Finished loading network connectionsFinished loading network connections
+      - button "Refresh network connections":
+        - generic: Refresh network connections
+      - heading "Current connections" [level=2]
+      - paragraph: These are the connections currently associated with the job.
+      - table "Current connections":
+        - rowgroup:
+          - row "Name Type VPC Subnet Security Groups Version":
+            - columnheader "Name":
+              - generic: Name
+            - columnheader "Type":
+              - generic: Type
+            - columnheader "VPC":
+              - generic: VPC
+            - columnheader "Subnet":
+              - generic: Subnet
+            - columnheader "Security Groups":
+              - generic: Security Groups
+            - columnheader "Version":
+              - generic: Version
+        - rowgroup:
+          - row "No connections No connections attached.":
+            - cell "No connections No connections attached.":
+              - generic: No connections
+              - paragraph: No connections attached.
+      - heading "Libraries" [level=3]
+      - button "More information for 'Libraries' (shows in sidebar).":
+        - generic: Q help
+      - generic: Python library path
+      - textbox "Input field"
+      - generic: Dependent JARs path
+      - textbox "Input field"
+      - generic: Referenced files path
+      - textbox "Input field"
+      - generic: Additional Python modules path
+      - textbox "Input field"
+      - generic: AWS recommends pinning library versions to ensure a consistent job environment.
+      - heading "Job parameters" [level=3]
+      - button "More information for 'Job parameters' (shows in sidebar).":
+        - generic: Q help
+      - group "Key --analysis-id":
+        - generic: Key
+        - combobox "Key": "--analysis-id"
+        - button "Clear parameter":
+        - generic: Value - optional
+        - combobox "Value - optional": q2-dev-20220901-m00-v1
+        - button "Clear parameter":
+        - button "Remove --analysis-id": Remove
+      - group "Key --custom-logGroup-prefix":
+        - generic: Key
+        - combobox "Key": "--custom-logGroup-prefix"
+        - button "Clear parameter":
+        - generic: Value - optional
+        - combobox "Value - optional": /is459/aml/q2
+        - button "Clear parameter":
+        - button "Remove --custom-logGroup-prefix": Remove
+      - group "Key --output-root":
+        - generic: Key
+        - combobox "Key": "--output-root"
+        - button "Clear parameter":
+        - generic: Value - optional
+        - combobox "Value - optional": s3://is459-aml-g2team7-160885259244-us-east-1
+        - button "Clear parameter":
+        - button "Remove --output-root": Remove
+      - group "Key --input-manifest":
+        - generic: Key
+        - combobox "Key": "--input-manifest"
+        - button "Clear parameter":
+        - generic: Value - optional
+        - combobox "Value - optional": s3://is459-aml-g2team7-160885259244-us-east-1/manifests/detector-inputs/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/manifest.json
+        - button "Clear parameter":
+        - button "Remove --input-manifest": Remove
+      - group "Key --window-start":
+        - generic: Key
+        - combobox "Key": "--window-start"
+        - button "Clear parameter":
+        - generic: Value - optional
+        - combobox "Value - optional": 2022-09-01T00:00:00
+        - button "Clear parameter":
+        - button "Remove --window-start": Remove
+      - group "Key --window-end":
+        - generic: Key
+        - combobox "Key": "--window-end"
+        - button "Clear parameter":
+        - generic: Value - optional
+        - combobox "Value - optional": 2022-09-01T00:01:00
+        - button "Clear parameter":
+        - button "Remove --window-end": Remove
+      - group "Key --snapshot-cutoff":
+        - generic: Key
+        - combobox "Key": "--snapshot-cutoff"
+        - button "Clear parameter":
+        - generic: Value - optional
+        - combobox "Value - optional": 2022-09-01T00:01:00
+        - button "Clear parameter":
+        - button "Remove --snapshot-cutoff": Remove
+      - button "Add new parameter"
+      - generic: You can add 43 more parameters.
+      - heading "Tags" [level=3]:
+        - generic: Tags
+      - group "Key Environment":
+        - generic: Key
+        - combobox "Key": Environment
+        - button "Clear tag":
+        - generic: Value - optional
+        - combobox "Value - optional": development
+        - button "Clear tag":
+        - button "Remove Environment": Remove
+      - group "Key Project":
+        - generic: Key
+        - combobox "Key": Project
+        - button "Clear tag":
+        - generic: Value - optional
+        - combobox "Value - optional": is459-aml
+        - button "Clear tag":
+        - button "Remove Project": Remove
+      - button "Add new tag"
+      - generic: You can add 48 more tags.
+- contentinfo:
+  - button "CloudShell":
+    - generic: CloudShell
+  - button "Agent Toolkit for AWS":
+    - text: Agent Toolkit for AWS
+  - button "Feedback"
+  - button "Console Mobile App":
+    - generic: Console Mobile App
+  - generic: © 2026, Amazon Web Services, Inc. or its affiliates.
+  - list:
+    - link "Privacy":
+      - /url: https://aws.amazon.com/privacy/
+    - link "Terms":
+      - /url: https://aws.amazon.com/terms/
+    - button "Cookie preferences"
+- generic: You can add 43 more parameters.
+- generic: You can add 48 more tags.
+- generic: Notifications Error 0 Warning 0 Success 1 Info 1 In progress 0

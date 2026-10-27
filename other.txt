@@ -1,0 +1,24 @@
+A data pipeline provides the infrastructure for data-driven decision making.
+When designing a pipeline, start with the business problem to be solved and work backwards to the data.
+The pipeline includes layers to ingest, store, process, analyze, and visualize data passing through it.
+Data wrangling refers to how data is acted upon as it passes through the pipeline. Tasks include discovery, cleaning, normalization, transformation, and augmentation.
+Data is processed iteratively to evaluate and improve upon results.
+
+The money laundering data set is split into HI and LI 
+HI --> More distribution of laundered translation
+LI --> less distribution of laundered transaction
+
+Just choose one data set you want to work with. HI or LI
+
+Need to identify the business problem first before choosing the right technology to solve the business problem
+Look at the data then come up with the business question
+1. Identify the business problem to solve
+2. How quickly we want to answer this problem (real time processing/ batch processing)
+3. What data is needed? Where to find this data?
+4. Choose the technology based on the cost consideration 
+
+
+Graph database (Neptune) could bee useful for fraud detection
+https://aws.amazon.com/blogs/database/build-a-real-time-fraud-detection-solution-using-amazon-neptune-ml/
+
+

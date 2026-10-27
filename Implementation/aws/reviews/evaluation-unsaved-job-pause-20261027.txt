@@ -1,0 +1,223 @@
+- navigation:
+  - 'img "Account color: Unset"'
+  - navigation "Global":
+    - link "Skip to Main Content":
+      - /url: "#c"
+    - link "AWS Console Home":
+      - /url: https://160885259244-oguqcgmi.us-east-1.console.aws.amazon.com/console/home?region=us-east-1
+    - button "Amazon Q":
+    - button "Services":
+    - img "Search":
+    - searchbox
+    - combobox "Search"
+    - button "Ask Amazon Q":
+    - generic: "[Option+S]"
+    - status
+    - link "CloudShell":
+      - /url: https://160885259244-oguqcgmi.us-east-1.console.aws.amazon.com/cloudshell/home?region=us-east-1
+    - button "Notifications (none available)":
+      - img "Notifications":
+    - img "Notifications":
+    - list:
+      - button "Help & support":
+        - img "Support":
+      - button "Settings":
+      - combobox "Regions (United States (N. Virginia))":
+        - generic: United States (N. Virginia)
+      - button "g2team7 @ 1608-8525-9244":
+        - 'generic "Account color: Unset"':
+          - generic: g2_team7admin (160885259244)
+        - generic: g2team7
+  - list
+- region "Notifications alt+T":
+  - list
+- button "Open side navigation" [expanded]:
+- region "Drawers":
+  - toolbar "Drawers":
+    - button "Open help panel":
+- navigation "Side navigation":
+  - button "Close side navigation":
+  - heading "AWS Glue" [level=2]:
+    - link "AWS Glue":
+      - /url: https://160885259244-oguqcgmi.us-east-1.console.aws.amazon.com/glue/home?region=us-east-1#/v2/service-landing
+      - generic: AWS Glue
+  - list:
+    - link "Getting started":
+      - /url: https://160885259244-oguqcgmi.us-east-1.console.aws.amazon.com/glue/home?region=us-east-1#/v2/getting-started
+      - generic: Getting started
+    - link "SageMaker Unified StudioOpens in a new tab":
+      - /url: https://160885259244-oguqcgmi.us-east-1.console.aws.amazon.com/datazone/home?region=us-east-1#/create-domain
+      - text: SageMaker Unified Studio
+      - img "Opens in a new tab":
+    - link "ETL jobs":
+      - /url: https://160885259244-oguqcgmi.us-east-1.console.aws.amazon.com/gluestudio/home?region=us-east-1#/jobs
+      - generic: ETL jobs
+    - list:
+      - link "Visual ETL":
+        - /url: https://160885259244-oguqcgmi.us-east-1.console.aws.amazon.com/gluestudio/home?region=us-east-1#/jobs?selectedInterface=source_and_target
+        - generic: Visual ETL
+      - link "Notebooks":
+        - /url: https://160885259244-oguqcgmi.us-east-1.console.aws.amazon.com/gluestudio/home?region=us-east-1#/jobs?selectedInterface=notebook
+        - generic: Notebooks
+      - link "Job run monitoring":
+        - /url: https://160885259244-oguqcgmi.us-east-1.console.aws.amazon.com/gluestudio/home?region=us-east-1#/monitoring
+        - generic: Job run monitoring
+    - link "Data Catalog tables":
+      - /url: https://160885259244-oguqcgmi.us-east-1.console.aws.amazon.com/glue/home?region=us-east-1#/v2/data-catalog/tables
+      - generic: Data Catalog tables
+    - link "Data connections":
+      - /url: https://160885259244-oguqcgmi.us-east-1.console.aws.amazon.com/gluestudio/home?region=us-east-1#/connectors
+      - generic: Data connections
+    - link "Workflows (orchestration)":
+      - /url: https://160885259244-oguqcgmi.us-east-1.console.aws.amazon.com/glue/home?region=us-east-1#/v2/etl-configuration/workflows
+      - generic: Workflows (orchestration)
+    - link "Zero-ETL integrations":
+      - /url: https://160885259244-oguqcgmi.us-east-1.console.aws.amazon.com/gluestudio/home?region=us-east-1#/zero-etl-integrations
+      - generic: Zero-ETL integrations
+    - button "Data Catalog":
+      - generic: Data Catalog
+    - button "Data Integration and ETL":
+      - generic: Data Integration and ETL
+  - separator
+  - list:
+    - link "What's NewWhat's new (opens in new tab)":
+      - /url: https://aws.amazon.com/about-aws/whats-new/analytics/?whats-new-content.sort-by=item.additionalFields.postDateTime&whats-new-content.sort-order=desc&awsf.whats-new-products=general-products%23aws-glue
+      - text: What's New
+      - img "What's new (opens in new tab)":
+    - link "DocumentationDocumentation (opens in new tab)":
+      - /url: https://docs.aws.amazon.com/glue/index.html
+      - text: Documentation
+      - img "Documentation (opens in new tab)":
+    - link "AWS Marketplace":
+      - /url: https://160885259244-oguqcgmi.us-east-1.console.aws.amazon.com/gluestudio/home?region=us-east-1#/marketplace
+      - generic: AWS Marketplace
+  - checkbox "Enable compact mode" [checked]
+  - generic: Enable compact mode
+  - checkbox "Enable new navigation" [checked]
+  - generic: Enable new navigation
+- main:
+  - list "Notifications":
+    - group "Info AWS now provides personalized help through Amazon Q Click Q help to receive personalized guidance for console tasks through Q Chat. To deactivate, click Deactivate Q help Opens in a new tab to access your console settings. Once deactivated, you'll receive static help content when available.":
+      - img "Info":
+      - generic: AWS now provides personalized help through Amazon Q
+      - text: Click Q help to receive personalized guidance for console tasks through Q Chat. To deactivate, click
+      - link "Deactivate Q help Opens in a new tab":
+        - /url: https://us-east-1.console.aws.amazon.com/settings/settings_management/edit?region=us-east-1
+        - text: Deactivate Q help
+        - img "Opens in a new tab":
+      - text: to access your console settings. Once deactivated, you'll receive static help content when available.
+    - button "Launch Q help"
+    - button "Dismiss":
+  - textbox "Job Title": is459-aml-evaluation-dev
+  - heading [level=2]: is459-aml-evaluation-dev
+  - text: Job has not been saved
+  - generic: Last modified on 10/27/2026, 3:44:57 AM
+  - button "Actions":
+    - text: Actions
+  - button "Save"
+  - button "Run" [disabled]
+  - tablist:
+    - tab "Script":
+      - generic: Script
+    - tab "Job details" [active] [selected]:
+      - generic: Job details
+    - tab "Runs" [disabled]:
+      - generic: Runs
+    - tab "Data quality":
+      - generic: Data quality
+    - tab "Schedules" [disabled]:
+      - generic: Schedules
+    - tab "Version Control":
+      - generic: Version Control
+  - tabpanel "Job details":
+    - heading "Basic properties" [level=2]
+    - button "More information for 'Basic properties' (shows in sidebar).":
+      - generic: Q help
+    - generic: Name
+    - textbox "Input field": is459-aml-evaluation-dev
+    - generic: Description - optional
+    - textbox "Description - optional": IS459 AML Q2 label-free structural leads. One approved first-minute development test with explicit fail-on-limit guards.
+    - generic: Descriptions can be up to 2048 characters long.
+    - heading "IAM role" [level=4]
+    - generic: To access other AWS services and resources your Glue ETL job needs an IAM role. Choose a role with the right permissions for your Glue ETL job.
+    - button "AWSGlueServiceRole-is459-aml-q2":
+      - generic: AWSGlueServiceRole-is459-aml-q2
+    - button "Refresh roles":
+    - button "Create new role"
+    - button "Edit role"
+    - button "View role details in IAM, Opens in a new tab":
+      - text: View role details in IAM
+    - generic: Type
+    - generic: The type of ETL job. This is set automatically based on the types of data sources you have selected.
+    - button "Type ETL job type selector Spark":
+      - generic "Spark":
+        - generic: Spark
+    - text: Glue version
+    - button "More information for 'Glue version' (shows in sidebar).":
+      - generic: Q help
+    - button "Glue version Job version selector Glue 5.1 - Supports spark 3.5, Scala 2, Python 3":
+      - generic "Glue 5.1 - Supports spark 3.5, Scala 2, Python 3":
+        - generic: Glue 5.1 - Supports spark 3.5, Scala 2, Python 3
+    - generic: Language
+    - button "Language Language selector Python 3":
+      - generic "Python 3":
+        - generic: Python 3
+    - generic: Worker type
+    - generic: Set the type of predefined worker that is allowed when a job runs.
+    - button "Worker type Worker type selector G 1X (4vCPU and 16GB RAM)":
+      - generic "G 1X":
+        - generic: G 1X
+        - generic: (4vCPU and 16GB RAM)
+    - generic: Automatically scale the number of workers
+    - checkbox "Automatically scale the number of workers"
+    - generic: AWS Glue will optimize costs and resource usage by dynamically scaling the number of workers up and down throughout the job run. Requires Glue 3.0 or later.
+    - generic: Requested number of workers
+    - generic: The number of workers you want AWS Glue to allocate to this job.
+    - textbox "Requested number of workers": "2"
+    - generic: Generate job insights
+    - checkbox "Generate job insights"
+    - generic: AWS Glue will analyze your job runs and provide insights on how to optimize your jobs and the reasons for job failures.
+    - generic: Generate lineage events
+    - checkbox "Generate lineage events"
+    - generic: AWS Glue will capture Spark lineage events from your job runs and send them to Amazon DataZone or next generation of Amazon Sagemaker to visualize the table and column lineage.
+    - text: Job bookmark
+    - button "More information for 'Job bookmark' (shows in sidebar).":
+      - generic: Q help
+    - generic: Specifies how AWS Glue processes job bookmark when the job runs. It can remember previously processed data (Enable), update state information (Pause), or ignore state information (Disable).
+    - button "Job bookmark Job bookmark selector Disable":
+      - generic "Disable":
+        - generic: Disable
+    - generic: Job Run Queuing
+    - checkbox "Job Run Queuing"
+    - generic: Enable job runs to be queued to run later when they cannot run immediately due to service quotas
+    - text: Flex execution
+    - button "More information for 'Flex execution' (shows in sidebar).":
+      - generic: Q help
+    - checkbox "Flex execution"
+    - generic: Reduce costs by running this job on spare capacity. Ideal for non-urgent workloads that don't require fast jobs start times or consistent execution times. See recommendations, limitations and pricing in the help panel by clicking on the Info link above.
+    - generic: Number of retries
+    - textbox "Number of retries": "0"
+    - generic: Job timeout (minutes)
+    - generic: Set the maximum execution time. The default is 480 minutes (8 hours) for a Glue 5.0 ETL job and 2,880 minutes (48 hours) for Glue 4.0 and below. No job timeout is defaulted for a Glue Streaming job.
+    - textbox "Job timeout (minutes)": "15"
+    - generic: Usage profile
+    - generic: "-"
+    - button "Advanced properties":
+      - generic: Advanced properties
+- contentinfo:
+  - button "CloudShell":
+    - generic: CloudShell
+  - button "Agent Toolkit for AWS":
+    - text: Agent Toolkit for AWS
+  - button "Feedback"
+  - button "Console Mobile App":
+    - generic: Console Mobile App
+  - generic: © 2026, Amazon Web Services, Inc. or its affiliates.
+  - list:
+    - link "Privacy":
+      - /url: https://aws.amazon.com/privacy/
+    - link "Terms":
+      - /url: https://aws.amazon.com/terms/
+    - button "Cookie preferences"
+- generic: You can add 42 more parameters.
+- generic: You can add 48 more tags.

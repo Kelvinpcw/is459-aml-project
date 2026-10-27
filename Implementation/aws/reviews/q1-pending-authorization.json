@@ -1,0 +1,53 @@
+{
+  "status": "consumed-run-succeeded-paused",
+  "prepared_at_singapore": "2026-10-26T16:14:46.427810+08:00",
+  "account_id": "160885259244",
+  "region": "us-east-1",
+  "role": "AWSGlueServiceRole-is459-aml-q1",
+  "policy": "is459-aml-q1-data-access",
+  "trust": "glue.amazonaws.com only",
+  "policy_sha256": "9d6ec61571576e2b2424f913cd72808b43dc35d096842ce49e93332ac05e4835",
+  "trust_sha256": "23d2373082b4b70f993484b4c9619d14769f5cf46495f427ad356a836074394d",
+  "script_sha256": "961fb197a2d9ea887835b9e4699bf8585dda09c1a4b0b5acaedadc57ab535dcd",
+  "job_config_sha256": "4f5e1735526f61f257a27080bc26ec2c00bc3ce319afa4279c15b6b23807107a",
+  "role_created": true,
+  "policy_created": true,
+  "code_uploaded": true,
+  "job_saved": true,
+  "run_started": true,
+  "requested_run": {
+    "job_name": "is459-aml-q1-dev",
+    "analysis_id": "q1-dev-20220901-v1",
+    "workers": 2,
+    "worker_type": "G.1X",
+    "timeout_minutes": 15,
+    "automatic_retries": 0,
+    "max_concurrent_runs": 1,
+    "total_prototype_test_budget_usd": 1,
+    "previous_estimated_glue_compute_usd": 0.166345,
+    "estimated_compute_at_15_minutes_usd": 0.22,
+    "other_charges": "S3 and logs additional; not an account-wide hard cap"
+  },
+  "excluded_from_run_request": [
+    "Athena queries",
+    "Catalog permission grant/registration",
+    "EC2",
+    "Q2/evaluation jobs",
+    "schedules"
+  ],
+  "review_page": "IAM Create policy > Review and create; browser tab IDs transient",
+  "evidence": "Implementation/evidence/q1-policy-review-20261026.jpg",
+  "tests": {
+    "passed": 18,
+    "q1_tests": 6,
+    "runtime": "local PySpark 3.5.6 Python 3.11 Java 21",
+    "cloud_q1_executed": false
+  },
+  "approved_at_singapore": "2026-10-26T16:19:22.313359+08:00",
+  "user_authorization": "yeah go ahead. All permission is allowed only let me know if the cost might be significant",
+  "cost_boundary": "Keep existing total US$1 prototype budget; flag before exceeding it.",
+  "consumed_by_run_id": "jr_8294653931045d22019ac21fc20f4d840159cba73f0600cc03aa25ee752a30c9",
+  "run_terminal": true,
+  "report_reviewed": true,
+  "report_status": "PASSED"
+}

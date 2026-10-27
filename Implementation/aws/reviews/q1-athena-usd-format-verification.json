@@ -1,0 +1,9 @@
+{
+  "status": "VERIFIED",
+  "rows": 7,
+  "baseline_n": 1634628,
+  "baseline_l": 382,
+  "all_counts_rates_lifts_and_support_flags_match_independent_source": true,
+  "eligible_bank_pair_segments_at_support_1000": 57,
+  "eligible_segment_positive_labels": 0
+}

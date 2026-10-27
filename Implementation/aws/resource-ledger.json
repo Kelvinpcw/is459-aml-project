@@ -1,0 +1,431 @@
+{
+  "account_id": "160885259244",
+  "region": "us-east-1",
+  "project": "is459-aml",
+  "user_instructions": {
+    "paid_runs": "General project permission is granted; retain US$1 total prototype budget and flag significant costs. Materially new Q2 service-role grant still requires computer-use action-time confirmation. Single bounded Q2 run prepared for the same confirmation.",
+    "cleanup": "After the project demo and checks are complete, tear down project-created compute and other costly resources. Retain S3 data.",
+    "scope": "Only resources created for this project. Existing unrelated account resources are outside teardown scope."
+  },
+  "resources": [
+    {
+      "service": "s3",
+      "name": "is459-aml-g2team7-160885259244-us-east-1",
+      "status": "created",
+      "cleanup_action": "retain_data",
+      "cost": "storage and requests"
+    },
+    {
+      "service": "iam-policy",
+      "name": "is459-aml-prepare-data-access",
+      "status": "created",
+      "cleanup_action": "may_retain_for_reproducibility",
+      "cost": "no compute running"
+    },
+    {
+      "service": "iam-role",
+      "name": "AWSGlueServiceRole-is459-aml-prepare",
+      "status": "created-and-verified-with-only-approved-policy",
+      "cleanup_action": "may_retain_for_reproducibility",
+      "cost": "no compute running"
+    },
+    {
+      "service": "glue-batch-definition",
+      "name": "is459-aml-prepare-dev",
+      "status": "v2 saved; v1 and v2 runs SUCCEEDED and terminal; v2 population verified",
+      "runtime": "Glue 5.1",
+      "workers": 2,
+      "worker_type": "G.1X",
+      "timeout_minutes": 15,
+      "automatic_retries": 0,
+      "max_concurrent_runs": 1,
+      "cleanup_action": "retain definition; verify executions stop after any approved run",
+      "cost": "Compute charged while running; both runs terminal."
+    },
+    {
+      "service": "iam-policy",
+      "name": "is459-aml-q1-data-access",
+      "status": "created-and-verified",
+      "cleanup_action": "retain for reproducibility",
+      "cost": "no running compute"
+    },
+    {
+      "service": "iam-role",
+      "name": "AWSGlueServiceRole-is459-aml-q1",
+      "status": "created-and-verified",
+      "cleanup_action": "retain for reproducibility",
+      "cost": "no running compute"
+    },
+    {
+      "service": "glue-batch-definition",
+      "name": "is459-aml-q1-dev",
+      "status": "saved; single approved run SUCCEEDED; no active runs",
+      "cleanup_action": "retain job definition; verify run terminates",
+      "workers": 2,
+      "worker_type": "G.1X",
+      "timeout_minutes": 15,
+      "automatic_retries": 0
+    },
+    {
+      "service": "athena-workgroup",
+      "name": "is459-aml-dev",
+      "status": "idle; ten terminal SQL executions across Q1 and Q2; no provisioned capacity",
+      "engine": "Athena engine version 3",
+      "data_scanned_limit_mb": 50,
+      "override_client_settings": true,
+      "query_results": "s3://is459-aml-g2team7-160885259244-us-east-1/query-results/q1/",
+      "encryption": "SSE_S3",
+      "expected_bucket_owner": "160885259244",
+      "publish_cloudwatch_metrics": false,
+      "cleanup_action": "retain idle configuration; no provisioned capacity",
+      "cost": "no running compute; query scans and S3 results charged when used"
+    },
+    {
+      "service": "glue-catalog-database",
+      "name": "is459_aml_dev",
+      "status": "created",
+      "cleanup_action": "retain metadata",
+      "cost": "Catalog metadata/storage requests only"
+    },
+    {
+      "service": "glue-catalog-table",
+      "name": "is459_aml_dev.q1_daily_counts_dev20220901_v2",
+      "status": "created-and-read-validated",
+      "partition": "event_date=2022-09-01",
+      "amount_type": "decimal(38,8)",
+      "location": "s3://is459-aml-g2team7-160885259244-us-east-1/gold/risk/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/analysis_id=q1-dev-20220901-v1/daily_counts/",
+      "cleanup_action": "retain metadata",
+      "cost": "metadata only"
+    },
+    {
+      "service": "iam-policy",
+      "name": "is459-aml-q2-data-access",
+      "status": "created by user; verified; attached only to Q2 role",
+      "arn": "arn:aws:iam::160885259244:policy/is459-aml-q2-data-access",
+      "cleanup_action": "retain for reproducibility",
+      "cost": "no compute running"
+    },
+    {
+      "service": "iam-role",
+      "name": "AWSGlueServiceRole-is459-aml-q2",
+      "status": "created-verified; Glue-only trust and exactly reviewed policy",
+      "cleanup_action": "retain for reproducibility",
+      "cost": "no running compute"
+    },
+    {
+      "service": "glue-batch-definition",
+      "name": "is459-aml-q2-dev",
+      "status": "saved; single approved run SUCCEEDED and fully validated; no active runs",
+      "workers": 2,
+      "worker_type": "G.1X",
+      "timeout_minutes": 15,
+      "automatic_retries": 0,
+      "cleanup_action": "retain definition; observe run to terminal"
+    },
+    {
+      "service": "glue-catalog-table",
+      "name": "is459_aml_dev.q2_case_index_dev20220901_m00_v1",
+      "status": "created; partition registered; all 15 physical rows verified",
+      "partition": "window_date=2022-09-01",
+      "cleanup_action": "retain metadata",
+      "cost": "metadata only"
+    },
+    {
+      "service": "iam-policy",
+      "name": "is459-aml-evaluation-data-access",
+      "status": "created under exact user approval",
+      "cleanup_action": "retain for reproducibility",
+      "cost": "no compute running"
+    },
+    {
+      "service": "iam-role",
+      "name": "AWSGlueServiceRole-is459-aml-evaluation",
+      "status": "created and verified; Glue-only trust, exactly one reviewed evaluator policy",
+      "cleanup_action": "retain for reproducibility",
+      "cost": "no compute running"
+    }
+  ],
+  "paid_resources_started_by_this_project": [
+    {
+      "service": "glue-job-run",
+      "job_name": "is459-aml-prepare-dev",
+      "run_id": "jr_ab63943d9cb2bfe3f8e7b96be19b04f1542190619123946ae313ef7d1a2f872d",
+      "status": "SUCCEEDED",
+      "started_at_singapore": "2026-10-26 03:03:35",
+      "ended_at_singapore": "2026-10-26 03:09:14",
+      "verified_at_singapore": "2026-10-26 03:09:43",
+      "execution_seconds": 330,
+      "startup_seconds": 8,
+      "dpu_hours": 0.183333,
+      "estimated_glue_compute_usd": 0.080667,
+      "approved_budget_usd": 1,
+      "workers": 2,
+      "worker_type": "G.1X",
+      "timeout_minutes": 15,
+      "automatic_retries": 0,
+      "quality_report_reviewed": true,
+      "compute_still_running": false,
+      "release_ready": false,
+      "review_issue": "Two-decimal validation quarantined 93,554 valid six-decimal payments including 16 positive labels; do not use v1 for Q1/Q2."
+    },
+    {
+      "service": "glue-job-run",
+      "job_name": "is459-aml-prepare-dev",
+      "run_id": "jr_bede7c68199d9eeec1e051d1b1a69bf9d9842aad199e097915f604c8ad246f08",
+      "run_id_parameter": "dev-20220901-v2",
+      "status": "SUCCEEDED",
+      "started_at_singapore": "2026-10-26 10:15:05",
+      "workers": 2,
+      "worker_type": "G.1X",
+      "timeout_minutes": 15,
+      "automatic_retries": 0,
+      "approved_total_test_budget_usd": 1,
+      "compute_still_running": false,
+      "quality_report_reviewed": true,
+      "ended_at_singapore": "2026-10-26 10:21:29",
+      "execution_seconds": 350,
+      "startup_seconds": 33,
+      "dpu_hours": 0.194722,
+      "estimated_glue_compute_usd": 0.085678,
+      "report_verification": "VERIFIED; 4465985 accepted, 0 quarantined, 1056 positive labels; exact format reconciliation",
+      "release_ready": true
+    },
+    {
+      "service": "glue-job-run",
+      "job_name": "is459-aml-q1-dev",
+      "run_id": "jr_8294653931045d22019ac21fc20f4d840159cba73f0600cc03aa25ee752a30c9",
+      "analysis_id": "q1-dev-20220901-v1",
+      "status": "SUCCEEDED",
+      "started_at_singapore": "2026-10-26 16:26:28",
+      "workers": 2,
+      "worker_type": "G.1X",
+      "timeout_minutes": 15,
+      "automatic_retries": 0,
+      "compute_still_running": false,
+      "quality_report_reviewed": true,
+      "ended_at_singapore": "2026-10-26 16:29:25",
+      "execution_seconds": 169,
+      "startup_seconds": 8,
+      "dpu_hours": 0.094167,
+      "estimated_glue_compute_usd": 0.041433,
+      "report_status": "PASSED",
+      "transactions": 4465985,
+      "labelled_laundering": 1056
+    },
+    {
+      "service": "glue-job-run",
+      "job_name": "is459-aml-q2-dev",
+      "run_id": "jr_3b40b2a7f316355a065f2df49bf430c50ca60d4d389bb49f12ba4ee4bfc35687",
+      "analysis_id": "q2-dev-20220901-m00-v1",
+      "status": "SUCCEEDED",
+      "started_at_singapore": "2026-10-27 03:45:28",
+      "workers": 2,
+      "worker_type": "G.1X",
+      "timeout_minutes": 15,
+      "automatic_retries": 0,
+      "compute_still_running": false,
+      "approved_total_test_budget_usd": 1,
+      "ended_at_singapore": "2026-10-27 03:48:02",
+      "execution_seconds": 145,
+      "startup_seconds": 9,
+      "dpu_hours": 0.080556,
+      "estimated_glue_compute_usd": 0.035445,
+      "quality_report_reviewed": true,
+      "report_status": "PASSED",
+      "scoped_transactions": 43681,
+      "case_count": 15,
+      "case_evidence_transactions": 840,
+      "all_bundles_and_physical_index_verified": true,
+      "verified_at_singapore": "2026-10-27T03:55:26.095877+08:00"
+    }
+  ],
+  "paused": true,
+  "awaiting_paid_run_approval": false,
+  "last_verified": "2026-10-27T03:55:26.095877+08:00; Q2 role/job/run/report, all 15 complete bundles and all Athena index fields verified. Four known project Glue runs and ten SQL statements terminal; no active project compute. No account-wide audit claimed.",
+  "s3_uploads": [
+    "raw/development/20220901/transactions.csv.gz",
+    "raw/development/20220901/accounts.csv.gz",
+    "raw/development/20220901/manifest.json",
+    "raw/development/20220901/ingestion-quarantine.jsonl.gz",
+    "scripts/preparation/prepare.py",
+    "scripts/preparation/prepare-v2.py",
+    "scripts/q1/q1_risk-v1.py",
+    "scripts/q2/q2_detect-v1.py",
+    "manifests/detector-inputs/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/manifest.json",
+    "manifests/evaluator-inputs/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/analysis_id=q2-dev-20220901-m00-v1/manifest.json",
+    "references/annotations/dataset_version=ibm-hi-medium-b1b99c68b765580f/HI-Medium_Patterns.txt"
+  ],
+  "paid_run_approvals": [
+    {
+      "date": "2026-10-26",
+      "job_name": "is459-aml-prepare-dev",
+      "scope": "One preparation test run only",
+      "budget_usd": 1,
+      "workers": 2,
+      "worker_type": "G.1X",
+      "timeout_minutes": 15,
+      "automatic_retries": 0,
+      "approved_by": "User replied yeah sure to the specific US$1 run request",
+      "consumed_by_run_id": "jr_ab63943d9cb2bfe3f8e7b96be19b04f1542190619123946ae313ef7d1a2f872d"
+    },
+    {
+      "date": "2026-10-26T10:14:58.723377+08:00",
+      "job_name": "is459-aml-prepare-dev",
+      "scope": "One corrected preparation v2 run only; no retries",
+      "run_id_parameter": "dev-20220901-v2",
+      "total_test_budget_usd": 1,
+      "workers": 2,
+      "worker_type": "G.1X",
+      "timeout_minutes": 15,
+      "automatic_retries": 0,
+      "approved_by": "User replied yes. can delete the old output to the specific corrected-run approval request",
+      "consumed_by_run_id": "jr_bede7c68199d9eeec1e051d1b1a69bf9d9842aad199e097915f604c8ad246f08",
+      "status": "consumed"
+    },
+    {
+      "date": "2026-10-26T16:27:12.691077+08:00",
+      "job_name": "is459-aml-q1-dev",
+      "scope": "one bounded Q1 test with existing US$1 total prototype budget",
+      "approved_by": "yeah go ahead. All permission is allowed only let me know if the cost might be significant",
+      "consumed_by_run_id": "jr_8294653931045d22019ac21fc20f4d840159cba73f0600cc03aa25ee752a30c9"
+    },
+    {
+      "date": "2026-10-27T03:46:32.528701+08:00",
+      "job_name": "is459-aml-q2-dev",
+      "scope": "exact Q2 role and one bounded first-minute test",
+      "approved_by": "go ahead",
+      "consumed_by_run_id": "jr_3b40b2a7f316355a065f2df49bf430c50ca60d4d389bb49f12ba4ee4bfc35687"
+    }
+  ],
+  "active_paid_resources": [],
+  "prepared_next_run": {
+    "job_name": "is459-aml-prepare-dev",
+    "run_id_parameter": "dev-20220901-v2",
+    "script": "scripts/preparation/prepare-v2.py",
+    "status": "SUCCEEDED-verified",
+    "max_quarantine_rows": 0,
+    "source_sha256": "881acd5d9bb0064d090e333d9c2939a57c530863711ab783613aee0f6e24406b",
+    "test_count": 12,
+    "test_status": "PASSED"
+  },
+  "estimated_total_glue_compute_usd": 0.243223,
+  "cleanup": {
+    "status": "completed",
+    "verified_at_singapore": "2026-10-26T10:31:09.543651+08:00",
+    "scope": "v1 synthetic development test output only",
+    "deleted_object_count": 35,
+    "approx_deleted_mb": 414.1,
+    "failed_object_count": 0,
+    "results_file": "Implementation/aws/reviews/v1-output-cleanup-results.json",
+    "retained": "raw inputs, scripts, all v2 outputs, local v1 review evidence, small static logs"
+  },
+  "local_drafts_not_deployed": [
+    "../sql/q2_validate_cases.sql (optional aggregate check; not needed after complete row verification)",
+    "evaluation-job-draft.json"
+  ],
+  "pending_q1_authorization": "Implementation/aws/reviews/q1-pending-authorization.json",
+  "last_preparation_turn": "2026-10-26T16:14:46.427810+08:00; Q1 locally tested (18 tests), IAM policy validated and staged for review only. No role/policy/job created and no paid run started.",
+  "athena_query_executions": [
+    {
+      "query_id": "2c1951da-79a0-4de7-a050-924fd05f5d79",
+      "label": "create_database",
+      "status": "SUCCEEDED",
+      "displayed_data_scanned": "-"
+    },
+    {
+      "query_id": "c3f06be7-491b-4362-b166-a519df8c27b8",
+      "label": "create_table",
+      "status": "SUCCEEDED",
+      "displayed_data_scanned": "-"
+    },
+    {
+      "query_id": "b93c0ef7-df0a-49a9-9d7a-18a09ceebdaf",
+      "label": "add_partition",
+      "status": "SUCCEEDED",
+      "displayed_data_scanned": "-"
+    },
+    {
+      "query_id": "0cfeed32-ebae-4d49-8c26-a41b77df9110",
+      "label": "validate_population_ordering_rejected",
+      "status": "FAILED-before-scan",
+      "displayed_data_scanned": "-"
+    },
+    {
+      "query_id": "65e43660-f6e4-4ef0-b20a-a83ac0fc5cb1",
+      "label": "validate_population",
+      "status": "SUCCEEDED",
+      "displayed_data_scanned": "26.36 MB"
+    },
+    {
+      "query_id": "8f0c18d4-6a26-480b-b9b6-84d846de1030",
+      "label": "rank_usd_segments_support_1000",
+      "status": "SUCCEEDED",
+      "displayed_data_scanned": "11.14 MB"
+    },
+    {
+      "query_id": "43fcc7f2-9ee5-4ef7-8644-55aa1da17f41",
+      "label": "usd_format_exposure",
+      "status": "SUCCEEDED",
+      "displayed_data_scanned": "3.56 MB"
+    },
+    {
+      "label": "create_q2_case_index_table",
+      "query_id": "4be2b02b-1167-4d58-9730-71a0f997bd7c",
+      "status": "SUCCEEDED"
+    },
+    {
+      "label": "add_q2_case_index_partition",
+      "query_id": "1b1c5ad1-8a57-4cb5-add7-f7c0a6257a85",
+      "status": "SUCCEEDED"
+    },
+    {
+      "label": "read_complete_q2_case_index",
+      "query_id": "ec566c8f-4f0a-4011-aab2-c12a5a5d72c2",
+      "status": "SUCCEEDED",
+      "displayed_data_scanned": "5.75 KB"
+    }
+  ],
+  "athena_scan_cost_estimate_usd": 0.00025,
+  "athena_scan_cost_estimate_note": "Approximate from rounded displayed scan sizes (26.36, 11.14, 3.56 MB), per-query minimum and checked US$5/TB example rate. Not a finalized invoice; S3/logging and Catalog charges separate.",
+  "active_athena_queries": [],
+  "pending_q2_authorization": "Implementation/aws/reviews/q2-pending-authorization.json",
+  "local_q2_validation": {
+    "verified_at_singapore": "2026-10-26T21:46:55.050482+08:00",
+    "tests_passed": 30,
+    "q2_tests": 12,
+    "cloud_deployed": false,
+    "replay": "Implementation/aws/reviews/q2-local-replay-m00-v1.json",
+    "scoped_rows": 43681,
+    "fan_out_cases": 15,
+    "case_evidence_rows": 840
+  },
+  "last_local_preparation": "2026-10-27T15:33:59.595655+08:00; separate development evaluator implemented, tested and replayed. IAM policy staged at review only; no new role/policy/upload/job/run/query started. Earlier compute cost estimate unchanged.",
+  "awaiting_access_grant_confirmation": false,
+  "pause_reason": "User requested checkpoint before paid evaluator processing. Evaluator policy/role and two input objects deployed; evaluator job unsaved.",
+  "paused_at_singapore": "2026-10-27T15:47:03.623179+08:00",
+  "resumed_at_singapore": "2026-10-27T15:33:59.595655+08:00",
+  "last_q2_review": "2026-10-27T03:23:15.526633+08:00; resumed, all hashes match. User-created policy verified; Q2 role absent. Role review prepared with Glue-only trust and only existing Q2 policy. No role created, no uploads/job/run/query started.",
+  "q2_athena_scan_cost_note": "One physical read displayed 5.75 KB; approximate scan cost below US$0.001. S3 requests/results and Catalog/log charges separate. Not an account-wide billing cap.",
+  "q2_completed": {
+    "analysis_id": "q2-dev-20220901-m00-v1",
+    "run_id": "jr_3b40b2a7f316355a065f2df49bf430c50ca60d4d389bb49f12ba4ee4bfc35687",
+    "report": "PASSED",
+    "verification": "Implementation/aws/reviews/q2-cloud-verification-m00-v1.json",
+    "complete_for_declared_one_minute_window": true,
+    "full_day_detector": false,
+    "evaluation_implemented": false
+  },
+  "pending_evaluation_authorization": "Implementation/aws/reviews/evaluation-pending-authorization.json",
+  "local_evaluation_validation": {
+    "verified_at_singapore": "2026-10-27T15:33:59.595655+08:00",
+    "status": "PASSED",
+    "tests_covered": 49,
+    "evaluator_tests": 19,
+    "eligible_transactions": 43681,
+    "positive_labels": 0,
+    "annotation_attempts": 2756,
+    "eligible_annotations": 0,
+    "deployed": false
+  },
+  "last_evaluation_deployment": "2026-10-27T15:47:03.623179+08:00; approved evaluator policy/role verified and exact manifest/original annotations uploaded successfully. Cloned job title and frozen code verified, but job not saved and no paid run started. Remaining one-run approval unconsumed; user paused."
+}

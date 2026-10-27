@@ -1,0 +1,45 @@
+Job name
+is459-aml-q2-dev
+Start time (Local)
+10/27/2026 03:45:28
+DPU Hours
+0.080556
+Glue version
+5.1
+Last modified on (Local)
+10/27/2026 03:48:02
+Id
+jr_3b40b2a7f316355a065f2df49bf430c50ca60d4d389bb49f12ba4ee4bfc35687
+End time (Local)
+10/27/2026 03:48:02
+Worker type
+G.1X
+Log group name
+/is459/aml/q2
+Run status
+Succeeded
+Start-up time
+9 seconds
+Max capacity
+2 DPUs
+Number of workers
+2
+Retry attempt number
+Initial run
+Execution time
+2 minutes 25 seconds
+Execution class
+Standard
+Timeout
+15 minutes
+Trigger name
+-
+Security configuration
+-
+Cloudwatch logs
+Output logs 
+Error logs 
+Usage profile
+-
+Job run queuing
+False
