@@ -15,7 +15,7 @@ The current user's task sets the scope. Do not implement the whole backlog or pr
 - Q2 was cloud-validated only for `[2022-09-01T00:00:00, 2022-09-01T00:01:00)`: 43,681 transactions, 15 fan-out cases and 840 evidence transactions. No pilot fan-in/cycle cases.
 - `q2_detect.py` uses a bounded driver graph with a 50,000-window-row guard. It is not full-day/distributed graph detection. Design a scalable implementation; do not remove limits, claim scalability, or pretend independent minute windows preserve cross-window patterns.
 - The local evaluator found no positive labels/eligible annotations in that minute; recall/recovery are not measurable. Do not claim detector effectiveness from this pilot or tune against holdout answers.
-- Evaluator role/inputs are deployed, but the last deployment checkpoint records the Glue job as unsaved and unrun. Dashboard, orchestration, shared publication and wider-window evaluation remain incomplete.
+- Evaluator cloud run succeeded on 28 October 2026 for the frozen first minute; all four raw artifacts matched local predictions. Its single-run approval is consumed; do not rerun it. Dashboard, orchestration, shared publication and wider-window evaluation remain incomplete.
 
 ## AWS safety and authorisation
 

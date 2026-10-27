@@ -1,0 +1,24 @@
+{
+  "JobRun": {
+    "Id": "jr_4791027e006652a752058e511a3d00afa0ac3e2c5bf19145ad72437b8db6fe23",
+    "Attempt": 0,
+    "JobName": "is459-aml-evaluation-dev",
+    "JobMode": "SCRIPT",
+    "JobRunQueuingEnabled": false,
+    "StartedOn": "2026-10-28T01:37:35.637000+08:00",
+    "LastModifiedOn": "2026-10-28T01:40:16.924000+08:00",
+    "CompletedOn": "2026-10-28T01:40:16.924000+08:00",
+    "JobRunState": "SUCCEEDED",
+    "PredecessorRuns": [],
+    "AllocatedCapacity": 2,
+    "ExecutionTime": 153,
+    "Timeout": 15,
+    "MaxCapacity": 2.0,
+    "WorkerType": "G.1X",
+    "NumberOfWorkers": 2,
+    "LogGroupName": "/is459/aml/evaluation",
+    "GlueVersion": "5.1",
+    "DPUSeconds": 306.0,
+    "ExecutionClass": "STANDARD"
+  }
+}

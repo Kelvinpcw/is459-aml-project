@@ -38,14 +38,14 @@ Complete outputs + quality reports + evaluation → shared release gate
 Step Functions coordinates the target workflow; EC2 hosts the target dashboard.
 ```
 
-## What actually exists? — saved AWS evidence, 27 October 2026
+## What actually exists? — saved AWS evidence through 28 October 2026
 
 | Component | Verified scope / remaining gap |
 | --- | --- |
 | Preparation | One day, **1 September 2022**: 4,465,985 accepted transactions; no quarantine |
 | Q1 | Glue aggregation and Athena validation for that one day; not the full dataset or a dashboard |
 | Q2 | **00:00 inclusive–00:01 exclusive** on 1 September: 43,681 transactions, 15 fan-out cases, 840 supporting transactions |
-| Evaluator | Local code/tests/results exist; role and input files deployed; last checkpoint records an unsaved Glue job and no cloud evaluator run |
+| Evaluator | Frozen first-minute Glue run succeeded; all four raw output files match local predictions. Zero positives/eligible annotations, so recall/recovery remain unmeasurable; [validation](Implementation/results/EVALUATION_CLOUD_VALIDATION.md) |
 | Dashboard, Step Functions, shared publication | Not implemented |
 | Full input | 31,898,238 transactions; not yet processed in full |
 

@@ -1,0 +1,89 @@
+{
+  "verified_at_singapore": "2026-10-28T01:41:00.120855+08:00",
+  "account_id": "160885259244",
+  "region": "us-east-1",
+  "source": "AWS CLI APIs with explicitly selected and verified project profile",
+  "evaluation_run": "jr_4791027e006652a752058e511a3d00afa0ac3e2c5bf19145ad72437b8db6fe23",
+  "quality_status": "PASSED",
+  "four_raw_artifacts_match": true,
+  "active_known_project_compute": false,
+  "active_known_project_queries": false,
+  "project_glue_runs": {
+    "is459-aml-prepare-dev": [
+      {
+        "id": "jr_bede7c68199d9eeec1e051d1b1a69bf9d9842aad199e097915f604c8ad246f08",
+        "state": "SUCCEEDED"
+      },
+      {
+        "id": "jr_ab63943d9cb2bfe3f8e7b96be19b04f1542190619123946ae313ef7d1a2f872d",
+        "state": "SUCCEEDED"
+      }
+    ],
+    "is459-aml-q1-dev": [
+      {
+        "id": "jr_8294653931045d22019ac21fc20f4d840159cba73f0600cc03aa25ee752a30c9",
+        "state": "SUCCEEDED"
+      }
+    ],
+    "is459-aml-q2-dev": [
+      {
+        "id": "jr_3b40b2a7f316355a065f2df49bf430c50ca60d4d389bb49f12ba4ee4bfc35687",
+        "state": "SUCCEEDED"
+      }
+    ],
+    "is459-aml-evaluation-dev": [
+      {
+        "id": "jr_4791027e006652a752058e511a3d00afa0ac3e2c5bf19145ad72437b8db6fe23",
+        "state": "SUCCEEDED"
+      }
+    ]
+  },
+  "recorded_athena_queries": [
+    {
+      "id": "1b1c5ad1-8a57-4cb5-add7-f7c0a6257a85",
+      "state": "SUCCEEDED"
+    },
+    {
+      "id": "4be2b02b-1167-4d58-9730-71a0f997bd7c",
+      "state": "SUCCEEDED"
+    },
+    {
+      "id": "2c1951da-79a0-4de7-a050-924fd05f5d79",
+      "state": "SUCCEEDED"
+    },
+    {
+      "id": "c3f06be7-491b-4362-b166-a519df8c27b8",
+      "state": "SUCCEEDED"
+    },
+    {
+      "id": "ec566c8f-4f0a-4011-aab2-c12a5a5d72c2",
+      "state": "SUCCEEDED"
+    },
+    {
+      "id": "43fcc7f2-9ee5-4ef7-8644-55aa1da17f41",
+      "state": "SUCCEEDED"
+    },
+    {
+      "id": "0cfeed32-ebae-4d49-8c26-a41b77df9110",
+      "state": "FAILED"
+    },
+    {
+      "id": "8f0c18d4-6a26-480b-b9b6-84d846de1030",
+      "state": "SUCCEEDED"
+    },
+    {
+      "id": "b93c0ef7-df0a-49a9-9d7a-18a09ceebdaf",
+      "state": "SUCCEEDED"
+    },
+    {
+      "id": "65e43660-f6e4-4ef0-b20a-a83ac0fc5cb1",
+      "state": "SUCCEEDED"
+    }
+  ],
+  "scope": "Known project jobs and ten recorded queries, not an account-wide inventory. No unrelated resources changed.",
+  "verification": "reviews/evaluation-cloud-verification-m00-v1.json",
+  "estimated_total_glue_compute_usd": 0.280623,
+  "s3_retained": true,
+  "new_schedules": 0,
+  "new_iam_grants": 0
+}

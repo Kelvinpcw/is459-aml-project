@@ -1,5 +1,5 @@
 {
-  "status": "approved-setup-partly-deployed-user-paused-before-run",
+  "status": "consumed-successfully-cloud-verified",
   "prepared_at_singapore": "2026-10-27T15:33:59.595655+08:00",
   "account_id": "160885259244",
   "region": "us-east-1",
@@ -14,11 +14,11 @@
   "annotations_sha256": "392d748d8d76efc1a96f6dc29ad8dd282c815de96537f0296bb0a7fa96ec4130",
   "policy_created": true,
   "role_created": true,
-  "code_uploaded": false,
+  "code_uploaded": true,
   "manifest_uploaded": true,
   "annotations_uploaded": true,
-  "job_saved": false,
-  "run_started": false,
+  "job_saved": true,
+  "run_started": true,
   "review_page": "IAM Create policy > Review and create; name/description filled; Create policy NOT clicked.",
   "evidence": "Implementation/evidence/evaluation-policy-review-20261027.png",
   "aws_linter": {
@@ -52,7 +52,7 @@
     "total_current_tests_covered": 49,
     "final_amount_format_assertion_passed": true,
     "runtime": "Local Spark3.5.6/Python3.11/Java21",
-    "cloud_evaluator_executed": false
+    "cloud_evaluator_executed": true
   },
   "local_reference": "Implementation/aws/reviews/evaluation-local-m00-v1.json",
   "local_result": {
@@ -66,14 +66,22 @@
     "recall_and_attempt_recovery": null,
     "benchmark_status": "development diagnostic only; no calibrated holdout claim"
   },
-  "next_action": "After user resumes, finish unsaved job configuration from evaluation-job-draft.json, save/verify, then use the existing unconsumed approval for one bounded evaluator run. Do not recreate policy/role or repeat input uploads.",
+  "next_action": "No evaluator rerun. Next scoped work is shared release-gate design/implementation; no additional cloud deployment or processing started.",
   "approved_at_singapore": "2026-10-27T15:35:48.526031+08:00",
   "user_authorization": "yes",
   "approved_scope": "Exact reviewed evaluator policy and Glue-only role, frozen uploads and one bounded first-minute Glue evaluation test; 2 G.1X,15-minute timeout,0 retries,existing US$1 total budget.",
   "role_permissions_verified": "Exactly one reviewed evaluator policy",
   "role_trust_verified": "glue.amazonaws.com only",
   "paused_at_singapore": "2026-10-27T15:47:03.623179+08:00",
-  "approval_consumed": false,
+  "approval_consumed": true,
   "unsaved_job_state": "Q2 job was cloned. New title is459-aml-evaluation-dev and exact frozen evaluator script were pasted/copied back successfully. Job details still need evaluator role, description, script filename/path, temporary path and full parameter replacement. NEVER save/run inherited Q2 settings.",
-  "pause_evidence": "Implementation/evidence/evaluation-unsaved-job-pause-20261027.png"
+  "pause_evidence": "Implementation/evidence/evaluation-unsaved-job-pause-20261027.png",
+  "deployed_at_singapore": "2026-10-28T01:37:02.281769+08:00",
+  "consumed_by_run_id": "jr_4791027e006652a752058e511a3d00afa0ac3e2c5bf19145ad72437b8db6fe23",
+  "started_at_singapore": "2026-10-28T01:37:35.222232+08:00",
+  "completed_at_singapore": "2026-10-28T01:40:16.924000+08:00",
+  "verified_at_singapore": "2026-10-28T01:41:00.120855+08:00",
+  "cloud_evaluator_executed": true,
+  "current_job_state": "Saved via verified project profile; all reviewed configuration fields matched; exact frozen script downloaded and hashed.",
+  "historical_fields_note": "review_page, unsaved_job_state and paused_at_singapore describe the earlier 27 October staging/pause, not current state."
 }

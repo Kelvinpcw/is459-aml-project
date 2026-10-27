@@ -1,0 +1,39 @@
+{
+  "observed_at_singapore": "2026-10-28T01:36:24.374558+08:00",
+  "account_id": "160885259244",
+  "region": "us-east-1",
+  "profile": "IS-459-BDA",
+  "role_matches_review": true,
+  "attached_policy_matches_review": true,
+  "no_inline_policies": true,
+  "manifest_sha256": "8be6f676eca024491b08ec4a110db34e5849f6400cc867271f93ab1156066f8f",
+  "annotations_sha256": "392d748d8d76efc1a96f6dc29ad8dd282c815de96537f0296bb0a7fa96ec4130",
+  "script_exists": false,
+  "job_exists": false,
+  "output_namespaces_empty": true,
+  "prior_project_runs": {
+    "is459-aml-prepare-dev": [
+      {
+        "id": "jr_bede7c68199d9eeec1e051d1b1a69bf9d9842aad199e097915f604c8ad246f08",
+        "state": "SUCCEEDED"
+      },
+      {
+        "id": "jr_ab63943d9cb2bfe3f8e7b96be19b04f1542190619123946ae313ef7d1a2f872d",
+        "state": "SUCCEEDED"
+      }
+    ],
+    "is459-aml-q1-dev": [
+      {
+        "id": "jr_8294653931045d22019ac21fc20f4d840159cba73f0600cc03aa25ee752a30c9",
+        "state": "SUCCEEDED"
+      }
+    ],
+    "is459-aml-q2-dev": [
+      {
+        "id": "jr_3b40b2a7f316355a065f2df49bf430c50ca60d4d389bb49f12ba4ee4bfc35687",
+        "state": "SUCCEEDED"
+      }
+    ]
+  },
+  "existing_approval_unconsumed": true
+}

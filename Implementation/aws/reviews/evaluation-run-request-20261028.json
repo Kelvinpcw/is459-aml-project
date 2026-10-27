@@ -1,0 +1,8 @@
+{
+  "requested_at_singapore": "2026-10-28T01:37:33.847612+08:00",
+  "job_name": "is459-aml-evaluation-dev",
+  "single_request_only": true,
+  "automatic_request_retries": 0,
+  "source_commit": "bc7e3fc9e777eaf1d2120c323aea65726e853bbf",
+  "script_sha256": "0416846ba0c00b93b77c122c4d663051d8480131de89b0f6cd2cc2b35639a9ec"
+}

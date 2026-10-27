@@ -1,8 +1,8 @@
-> **Current status — 2026-10-27T15:47:03.623179+08:00: PAUSED at user request. Exact evaluator grant approved/applied; role and input files deployed. Glue job remains unsaved; no paid evaluator run started. Resume from PROJECT_CHECKPOINT.md and finish job configuration. The single bounded-run approval is unconsumed. Earlier pending-approval statements below are historical.
+> **Current status — 28 October 2026: Cloud pilot SUCCEEDED; all four raw S3 files match frozen local predictions. The single approved run is consumed. All known project processing is terminal. See [cloud validation](results/EVALUATION_CLOUD_VALIDATION.md). Earlier proposed run/access details below document the reviewed contract.
 
 # Isolated Q2 evaluator — development pilot
 
-27 October 2026, Singapore. **Implemented, tested and replayed locally; not deployed or run in AWS.** The new evaluator access grant and single cloud test still require concrete confirmation. Preparation/Q1/Q2 remain unchanged.
+Reviewed 27 October and cloud-validated 28 October 2026, Singapore. The existing exact approval was used once. Preparation/Q1/Q2 outputs remain unchanged.
 
 ## What this version establishes
 
@@ -30,7 +30,7 @@ The first-minute replay **passes pipeline/evidence checks but cannot establish d
 
 ## Local verification
 
-The complete original 30 regression tests and initial 16 evaluator tests passed together (46 tests). The final 19 evaluator tests then passed, including 3 added manifest/index/output checks; a final amount-format assertion passed after canonical eight-decimal formatting. Thus all 49 current tests are covered. Runtime local Spark 3.5.6/Python 3.11/Java 21; Glue cloud validation is still pending.
+The complete original 30 regression tests and initial 16 evaluator tests passed together (46 tests). The final 19 evaluator tests then passed, including 3 added manifest/index/output checks; a final amount-format assertion passed after canonical eight-decimal formatting. Thus all 49 current tests are covered. Runtime local Spark 3.5.6/Python 3.11/Java 21; The subsequent Glue 5.1 run and all four raw-file comparisons passed; local tests were not rerun because source was unchanged.
 
 Tests cover overlapping cases, missed attempts retained in denominators, exact80% boundary, single-case recovery, wrong hubs/directed cycles, duplicate-looking ambiguous references, malformed/checksum-invalid blocks, full-population label reconciliation, out-of-window facts, exact money/currency separation/ties, zero denominators, immutable detector cases, unsafe holdout promotion, manifest pins, changed index fields and zero-case Parquet.
 
@@ -49,7 +49,7 @@ Planned uploads in bucket `is459-aml-g2team7-160885259244-us-east-1`:
 
 Glue 5.1,2×G.1X,15-minute timeout,0 retries, concurrency1, no optional metrics/notebooks/VPC/schedules. At the checked US$0.44/DPU-hour example,15 minutes estimate **US$0.22 compute** plus separately applicable overhead/S3/logs. Existing Glue estimate$0.243223; nominal combined compute ~$0.463223, within the unchanged US$1 prototype budget. This is not a hard account-wide billing cap. [AWS pricing](https://aws.amazon.com/glue/pricing/) checked 27 October 2026.
 
-The browser-control tool requires confirmation at action time for a new security-sensitive access grant even under general project permission. The exact policy/role plus one bounded test must be confirmed before creating/attaching the grant. Complete local work/review staging first. No existing preparation/Q1/Q2 grant needs reapproval.
+The exact evaluator grant was approved and created on 27 October. On 28 October the existing role and inputs were verified and reused, with no IAM changes. The one approved run has succeeded; this record does not authorise another run.
 
 ## Outputs, limits and resumption
 
@@ -57,4 +57,4 @@ Base `evaluation/dataset_version=<version>/run_id=<prep>/analysis_id=<q2>/evalua
 
 Output prefixes must be empty. Conditional S3 writes refuse replacement; PASSED quality is written only after all artifacts succeed. Failures remain FAILED/partial and cannot reuse the attempt namespace. A valid diagnostic report with null recall is completed evaluation, not successful holdout performance. Shared release/publication logic remains unimplemented.
 
-After approval: create/verify exact evaluator policy/role, upload/check exact code/manifest/annotations, save reviewed job, verify role/paths/arguments before one Run. Observe terminal state, stop on failure/no retry, read quality and compare all four reported artifact hashes and metrics with local reference. Keep compute terminal at handoff, update costs/checkpoint, then implement the shared release gate. Never rerun preparation/Q1/Q2 for this step.
+Deployment and the one approved test are complete. Preserve all immutable inputs/outputs and consumed approvals. Next work is a scoped shared release gate; wider detection/calibration and dashboard/orchestration remain incomplete. No additional deployment or paid run is started by this document.

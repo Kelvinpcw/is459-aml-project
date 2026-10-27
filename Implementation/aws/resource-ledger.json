@@ -3,7 +3,7 @@
   "region": "us-east-1",
   "project": "is459-aml",
   "user_instructions": {
-    "paid_runs": "General project permission is granted; retain US$1 total prototype budget and flag significant costs. Materially new Q2 service-role grant still requires computer-use action-time confirmation. Single bounded Q2 run prepared for the same confirmation.",
+    "paid_runs": "Retain US$1 total prototype budget and flag significant costs. Exact evaluator approval consumed by one successful bounded run; no retry or earlier-stage rerun. New scope needs its own review.",
     "cleanup": "After the project demo and checks are complete, tear down project-created compute and other costly resources. Retain S3 data.",
     "scope": "Only resources created for this project. Existing unrelated account resources are outside teardown scope."
   },
@@ -143,6 +143,19 @@
       "status": "created and verified; Glue-only trust, exactly one reviewed evaluator policy",
       "cleanup_action": "retain for reproducibility",
       "cost": "no compute running"
+    },
+    {
+      "service": "glue-batch-definition",
+      "name": "is459-aml-evaluation-dev",
+      "status": "saved; single run SUCCEEDED; four raw output files verified",
+      "runtime": "Glue 5.1",
+      "workers": 2,
+      "worker_type": "G.1X",
+      "timeout_minutes": 15,
+      "automatic_retries": 0,
+      "max_concurrent_runs": 1,
+      "cleanup_action": "retain idle definition; run is terminal",
+      "cost": "No compute running"
     }
   ],
   "paid_resources_started_by_this_project": [
@@ -237,11 +250,33 @@
       "case_evidence_transactions": 840,
       "all_bundles_and_physical_index_verified": true,
       "verified_at_singapore": "2026-10-27T03:55:26.095877+08:00"
+    },
+    {
+      "service": "glue-job-run",
+      "job_name": "is459-aml-evaluation-dev",
+      "run_id": "jr_4791027e006652a752058e511a3d00afa0ac3e2c5bf19145ad72437b8db6fe23",
+      "evaluation_id": "eval-dev-20220901-m00-v1",
+      "status": "SUCCEEDED",
+      "compute_still_running": false,
+      "workers": 2,
+      "worker_type": "G.1X",
+      "timeout_minutes": 15,
+      "automatic_retries": 0,
+      "approved_total_test_budget_usd": 1,
+      "started_at_singapore": "2026-10-28T01:37:35.637000+08:00",
+      "ended_at_singapore": "2026-10-28T01:40:16.924000+08:00",
+      "execution_seconds": 153,
+      "dpu_hours": 0.085,
+      "estimated_glue_compute_usd": 0.0374,
+      "quality_report_reviewed": true,
+      "report_status": "PASSED",
+      "all_four_raw_artifacts_match": true,
+      "verified_at_singapore": "2026-10-28T01:41:00.120855+08:00"
     }
   ],
-  "paused": true,
+  "paused": false,
   "awaiting_paid_run_approval": false,
-  "last_verified": "2026-10-27T03:55:26.095877+08:00; Q2 role/job/run/report, all 15 complete bundles and all Athena index fields verified. Four known project Glue runs and ten SQL statements terminal; no active project compute. No account-wide audit claimed.",
+  "last_verified": "2026-10-28T01:41:00.120855+08:00; five known Glue runs and ten recorded Athena statements freshly read and terminal. Four raw evaluator output hashes/bytes match frozen local reference. No account-wide billing audit claimed.",
   "s3_uploads": [
     "raw/development/20220901/transactions.csv.gz",
     "raw/development/20220901/accounts.csv.gz",
@@ -253,7 +288,8 @@
     "scripts/q2/q2_detect-v1.py",
     "manifests/detector-inputs/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/manifest.json",
     "manifests/evaluator-inputs/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=dev-20220901-v2/analysis_id=q2-dev-20220901-m00-v1/manifest.json",
-    "references/annotations/dataset_version=ibm-hi-medium-b1b99c68b765580f/HI-Medium_Patterns.txt"
+    "references/annotations/dataset_version=ibm-hi-medium-b1b99c68b765580f/HI-Medium_Patterns.txt",
+    "scripts/evaluation/evaluate_q2-v1.py"
   ],
   "paid_run_approvals": [
     {
@@ -295,6 +331,13 @@
       "scope": "exact Q2 role and one bounded first-minute test",
       "approved_by": "go ahead",
       "consumed_by_run_id": "jr_3b40b2a7f316355a065f2df49bf430c50ca60d4d389bb49f12ba4ee4bfc35687"
+    },
+    {
+      "date": "2026-10-28T01:37:35.222653+08:00",
+      "job_name": "is459-aml-evaluation-dev",
+      "scope": "Exact reviewed evaluator policy and Glue-only role, frozen uploads and one bounded first-minute Glue evaluation test; 2 G.1X,15-minute timeout,0 retries,existing US$1 total budget.",
+      "approved_by": "Existing exact approval plus user resumption on 28 October 2026",
+      "consumed_by_run_id": "jr_4791027e006652a752058e511a3d00afa0ac3e2c5bf19145ad72437b8db6fe23"
     }
   ],
   "active_paid_resources": [],
@@ -308,7 +351,7 @@
     "test_count": 12,
     "test_status": "PASSED"
   },
-  "estimated_total_glue_compute_usd": 0.243223,
+  "estimated_total_glue_compute_usd": 0.280623,
   "cleanup": {
     "status": "completed",
     "verified_at_singapore": "2026-10-26T10:31:09.543651+08:00",
@@ -320,8 +363,7 @@
     "retained": "raw inputs, scripts, all v2 outputs, local v1 review evidence, small static logs"
   },
   "local_drafts_not_deployed": [
-    "../sql/q2_validate_cases.sql (optional aggregate check; not needed after complete row verification)",
-    "evaluation-job-draft.json"
+    "../sql/q2_validate_cases.sql (optional aggregate check; not needed after complete row verification)"
   ],
   "pending_q1_authorization": "Implementation/aws/reviews/q1-pending-authorization.json",
   "last_preparation_turn": "2026-10-26T16:14:46.427810+08:00; Q1 locally tested (18 tests), IAM policy validated and staged for review only. No role/policy/job created and no paid run started.",
@@ -401,9 +443,9 @@
   },
   "last_local_preparation": "2026-10-27T15:33:59.595655+08:00; separate development evaluator implemented, tested and replayed. IAM policy staged at review only; no new role/policy/upload/job/run/query started. Earlier compute cost estimate unchanged.",
   "awaiting_access_grant_confirmation": false,
-  "pause_reason": "User requested checkpoint before paid evaluator processing. Evaluator policy/role and two input objects deployed; evaluator job unsaved.",
+  "pause_reason": null,
   "paused_at_singapore": "2026-10-27T15:47:03.623179+08:00",
-  "resumed_at_singapore": "2026-10-27T15:33:59.595655+08:00",
+  "resumed_at_singapore": "2026-10-28T01:37:35.222646+08:00",
   "last_q2_review": "2026-10-27T03:23:15.526633+08:00; resumed, all hashes match. User-created policy verified; Q2 role absent. Role review prepared with Glue-only trust and only existing Q2 policy. No role created, no uploads/job/run/query started.",
   "q2_athena_scan_cost_note": "One physical read displayed 5.75 KB; approximate scan cost below US$0.001. S3 requests/results and Catalog/log charges separate. Not an account-wide billing cap.",
   "q2_completed": {
@@ -413,7 +455,7 @@
     "verification": "Implementation/aws/reviews/q2-cloud-verification-m00-v1.json",
     "complete_for_declared_one_minute_window": true,
     "full_day_detector": false,
-    "evaluation_implemented": false
+    "evaluation_implemented": true
   },
   "pending_evaluation_authorization": "Implementation/aws/reviews/evaluation-pending-authorization.json",
   "local_evaluation_validation": {
@@ -425,9 +467,9 @@
     "positive_labels": 0,
     "annotation_attempts": 2756,
     "eligible_annotations": 0,
-    "deployed": false
+    "deployed": true
   },
-  "last_evaluation_deployment": "2026-10-27T15:47:03.623179+08:00; approved evaluator policy/role verified and exact manifest/original annotations uploaded successfully. Cloned job title and frozen code verified, but job not saved and no paid run started. Remaining one-run approval unconsumed; user paused.",
+  "last_evaluation_deployment": "2026-10-28T01:41:00.120855+08:00; approved evaluator saved, run once successfully and independently raw-byte verified; compute terminal.",
   "github_integration": {
     "observed_at_singapore": "2026-10-27T22:06:10.739130+08:00",
     "scope": "Q1 GitHub integration only; paused at user request",
@@ -460,5 +502,12 @@
     ],
     "troubleshooting": "Repository discovery initially failed; switching Script then Version Control remounted the panel and discovery succeeded without expanding access.",
     "local_git_repair": "Preserved 40 empty macOS Icon CR metadata files from .git/refs under /tmp/is459-git-finder-icon-20261027 and /tmp/is459-git-finder-metadata-20261027. Valid Git refs unchanged; fetch then succeeded."
+  },
+  "evaluation_completed": {
+    "evaluation_id": "eval-dev-20220901-m00-v1",
+    "run_id": "jr_4791027e006652a752058e511a3d00afa0ac3e2c5bf19145ad72437b8db6fe23",
+    "status": "VERIFIED",
+    "verification": "Implementation/aws/reviews/evaluation-cloud-verification-m00-v1.json",
+    "scope": "Frozen first minute only; no recall/recovery measurement or holdout result."
   }
 }

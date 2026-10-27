@@ -11,7 +11,7 @@ Verified 27 October 2026, Singapore. Setup is paused at the user's request after
 | Sync folder | `Implementation/glue/is459-aml-q1-dev` |
 | Verified sync commit | `24ec9b68e380910843932472113a93aebe6d3091` |
 
-Only Q1 is connected. Preparation, Q2 and the unsaved evaluator are unchanged. No automatic deployment, execution or schedule is configured. The integration branch has not been merged into main.
+Only Q1 is connected. At the connection checkpoint, preparation/Q2 were unchanged and the evaluator was unsaved. Its later cloud completion is recorded in [current status](../STATUS.md); it has no GitHub connection. No automatic deployment, execution or schedule is configured. The integration branch has not been merged into main.
 
 ## What the buttons do
 

@@ -2,7 +2,7 @@
 
 Think of **Q1 as a reporting job** and **Q2 as an investigation job**. They share the same data preparation, but perform different analyses.
 
-**Design reference, updated 27 October 2026:** This describes the full target workflow, not a completed deployment. Preparation/Q1 are validated for one day; Q2 is validated for its first minute only. The evaluator is locally implemented with partial cloud setup; its cloud run, scalable wider-window detection, dashboard, shared publication and orchestration remain incomplete. See [implementation status](../../Implementation/STATUS.md) for evidence and scope. The IBM dataset is synthetic.
+**Design reference, updated 28 October 2026:** This describes the full target workflow, not a completed deployment. Preparation/Q1 are validated for one day; Q2 is validated for its first minute only. The evaluator cloud run and exact output verification are complete for that frozen first minute. Scalable wider-window detection, calibrated holdout evaluation, dashboard, shared publication and orchestration remain incomplete. See [implementation status](../../Implementation/STATUS.md) for evidence and scope. The IBM dataset is synthetic.
 
 **Architecture diagrams:** [Simplified PDF](Simplified/AWS_Architecture_Pack.pdf) · [Detailed PDF](Detailed/AWS_Architecture_Pack.pdf)
 

@@ -1,6 +1,6 @@
 # Q2 evaluator local development validation
 
-27 October 2026. **Local PASSED; not deployed or run in AWS.**
+27 October 2026. **Historical local PASSED milestone.** The subsequent 28 October cloud run also passed and all four raw output files matched; see [cloud validation](EVALUATION_CLOUD_VALIDATION.md). The findings below describe the original local replay.
 
 | Measurement | Detector | Matched-volume amount diagnostic |
 | --- | ---: | ---: |

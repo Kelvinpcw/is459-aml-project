@@ -1,6 +1,6 @@
 # Full architecture and current implementation
 
-Updated 27 October 2026, Singapore. **Deployment remains paused.** The last cloud handoff is **2026-10-27T15:47:03.623179+08:00**: evaluator role/policy and input files deployed, Glue evaluator job unsaved, no cloud evaluator run started. Repository/documentation work does not resume that deployment.
+Updated 28 October 2026, Singapore. **The scoped evaluator continuation is complete.** Its single approved run succeeded and all four raw output files match frozen local predictions. All five known project Glue runs and ten recorded Athena statements are terminal; S3 is retained. No further processing or deployment is in progress. See [cloud evaluator validation](results/EVALUATION_CLOUD_VALIDATION.md).
 
 ## GitHub connection — 27 October 2026
 
@@ -13,7 +13,7 @@ The table below summarises retained evidence, not a new live AWS inventory. The 
 | S3 ingestion and shared Glue preparation | Clean transactions, enrich accounts, separate labels | Development slice validated: 4,465,985 transactions, 1,056 positive labels, no quarantine. Full source has 31,898,238 transactions and has not been processed/uploaded in full. |
 | Q1 reporting | Counts, rates, lift and support by format/bank pair, with currency filters | Glue Q1 and Athena validation complete for one day; full/format/USD baseline counts, rates, lifts and precision independently verified. Bank-pair support limitation documented. No dashboard/holdout result yet. |
 | Q2 detection | Label-free fan-in, fan-out and 2–4-account cycles with supporting cases | Cloud first-minute run PASSED: 15 fan-out cases / 840 evidence transactions. Every complete bundle/hash and all 15 Athena index rows match the frozen replay. Bounded prototype only; wider detection/evaluation remain. |
-| Separate evaluator | Compare frozen detector outputs with labels and eligible annotations | Local evaluator tests/replay verified. First-minute positives and eligible annotations are both zero, so recall/recovery are not measurable. Exact evaluator role/policy and manifest/annotations deployed; job unsaved and no cloud evaluator run. Calibrated holdout remains. |
+| Separate evaluator | Compare frozen detector outputs with labels and eligible annotations | Local evaluator tests/replay verified. First-minute positives and eligible annotations are both zero, so recall/recovery are not measurable. Glue run succeeded; all four raw artifact hashes/bytes match the frozen local reference. This completes pilot evaluation mechanics; calibrated holdout remains. |
 | Release checks and published manifest | Publish only complete, validated outputs; retain previous successful release on failure | Preparation/Q1/Q2 per-stage checks exist. Shared publication gate is not implemented. |
 | Glue Data Catalog and Athena | Describe/query summaries and case index | Q1 summary and Q2 case-index tables/partitions registered and read-validated. Ten saved Athena statements are terminal (seven Q1, three Q2). Private SSE-S3 results and 50 MB/query limit retained. |
 | EC2 dashboard | Streamlit/Plotly Q1 charts and PyVis Q2 case inspection | Planned; not implemented or launched. |
@@ -34,9 +34,9 @@ This is on-demand batch analysis of synthetic data. The current one-day prototyp
 
 1. Scalable Q2 fan patterns and bounded cycles over agreed lookbacks, with complete source evidence.
 2. Wider preparation/Q1 runs and eventual full-source accounting, after local validation and scoped authorisation.
-3. Evaluator cloud completion only when explicitly resumed; preserve existing exact grant/attempt boundaries rather than recreating resources.
+3. Integrate the completed pilot evaluator into a shared release gate; preserve frozen attempts and consumed approvals.
 4. Development calibration and frozen holdout evaluation on the declared eligible population.
 5. Shared release gate, one published-run manifest, dashboard and Step Functions integration.
 6. Full-run benchmarks, recovery tests, setup/run videos and final resource cleanup.
 
-See [pipeline design](../Proposal/Architecture/Pipeline_Explanation.md), [Q1 validation](results/Q1_VALIDATION.md), [Q2 validation](results/Q2_VALIDATION.md), [local evaluation](results/EVALUATION_LOCAL_VALIDATION.md) and [deployment checkpoint](../PROJECT_CHECKPOINT.md). AWS profile names are machine-local; each member must verify their own project login. See [SETUP.md](SETUP.md).
+See [pipeline design](../Proposal/Architecture/Pipeline_Explanation.md), [Q1 validation](results/Q1_VALIDATION.md), [Q2 validation](results/Q2_VALIDATION.md), [cloud evaluation](results/EVALUATION_CLOUD_VALIDATION.md), [local evaluation](results/EVALUATION_LOCAL_VALIDATION.md) and [deployment checkpoint](../PROJECT_CHECKPOINT.md). AWS profile names are machine-local; each member must verify their own project login. See [SETUP.md](SETUP.md).
