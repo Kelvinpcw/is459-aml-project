@@ -1,5 +1,15 @@
 # IS459 AML project — checkpoint
 
+## Latest scoped handoff — GitHub integration, 27 October 2026, Singapore
+
+**Paused at user request due to remaining conversation usage.** Q1 GitHub push and unchanged pull verified at commit `24ec9b68e380910843932472113a93aebe6d3091`. Account `160885259244`, Region `us-east-1`; job `is459-aml-q1-dev`, repository `Kelvinpcw/is459-aml-project`, branch `codex/glue-github-connection`, folder `Implementation/glue/is459-aml-q1-dev`. Exact source SHA256 `961fb197a2d9ea887835b9e4699bf8585dda09c1a4b0b5acaedadc57ab535dcd` matched frozen Q1 before/after. No jobs/queries started, IAM changed, schedules added or data outputs overwritten. Prior evaluator pause is still in force.
+
+User generated and entered the fine-grained token personally. Repository-only Contents read/write and Metadata read were verified; GitHub showed expiry **26 November 2026** (user changed the initially proposed expiry). No credential values retained in files. New console logins require connection information again; do not retrieve tokens from logs/chat.
+
+Read `Implementation/glue/README.md` and `Implementation/aws/reviews/github-glue-q1-connection-20261027.json`. Next: review integration PR before any merge; deliberately change Glue's source branch after agreement. Preparation/Q2/evaluator are not connected. Do not repeat the successful push/pull just for a screenshot. Future changed code needs a new versioned script path and fresh output identity, preserving frozen pilot artifacts.
+
+Local checkout is on the integration branch. Git fetch was repaired by preserving 40 empty Finder `Icon\r` files outside `.git/refs` in `/tmp/is459-git-finder-icon-20261027` and `/tmp/is459-git-finder-metadata-20261027`; no valid refs/history were changed. Live AWS tab may close safely; no running compute was started by this integration.
+
 > **Team access note:** AWS CLI profiles are configured separately on each member's computer; they are not shared through GitHub. Before cloud actions, verify your own authorised login/profile points to project account `160885259244` and Region `us-east-1`. Do not assume any local default account is correct. Start with `README.md`, `AGENTS.md` and `Implementation/STATUS.md` for onboarding. Reading this checkpoint does not resume deployment; recorded approvals concern specific historical attempts, not a teammate's new runs.
 
 Updated 27 October 2026 (Singapore). **PAUSED at user request. Evaluator policy/role and manifest/annotations are deployed; evaluator job remains an UNSAVED draft. No new paid run or query started. One specifically approved evaluator run is still unconsumed. Existing known project compute is terminal; retain S3.**

@@ -2,6 +2,10 @@
 
 Updated 27 October 2026, Singapore. **Deployment remains paused.** The last cloud handoff is **2026-10-27T15:47:03.623179+08:00**: evaluator role/policy and input files deployed, Glue evaluator job unsaved, no cloud evaluator run started. Repository/documentation work does not resume that deployment.
 
+## GitHub connection — 27 October 2026
+
+Q1 now has a verified manual GitHub push/pull connection on `codex/glue-github-connection`; its script is unchanged. Main has not been merged, other jobs are not connected, and no processing run or automatic deployment was started. Work is paused at the user's request. See [team instructions](glue/README.md) and [verification](aws/reviews/github-glue-q1-connection-20261027.json).
+
 The table below summarises retained evidence, not a new live AWS inventory. The proposal/diagrams describe the target design, not implemented features.
 
 | Component | Purpose | Current state |

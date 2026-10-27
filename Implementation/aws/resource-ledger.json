@@ -427,5 +427,38 @@
     "eligible_annotations": 0,
     "deployed": false
   },
-  "last_evaluation_deployment": "2026-10-27T15:47:03.623179+08:00; approved evaluator policy/role verified and exact manifest/original annotations uploaded successfully. Cloned job title and frozen code verified, but job not saved and no paid run started. Remaining one-run approval unconsumed; user paused."
+  "last_evaluation_deployment": "2026-10-27T15:47:03.623179+08:00; approved evaluator policy/role verified and exact manifest/original annotations uploaded successfully. Cloned job title and frozen code verified, but job not saved and no paid run started. Remaining one-run approval unconsumed; user paused.",
+  "github_integration": {
+    "observed_at_singapore": "2026-10-27T22:06:10.739130+08:00",
+    "scope": "Q1 GitHub integration only; paused at user request",
+    "account_id": "160885259244",
+    "region": "us-east-1",
+    "job": "is459-aml-q1-dev",
+    "repository": "Kelvinpcw/is459-aml-project",
+    "branch": "codex/glue-github-connection",
+    "folder": "Implementation/glue/is459-aml-q1-dev",
+    "synchronized_commit": "24ec9b68e380910843932472113a93aebe6d3091",
+    "push_verified": true,
+    "pull_verified": true,
+    "editor_matches_frozen_before_and_after": true,
+    "script_sha256": "961fb197a2d9ea887835b9e4699bf8585dda09c1a4b0b5acaedadc57ab535dcd",
+    "exported_definition_sha256": "e1d43f00f8a4630f43854c70f827cd012fb3f46f4d5e3a47835297616cf3e18b",
+    "credential_values_recorded": false,
+    "token_repository_scope": "is459-aml-project only",
+    "token_permissions": "Contents read/write; Metadata read; no account permissions",
+    "token_expiry_observed": "2026-11-26",
+    "expiry_note": "User-created token differs from the initially prepared 7-day expiry; observed on GitHub token details.",
+    "new_job_runs": 0,
+    "new_queries": 0,
+    "new_iam_grants": 0,
+    "new_schedules": 0,
+    "cost": "No new Glue processing compute; small S3 script-save requests only, not metered separately. Prior compute estimate unchanged.",
+    "remaining": [
+      "Review/merge integration PR; main unchanged",
+      "Preparation/Q2/evaluator not connected",
+      "Future deployments need reviewed versioned script/output paths; no automatic deployment or run configured"
+    ],
+    "troubleshooting": "Repository discovery initially failed; switching Script then Version Control remounted the panel and discovery succeeded without expanding access.",
+    "local_git_repair": "Preserved 40 empty macOS Icon CR metadata files from .git/refs under /tmp/is459-git-finder-icon-20261027 and /tmp/is459-git-finder-metadata-20261027. Valid Git refs unchanged; fetch then succeeded."
+  }
 }
