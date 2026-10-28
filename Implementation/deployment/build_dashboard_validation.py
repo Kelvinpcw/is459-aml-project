@@ -9,6 +9,7 @@ def build():
     instance=stack['Resources']['Instance']['Properties']
     instance['InstanceInitiatedShutdownBehavior']='terminate'
     userdata=instance['UserData']['Fn::Base64']
+    userdata=userdata.replace('/published/software/full-v2/dashboard.zip','/published/software/dashboard-v1/dashboard.zip')
     instance['UserData']['Fn::Base64']=userdata.replace('set -euo pipefail\n','set -euo pipefail\n# One-time safety timer; normal cleanup deletes the stack sooner.\nshutdown -h +60\n',1)
     assert stack['Resources']['Role']==original['Resources']['Role']
     return stack

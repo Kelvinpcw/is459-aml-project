@@ -1,0 +1,20 @@
+{
+  "version": "dashboard-v1",
+  "immutable": true,
+  "files": {
+    "dashboard.zip": {
+      "sha256": "73fe66af25dcd7990f56ac571fab1ff87ed5c7d14d92900691ab1d7d3e0eca34",
+      "bytes": 14886,
+      "s3_key": "published/software/dashboard-v1/dashboard.zip"
+    }
+  },
+  "source_files": {
+    ".streamlit/config.toml": "e2d668465e5f6145bacf289758e9d25457df4a4c4de5b6ec431ae395b739ae78",
+    "Implementation/dashboard/__init__.py": "8f7186dcc06091d5c0b12aed102e949d4f2a726aaa23a044177c1f56683d6789",
+    "Implementation/dashboard/app.py": "b6a5a1ffb4a55234e223f2b34e583d3a333097288862d661e175e98922c8d54a",
+    "Implementation/dashboard/data.py": "6e13d1cf8c023b3aac3a87ddbb89530e94000f712a0a075c02cbda6db978461c",
+    "Implementation/pipeline/__init__.py": "92da5243810d55a5896877629b2a3718e05c9d972a92cd1a4efe6f8f2afc4ce6",
+    "Implementation/pipeline/release.py": "59a9796a2748d001a83ff0510afe04bd187e1a2098c5e701f6fdf39f57142c0a",
+    "requirements-dashboard.txt": "ff5d58fe3358198c18754103ec3f07453687fe5a6a33a94072b2a2740b1d46d3"
+  }
+}

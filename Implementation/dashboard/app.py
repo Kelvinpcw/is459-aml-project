@@ -137,9 +137,31 @@ with validation:
     st.write('Q2 snapshot: '+release['q2']['window_start']+' to '+release['q2']['window_end'])
     try:
         metrics=verify_ref(s3,release['evaluation']['metrics'])
-        tx=metrics['detector_transaction_metrics'];a,b,c=st.columns(3)
+        if metrics.get('scoring_window'):
+            window=metrics['scoring_window']
+            st.write('Holdout payments: '+window['start_inclusive']+' inclusive to '+window['end_exclusive']+' exclusive (dataset-local time).')
+        tx=metrics['detector_transaction_metrics'];a,b,c,d=st.columns(4)
         a.metric('Eligible payments',f"{tx['population']:,}");b.metric('Labelled positives',f"{tx['positive_labels']:,}");c.metric('Recall',f"{tx['recall']:.2%}" if tx.get('recall') is not None else 'Not measurable')
+        d.metric('Precision',f"{tx['precision']:.3%}" if tx.get('precision') is not None else 'Not measurable')
         annotated=metrics['annotation_metrics'];st.write(f"Eligible annotated attempts: {annotated['eligible_attempts']:,}")
         st.write('Attempt recovery: '+(f"{annotated['attempt_recovery']:.2%}" if annotated.get('attempt_recovery') is not None else 'Not measurable'))
+        if 'amount_baseline_transaction_metrics' in metrics:
+            comparisons=[]
+            for label,key in [('Connected cases','detector_transaction_metrics'),('Matched-volume amount baseline','amount_baseline_transaction_metrics'),('Development-frozen amount baseline','frozen_amount_baseline_transaction_metrics')]:
+                if key not in metrics:continue
+                item=metrics[key]
+                comparisons.append({'Method':label,'Alerted payments':item['unique_alerted_transactions'],
+                    'Precision':f"{item['precision']:.3%}" if item.get('precision') is not None else 'Not measurable',
+                    'Recall':f"{item['recall']:.2%}" if item.get('recall') is not None else 'Not measurable'})
+            st.dataframe(pd.DataFrame(comparisons),hide_index=True,width='stretch')
+            coverage=annotated.get('amount_baseline_coverage_80pct')
+            st.write('Matched-volume amount baseline: '+(f'{coverage:.2%}' if coverage is not None else 'Not measurable')+' of eligible attempts have at least 80% evidence coverage.')
+        if 'recovery_improvement_percentage_points' in metrics:
+            improvement=metrics['recovery_improvement_percentage_points']
+            st.write('Typed recovery improvement over matched-volume amount coverage: '+(f'{improvement:.2f} percentage points' if improvement is not None else 'Not measurable'))
+            target=metrics.get('improvement_target_met')
+            st.write('Frozen five-percentage-point recovery target: '+('Met' if target is True else 'Unmet' if target is False else 'Not measurable'))
+        st.caption('Attempt recovery concerns only eligible supported annotations. It does not imply recovery of every laundering event or better individual-payment precision/recall than the amount baseline.')
+        for limitation in metrics.get('limitations',[]):st.write(limitation)
     except Exception as e:st.error(f'Unable to load evaluation: {e}')
     st.caption('Labels and annotations enter offline evaluation only. Structural leads are not proof of laundering or chronological return of identical funds.')
