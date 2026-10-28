@@ -63,7 +63,7 @@ The full file remains in scope for ingestion and processing. Separate reporting 
 | Requirement | Proposed acceptance criterion |
 | --- | --- |
 | Scale and completeness | Account for all 31,898,238 input transactions as accepted or quarantined; report all unmatched account joins without silently dropping records. |
-| Runtime | Aim for a complete refresh within 60 minutes, excluding initial upload and UI startup. Confirm or revise after a prototype benchmark. |
+| Batch processing | Run the pipeline on demand with no fixed refresh-completion deadline. Record observed runtime and cost for operational planning; runtime is not a pass/fail completion criterion. |
 | Interactive response | Aim for initial summaries within 10 seconds and cached interactions within 3 seconds. Display bounded case views, initially up to 100 nodes / 500 edges, with access to full evidence. |
 | Traceability | Every displayed aggregate/case identifies its dataset version, run, parameters, and supporting source records. |
 | Repeatability and recovery | Same input/code/configuration gives the same result; retry does not duplicate published outputs; failed runs do not replace the last successful release. |
@@ -247,7 +247,7 @@ Preliminary annotation checks found 42 fan-in, 24 fan-out, and 56 short-cycle at
 - **Counts and joins:** Input = accepted + quarantined; no multiplicative joins; report unknown entities; all risk totals reconcile to the same filtered population. Test both currency-selector sides and ensure N, L, support, and the baseline use the same filters.
 - **Leakage:** Check Q2's columns/permissions; varying evaluation-side held-out labels while keeping curated facts and source IDs fixed must not change generated cases.
 - **Recovery and repeatability:** Inject one failed stage or failed quality report; retry without duplicate outputs. The previous published release remains readable until a complete new release succeeds. Verify that the application never mixes Athena results and graph bundles from different run IDs.
-- **Performance and usability:** Measure full-run runtime, Athena bytes scanned, initial/cached UI latency, case load time, and successful completion of both user scenarios against Section 2 targets.
+- **Performance and usability:** Record full-run runtime and Athena bytes scanned for operational planning, without a fixed batch-completion deadline. Measure initial/cached UI latency and case load time against the interactive-response targets in Section 2, and verify successful completion of both user scenarios.
 - **Case provenance:** Every core pattern edge resolves to a source ID; retain complete evidence even when the visual graph is capped.
 
 **Metric cautions:** An always-legitimate classifier has 99.8896% full-file accuracy, so accuracy alone is unsuitable. Pattern annotations are incomplete: an unannotated case is not automatically a false positive, and transaction-level precision does not establish case-level truth.
