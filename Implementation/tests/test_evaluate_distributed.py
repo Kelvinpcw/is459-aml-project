@@ -25,6 +25,13 @@ class WiderEvaluationTests(DistributedTests):
   report={'status':'PASSED','rule_version':'structural-v2','detector_received_labels':False,'config':asdict(config),'statistics':stats}
   annotations=[{'attempt_id':'fixture:1','annotation_type':'FAN-OUT','transactions':[{k:r[k] for k in ['event_time','sender_bank','sender_account','receiver_bank','receiver_account','amount_paid','amount_received','payment_currency','receiving_currency','payment_format']} for r in rows[:5]]}]
   result=evaluate(facts,labels,index,pairs,evidence,prep,report,annotations)
+  # Compare the complete metrics/audit result against immutable pre-fix scoring
+  # on a small fixture, where the legacy Cartesian verification is inexpensive.
+  import importlib.util
+  spec=importlib.util.spec_from_file_location('frozen_evaluation_v3',Path(__file__).resolve().parents[1]/'releases/full-v3/evaluate_distributed.py')
+  legacy=importlib.util.module_from_spec(spec);spec.loader.exec_module(legacy)
+  golden=legacy.evaluate(facts,labels,index,pairs,evidence,prep,report,annotations)
+  self.assertEqual(result,golden)
   self.assertEqual(result['detector_transaction_metrics']['population'],6)
   self.assertEqual(result['detector_transaction_metrics']['recall'],1)
   self.assertEqual(result['annotation_metrics']['eligible_attempts'],1)

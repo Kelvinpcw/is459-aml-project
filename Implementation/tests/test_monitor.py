@@ -31,6 +31,7 @@ class MonitorTests(unittest.TestCase):
             self.assertEqual(ledger['full_completion']['status'],'RUNNING')
             self.assertEqual(ledger['active_paid_resources'],[])
             self.assertEqual(len(ledger['paid_resources_started_by_this_project']),1)
+            self.assertAlmostEqual(ledger['estimated_total_glue_compute_usd'],result['prior_compute_estimate_usd']+result['full_compute_estimate_usd'],places=5)
             sf.stop_execution.assert_not_called();glue.batch_stop_job_run.assert_not_called()
             self.assertLess(result['guard_total_estimate_usd'],28)
 

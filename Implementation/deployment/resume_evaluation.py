@@ -5,21 +5,22 @@ import boto3
 from botocore.exceptions import ClientError
 from deploy import ROOT,REV,STACK,save,execution_arns
 from build_stack import ACCOUNT,REGION,BUCKET
-from build_evaluation_resume import ATTEMPT,MAXIMUM_COMPUTE_USD
+from build_evaluation_resume import MAXIMUM_COMPUTE_USD
 
 
 def main():
- p=argparse.ArgumentParser();p.add_argument('--profile',required=True);p.add_argument('--phase',required=True,choices=['upload','update','verify','start','status']);args=p.parse_args()
+ p=argparse.ArgumentParser();p.add_argument('--profile',required=True);p.add_argument('--attempt',choices=['evaluation-resume1','evaluation-keyed1'],default='evaluation-resume1');p.add_argument('--phase',required=True,choices=['upload','update','verify','start','status']);args=p.parse_args()
  subprocess.run(['bash','Implementation/scripts/check_aws_profile.sh',args.profile],cwd=ROOT,check=True)
  s=boto3.Session(profile_name=args.profile,region_name=REGION)
  if s.client('sts').get_caller_identity()['Account']!=ACCOUNT:raise ValueError('Wrong project account')
  cfn=s.client('cloudformation');s3=s.client('s3');sf=s.client('stepfunctions');glue=s.client('glue')
- template_path=ROOT/'Implementation/deployment/evaluation-resume1-stack.json';template=json.loads(template_path.read_text())
- base=json.loads((ROOT/'Implementation/deployment/recovery1-stack.json').read_text())
+ attempt=args.attempt
+ template_path=ROOT/('Implementation/deployment/'+attempt+'-stack.json');template=json.loads(template_path.read_text())
+ base=json.loads((ROOT/('Implementation/deployment/'+('recovery1' if attempt=='evaluation-resume1' else 'evaluation-resume1')+'-stack.json')).read_text())
  for key,r in base['Resources'].items():
   if r['Type']=='AWS::IAM::Role' and template['Resources'][key]!=r:raise ValueError('Changed IAM grant')
  if args.phase=='upload':
-  folder=ROOT/'Implementation/releases/full-v3';manifest=json.loads((folder/'manifest.json').read_text())
+  folder=ROOT/('Implementation/releases/'+('full-v3' if attempt=='evaluation-resume1' else 'full-v4'));manifest=json.loads((folder/'manifest.json').read_text())
   for name,ref in manifest['files'].items():
    body=(folder/name).read_bytes()
    if hashlib.sha256(body).hexdigest()!=ref['sha256']:raise ValueError('Frozen payload changed')
@@ -28,7 +29,7 @@ def main():
     if error.response['Error']['Code'] not in ('PreconditionFailed','412'):raise
    actual=s3.get_object(Bucket=BUCKET,Key=ref['s3_key'])['Body'].read()
    if hashlib.sha256(actual).hexdigest()!=ref['sha256']:raise ValueError('Conflicting uploaded code')
-  save('evaluation-resume1-code-upload.json',{'manifest':manifest,'git_commit':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip()});print('New frozen code uploaded/hash-verified; no processing started.')
+  save(attempt+'-code-upload.json',{'manifest':manifest,'git_commit':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip()});print('New frozen code uploaded/hash-verified; no processing started.')
  elif args.phase=='update':
   deployed=cfn.get_template(StackName=STACK,TemplateStage='Original')['TemplateBody']
   if isinstance(deployed,str):deployed=json.loads(deployed)
@@ -36,7 +37,7 @@ def main():
   for name in ('prepare','risk','detect','evaluate','control'):
    if any(x['JobRunState'] not in ('SUCCEEDED','FAILED','STOPPED','TIMEOUT','ERROR','EXPIRED') for x in glue.get_job_runs(JobName='is459-aml-full-'+name)['JobRuns']):raise ValueError('Project compute active')
   response=cfn.update_stack(StackName=STACK,TemplateBody=json.dumps(template),Capabilities=['CAPABILITY_NAMED_IAM'],Parameters=[{'ParameterKey':k,'UsePreviousValue':True} for k in ('CodeVersion','RunId','ReleaseId')],ClientRequestToken=str(uuid.uuid4()))
-  save('evaluation-resume1-stack-update.json',{'response':response,'all_iam_resources_unchanged':True,'template_sha256':hashlib.sha256(template_path.read_bytes()).hexdigest()});print(json.dumps(response))
+  save(attempt+'-stack-update.json',{'response':response,'all_iam_resources_unchanged':True,'template_sha256':hashlib.sha256(template_path.read_bytes()).hexdigest()});print(json.dumps(response))
  elif args.phase=='verify':
   stack=cfn.describe_stacks(StackName=STACK)['Stacks'][0]
   if stack['StackStatus']!='UPDATE_COMPLETE':raise ValueError('Update not complete')
@@ -68,8 +69,8 @@ def main():
     if job.get(field)!=resolve(props[field]):raise ValueError('Job mismatch: '+field)
    expected_role='arn:aws:iam::'+ACCOUNT+':role/is459-aml-full-'+('evaluate' if key=='EvaluateJob' else 'control')
    if job['Role']!=expected_role:raise ValueError('Unexpected job role')
-  arn=next(x['OutputValue'] for x in stack['Outputs'] if x['OutputKey']=='EvaluationResumeWorkflowArn');machine=sf.describe_state_machine(stateMachineArn=arn)
-  definition=json.loads(template['Resources']['EvaluationResumeWorkflow']['Properties']['DefinitionString']['Fn::Sub'][0])
+  arn=next(x['OutputValue'] for x in stack['Outputs'] if x['OutputKey']==('EvaluationResumeWorkflowArn' if attempt=='evaluation-resume1' else 'KeyedEvaluationWorkflowArn'));machine=sf.describe_state_machine(stateMachineArn=arn)
+  definition=json.loads(template['Resources']['EvaluationResumeWorkflow' if attempt=='evaluation-resume1' else 'KeyedEvaluationWorkflow']['Properties']['DefinitionString']['Fn::Sub'][0])
   encoded=json.dumps(definition).replace('${EvaluateJob}','is459-aml-full-evaluate').replace('${ControlJob}','is459-aml-full-control')
   if json.loads(machine['definition'])!=json.loads(encoded):raise ValueError('Workflow mismatch')
   if machine['roleArn']!='arn:aws:iam::'+ACCOUNT+':role/is459-aml-full-workflow':raise ValueError('Unexpected workflow role')
@@ -86,24 +87,24 @@ def main():
   q2=json.loads(body)
   if q2['status']!='PASSED' or len(q2['snapshots'])!=28:raise ValueError('Incomplete detection')
   for prefix in ('evaluation/','quality/evaluation/'):
-   key=prefix+'dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=full-20261028-v1/analysis_id=q2-full-v2/evaluation_id=eval-full-v2/attempt='+ATTEMPT+'/'
+   key=prefix+'dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=full-20261028-v1/analysis_id=q2-full-v2/evaluation_id=eval-full-v2/attempt='+attempt+'/'
    if s3.list_objects_v2(Bucket=BUCKET,Prefix=key,MaxKeys=1).get('KeyCount'):raise ValueError('Fresh evaluation namespace required')
-  save('evaluation-resume1-deployment-verification.json',{'status':'VERIFIED_BEFORE_PROCESSING','workflow_arn':arn,'exact_template_jobs_workflow_roles_match':True,'q2_report_sha256':check['q2_report_sha256'],'fresh_evaluation_prefix':True,'budget_usd':30,'observed_at':datetime.datetime.now(datetime.timezone.utc).isoformat()});print('VERIFIED: unchanged grants, exact code/config, completed detection and fresh evaluation prefix.')
+  save(attempt+'-deployment-verification.json',{'status':'VERIFIED_BEFORE_PROCESSING','workflow_arn':arn,'exact_template_jobs_workflow_roles_match':True,'q2_report_sha256':check['q2_report_sha256'],'fresh_evaluation_prefix':True,'budget_usd':30,'observed_at':datetime.datetime.now(datetime.timezone.utc).isoformat()});print('VERIFIED: unchanged grants, exact code/config, completed detection and fresh evaluation prefix.')
  elif args.phase=='status':
   stack=cfn.describe_stacks(StackName=STACK)['Stacks'][0];print(stack['StackStatus'])
-  save('evaluation-resume1-stack-status.json',stack)
+  save(attempt+'-stack-status.json',stack)
  else:
-  if (REV/'evaluation-resume1-start.json').exists() or (REV/'evaluation-resume1-request.json').exists():raise ValueError('Continuation already requested; inspect instead')
-  verified=json.loads((REV/'evaluation-resume1-deployment-verification.json').read_text())
+  if (REV/(attempt+'-start.json')).exists() or (REV/(attempt+'-request.json')).exists():raise ValueError('Continuation already requested; inspect instead')
+  verified=json.loads((REV/(attempt+'-deployment-verification.json')).read_text())
   if verified['status']!='VERIFIED_BEFORE_PROCESSING':raise ValueError('Verify exact deployment first')
-  approval=json.loads((REV/'evaluation-resume1-authorization.json').read_text())
+  approval=json.loads((REV/(attempt+'-authorization.json')).read_text())
   if approval.get('approved') is not True or approval.get('template_sha256')!=hashlib.sha256(template_path.read_bytes()).hexdigest():raise ValueError('Exact processing scope not approved')
   costs=json.loads((REV/'full-monitor-latest.json').read_text())
   if costs['active_paid_resources'] or costs['guard_total_estimate_usd']+MAXIMUM_COMPUTE_USD>=28:raise ValueError('Active processing or insufficient budget reserve')
   current=s3.get_object(Bucket=BUCKET,Key='published/current.json');pointer=json.loads(current['Body'].read())
   if pointer['release_id']!='pilot-20220901-m00-v1':raise ValueError('Publication changed; inspect before proceeding')
   body={'expected_pointer_etag':current['ETag'],'total_budget_usd':30}
-  save('evaluation-resume1-request.json',{'state_machine':verified['workflow_arn'],'execution_name':'full-20261028-evaluation-resume1','input':body,'maximum_new_compute_estimate_usd':MAXIMUM_COMPUTE_USD,'completed_stages_reused':['preparation','q1','q2','catalog']})
-  result=sf.start_execution(stateMachineArn=verified['workflow_arn'],name='full-20261028-evaluation-resume1',input=json.dumps(body));save('evaluation-resume1-start.json',result);print(json.dumps(result,default=str))
+  save(attempt+'-request.json',{'state_machine':verified['workflow_arn'],'execution_name':'full-20261028-'+attempt,'input':body,'maximum_new_compute_estimate_usd':MAXIMUM_COMPUTE_USD,'completed_stages_reused':['preparation','q1','q2','catalog']})
+  result=sf.start_execution(stateMachineArn=verified['workflow_arn'],name='full-20261028-'+attempt,input=json.dumps(body));save(attempt+'-start.json',result);print(json.dumps(result,default=str))
 
 if __name__=='__main__':main()

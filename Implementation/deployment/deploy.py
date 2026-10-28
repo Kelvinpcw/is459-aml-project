@@ -9,7 +9,7 @@ ROOT=Path(__file__).resolve().parents[2];REV=ROOT/'Implementation/aws/reviews'
 STACK='is459-aml-full-v1';DASHBOARD='is459-aml-dashboard-v1'
 
 
-EXECUTION_MARKERS=('full-workflow-start.json','full-recovery1-start.json','evaluation-resume1-start.json')
+EXECUTION_MARKERS=('full-workflow-start.json','full-recovery1-start.json','evaluation-resume1-start.json','evaluation-keyed1-start.json')
 TERMINAL_JOBS={'SUCCEEDED','FAILED','STOPPED','TIMEOUT','ERROR','EXPIRED'}
 
 

@@ -43,6 +43,7 @@ def main():
  if not ledger_path.exists():
   ledger_path.parent.mkdir(parents=True,exist_ok=True);ledger_path.write_bytes((ROOT/'Implementation/aws/resource-ledger.json').read_bytes())
  ledger=json.loads(ledger_path.read_text());ledger['active_paid_resources']=active
+ ledger['estimated_total_glue_compute_usd']=round(.280623+compute,6)
  ledger['full_completion'].update(status=execution['status'],full_processing_started=True,execution_arn=start['executionArn'],observed_at_singapore=result['observed_at_singapore'],estimated_compute_usd=round(compute,6))
  for group in jobs.values():
   for item in group:

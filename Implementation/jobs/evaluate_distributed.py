@@ -32,6 +32,22 @@ def validate_calibration(policy,config):
     if not policy.get('improvement_target'):raise ValueError('Improvement target must be declared before holdout')
 
 
+def complete_fan_pairs(fan,edges):
+    """Reconstruct fan pairs with keyed joins; OR direction predicates are Cartesian.
+
+    Time/cutoff bounds remain case-local. Parallel payments collapse only here
+    to directional pairs; the independent evidence check retains source IDs.
+    """
+    from pyspark.sql import functions as F
+    directions=[]
+    for pattern,endpoint in [('fan_in','dst'),('fan_out','src')]:
+        f=fan.filter(F.col('pattern_type')==pattern).alias('f');e=edges.alias('e')
+        matches=f.join(e,F.col('f.hub')==F.col('e.'+endpoint))
+        directions.append(matches.filter((F.col('e.event_time')>=F.col('f.window_start'))&(F.col('e.event_time')<F.col('f.window_end'))&(F.col('e.event_time')<=F.col('f.snapshot_cutoff')))
+            .select(F.col('f.case_id').alias('case_id'),F.col('e.src').alias('src'),F.col('e.dst').alias('dst')))
+    return directions[0].unionByName(directions[1]).distinct()
+
+
 def evaluate(facts,labels,index,pairs,evidence,prep,detector,attempts,calibration=None,scoring_window=None):
     from pyspark.sql import functions as F,types as T,Window
     cfg=detector['config'];start,end,cutoff=(datetime.fromisoformat(cfg[x]) for x in ('window_start','window_end','snapshot_cutoff'))
@@ -88,10 +104,7 @@ def evaluate(facts,labels,index,pairs,evidence,prep,detector,attempts,calibratio
     # Re-derive complete membership from frozen pairs and their case-local history.
     ed=history.withColumn('src',F.to_json(F.array('sender_bank','sender_account'))).withColumn('dst',F.to_json(F.array('receiver_bank','receiver_account'))).filter('src<>dst')
     fan=index.filter(F.col('pattern_type').isin('fan_in','fan_out')).select('case_id','hub','pattern_type','window_start','window_end','snapshot_cutoff')
-    f,e=fan.alias('f'),ed.alias('e')
-    hub_match=((F.col('f.pattern_type')=='fan_in')&(F.col('f.hub')==F.col('e.dst')))|((F.col('f.pattern_type')=='fan_out')&(F.col('f.hub')==F.col('e.src')))
-    complete_fan=(f.join(e,hub_match).filter((F.col('e.event_time')>=F.col('f.window_start'))&(F.col('e.event_time')<F.col('f.window_end'))&(F.col('e.event_time')<=F.col('f.snapshot_cutoff')))
-      .select(F.col('f.case_id').alias('case_id'),F.col('e.src').alias('src'),F.col('e.dst').alias('dst')).distinct())
+    complete_fan=complete_fan_pairs(fan,ed)
     actual_fan=pairs.join(fan.select('case_id'),'case_id').select('case_id','src','dst')
     if complete_fan.exceptAll(actual_fan).limit(1).count() or actual_fan.exceptAll(complete_fan).limit(1).count():raise ValueError('Fan topology drops or adds counterparties')
     if complete_fan.groupBy('case_id').count().filter(F.col('count')<cfg['min_counterparties']).limit(1).count():raise ValueError('Fan does not meet frozen degree')

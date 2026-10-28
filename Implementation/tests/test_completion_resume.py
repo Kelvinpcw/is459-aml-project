@@ -52,6 +52,6 @@ class CompletionResumeTests(unittest.TestCase):
     def test_evaluation_and_calibration_logic_are_frozen(self):
         def functions(path):return {n.name:ast.dump(n) for n in ast.parse(path.read_text()).body if isinstance(n,(ast.FunctionDef,ast.AsyncFunctionDef))}
         old=functions(ROOT/'releases/full-v2/evaluate_distributed.py');new=functions(ROOT/'jobs/evaluate_distributed.py')
-        for name in ('metrics','validate_calibration','evaluate','freeze_calibration'):self.assertEqual(old[name],new[name],name)
+        for name in ('metrics','validate_calibration','freeze_calibration'):self.assertEqual(old[name],new[name],name)
 
 if __name__=='__main__':unittest.main()

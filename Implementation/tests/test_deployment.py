@@ -61,6 +61,17 @@ class DeploymentTests(unittest.TestCase):
   self.assertTrue(instance['BlockDeviceMappings'][0]['Ebs']['DeleteOnTermination'])
   self.assertEqual(stack['Resources']['Group']['Properties']['SecurityGroupIngress'],[])
 
+ def test_keyed_resume_preserves_prior_workflows_and_every_grant(self):
+  from build_keyed_evaluation import build as keyed
+  from build_evaluation_resume import build as previous
+  before=previous();after=keyed()
+  for key,value in before['Resources'].items():
+   if value['Type']=='AWS::IAM::Role' or key in ('PrepareJob','RiskJob','DetectJob','Workflow','RecoveryWorkflow','EvaluationResumeWorkflow','FullDatabase'):
+    self.assertEqual(value,after['Resources'][key])
+  definition=json.loads(after['Resources']['KeyedEvaluationWorkflow']['Properties']['DefinitionString']['Fn::Sub'][0])
+  self.assertEqual(set(definition['States']),{'Evaluate','Publish','Failed'})
+  self.assertEqual(after['Resources']['EvaluateJob']['Properties']['DefaultArguments']['--attempt-id'],'evaluation-keyed1')
+
  def test_schedule_overlaps_and_preserves_full_daily_history(self):
   windows=schedule('2022-09-02T00:00:00','2022-09-29T00:00:00')
   self.assertEqual(len(windows),28)
