@@ -71,6 +71,8 @@ For final validation, `dashboard-validation-stack.json` adds a one-time60minute 
 
 A follow-up keyed verification correction is prepared as `evaluation-keyed1-stack.json` / frozen full-v4. It replaces the fan reconstruction OR join with separate incoming/outgoing equi-joins; equivalent result and no-Cartesian plan tests are required. Use `resume_evaluation.py --attempt evaluation-keyed1` only for its explicitly approved new attempt. The driver uses separate approval/request/start records and preserves all old attempts. Original detector/scoring formulas/holdout settings are unchanged. The current operator checkpoint, not this runbook, determines the next authorised stage.
 
+`evaluation-lineage1-stack.json` / full-v5 adds systematic fresh references for every evaluator join; values/types/scoring settings are unchanged. Its proposed evaluator uses10G.1Xworkers/45min plus the existing bounded publisher (maximum new compute estimate3.446667USD). It needs its own scoped approval and fresh attempt namespace. `resume_evaluation.py --attempt evaluation-lineage1` uses separate approval/request/start markers; do not repeat older attempts.
+
 ## Private dashboard and demo
 
 Create the separate temporary dashboard stack only when ready to demonstrate. It uses an existing default VPC/subnet, one`t3.small`, an encrypted8GB root disk with delete-on-termination, IMDSv2 and no inbound security-group rules. Access is through SSM port forwarding, not a public web port. Its role reads published analysis and metrics only, never raw facts/labels, and writes only its restricted Athena result prefix. The dashboard workgroup has a512MB/query scan cutoff and app queries cancel after30seconds.

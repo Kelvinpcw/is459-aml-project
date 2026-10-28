@@ -72,6 +72,17 @@ class DeploymentTests(unittest.TestCase):
   self.assertEqual(set(definition['States']),{'Evaluate','Publish','Failed'})
   self.assertEqual(after['Resources']['EvaluateJob']['Properties']['DefaultArguments']['--attempt-id'],'evaluation-keyed1')
 
+ def test_lineage_resume_preserves_all_grants_and_uses_reviewed_capacity(self):
+  from build_lineage_evaluation import build as lineage,MAXIMUM_COMPUTE_USD
+  from build_keyed_evaluation import build as keyed
+  old=keyed();new=lineage()
+  for key,value in old['Resources'].items():
+   if value['Type']=='AWS::IAM::Role' or key in ('PrepareJob','RiskJob','DetectJob','FullDatabase','Workflow','RecoveryWorkflow','EvaluationResumeWorkflow','KeyedEvaluationWorkflow'):
+    self.assertEqual(value,new['Resources'][key])
+  self.assertEqual(new['Resources']['EvaluateJob']['Properties']['NumberOfWorkers'],10)
+  self.assertEqual(new['Resources']['EvaluateJob']['Properties']['Timeout'],45)
+  self.assertAlmostEqual(MAXIMUM_COMPUTE_USD,3.4466666667)
+
  def test_schedule_overlaps_and_preserves_full_daily_history(self):
   windows=schedule('2022-09-02T00:00:00','2022-09-29T00:00:00')
   self.assertEqual(len(windows),28)

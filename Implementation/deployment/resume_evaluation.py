@@ -6,21 +6,28 @@ from botocore.exceptions import ClientError
 from deploy import ROOT,REV,STACK,save,execution_arns
 from build_stack import ACCOUNT,REGION,BUCKET
 from build_evaluation_resume import MAXIMUM_COMPUTE_USD
+from build_lineage_evaluation import MAXIMUM_COMPUTE_USD as LINEAGE_COMPUTE_USD
+ATTEMPTS={
+ "evaluation-resume1":("full-v3","recovery1","EvaluationResumeWorkflow",MAXIMUM_COMPUTE_USD),
+ "evaluation-keyed1":("full-v4","evaluation-resume1","KeyedEvaluationWorkflow",MAXIMUM_COMPUTE_USD),
+ "evaluation-lineage1":("full-v5","evaluation-keyed1","LineageEvaluationWorkflow",LINEAGE_COMPUTE_USD),
+}
 
 
 def main():
- p=argparse.ArgumentParser();p.add_argument('--profile',required=True);p.add_argument('--attempt',choices=['evaluation-resume1','evaluation-keyed1'],default='evaluation-resume1');p.add_argument('--phase',required=True,choices=['upload','update','verify','start','status']);args=p.parse_args()
+ p=argparse.ArgumentParser();p.add_argument('--profile',required=True);p.add_argument('--attempt',choices=list(ATTEMPTS),default='evaluation-resume1');p.add_argument('--phase',required=True,choices=['upload','update','verify','start','status']);args=p.parse_args()
  subprocess.run(['bash','Implementation/scripts/check_aws_profile.sh',args.profile],cwd=ROOT,check=True)
  s=boto3.Session(profile_name=args.profile,region_name=REGION)
  if s.client('sts').get_caller_identity()['Account']!=ACCOUNT:raise ValueError('Wrong project account')
  cfn=s.client('cloudformation');s3=s.client('s3');sf=s.client('stepfunctions');glue=s.client('glue')
  attempt=args.attempt
+ release_version,base_version,workflow_key,maximum_compute=ATTEMPTS[attempt]
  template_path=ROOT/('Implementation/deployment/'+attempt+'-stack.json');template=json.loads(template_path.read_text())
- base=json.loads((ROOT/('Implementation/deployment/'+('recovery1' if attempt=='evaluation-resume1' else 'evaluation-resume1')+'-stack.json')).read_text())
+ base=json.loads((ROOT/('Implementation/deployment/'+base_version+'-stack.json')).read_text())
  for key,r in base['Resources'].items():
   if r['Type']=='AWS::IAM::Role' and template['Resources'][key]!=r:raise ValueError('Changed IAM grant')
  if args.phase=='upload':
-  folder=ROOT/('Implementation/releases/'+('full-v3' if attempt=='evaluation-resume1' else 'full-v4'));manifest=json.loads((folder/'manifest.json').read_text())
+  folder=ROOT/('Implementation/releases/'+release_version);manifest=json.loads((folder/'manifest.json').read_text())
   for name,ref in manifest['files'].items():
    body=(folder/name).read_bytes()
    if hashlib.sha256(body).hexdigest()!=ref['sha256']:raise ValueError('Frozen payload changed')
@@ -69,8 +76,8 @@ def main():
     if job.get(field)!=resolve(props[field]):raise ValueError('Job mismatch: '+field)
    expected_role='arn:aws:iam::'+ACCOUNT+':role/is459-aml-full-'+('evaluate' if key=='EvaluateJob' else 'control')
    if job['Role']!=expected_role:raise ValueError('Unexpected job role')
-  arn=next(x['OutputValue'] for x in stack['Outputs'] if x['OutputKey']==('EvaluationResumeWorkflowArn' if attempt=='evaluation-resume1' else 'KeyedEvaluationWorkflowArn'));machine=sf.describe_state_machine(stateMachineArn=arn)
-  definition=json.loads(template['Resources']['EvaluationResumeWorkflow' if attempt=='evaluation-resume1' else 'KeyedEvaluationWorkflow']['Properties']['DefinitionString']['Fn::Sub'][0])
+  arn=next(x['OutputValue'] for x in stack['Outputs'] if x['OutputKey']==workflow_key+'Arn');machine=sf.describe_state_machine(stateMachineArn=arn)
+  definition=json.loads(template['Resources'][workflow_key]['Properties']['DefinitionString']['Fn::Sub'][0])
   encoded=json.dumps(definition).replace('${EvaluateJob}','is459-aml-full-evaluate').replace('${ControlJob}','is459-aml-full-control')
   if json.loads(machine['definition'])!=json.loads(encoded):raise ValueError('Workflow mismatch')
   if machine['roleArn']!='arn:aws:iam::'+ACCOUNT+':role/is459-aml-full-workflow':raise ValueError('Unexpected workflow role')
@@ -100,11 +107,11 @@ def main():
   approval=json.loads((REV/(attempt+'-authorization.json')).read_text())
   if approval.get('approved') is not True or approval.get('template_sha256')!=hashlib.sha256(template_path.read_bytes()).hexdigest():raise ValueError('Exact processing scope not approved')
   costs=json.loads((REV/'full-monitor-latest.json').read_text())
-  if costs['active_paid_resources'] or costs['guard_total_estimate_usd']+MAXIMUM_COMPUTE_USD>=28:raise ValueError('Active processing or insufficient budget reserve')
+  if costs['active_paid_resources'] or costs['guard_total_estimate_usd']+maximum_compute>=28:raise ValueError('Active processing or insufficient budget reserve')
   current=s3.get_object(Bucket=BUCKET,Key='published/current.json');pointer=json.loads(current['Body'].read())
   if pointer['release_id']!='pilot-20220901-m00-v1':raise ValueError('Publication changed; inspect before proceeding')
   body={'expected_pointer_etag':current['ETag'],'total_budget_usd':30}
-  save(attempt+'-request.json',{'state_machine':verified['workflow_arn'],'execution_name':'full-20261028-'+attempt,'input':body,'maximum_new_compute_estimate_usd':MAXIMUM_COMPUTE_USD,'completed_stages_reused':['preparation','q1','q2','catalog']})
+  save(attempt+'-request.json',{'state_machine':verified['workflow_arn'],'execution_name':'full-20261028-'+attempt,'input':body,'maximum_new_compute_estimate_usd':maximum_compute,'completed_stages_reused':['preparation','q1','q2','catalog']})
   result=sf.start_execution(stateMachineArn=verified['workflow_arn'],name='full-20261028-'+attempt,input=json.dumps(body));save(attempt+'-start.json',result);print(json.dumps(result,default=str))
 
 if __name__=='__main__':main()

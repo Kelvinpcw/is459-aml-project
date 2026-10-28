@@ -8,10 +8,10 @@ class ShutdownTests(unittest.TestCase):
  def test_old_terminal_executions_do_not_hide_active_evaluator_resume(self):
   with tempfile.TemporaryDirectory() as d:
    root=Path(d);arns=[]
-   for marker,name in zip(EXECUTION_MARKERS,('full-pipeline','full-recovery1','evaluation-resume1','evaluation-keyed1')):
+   for marker,name in zip(EXECUTION_MARKERS,('full-pipeline','full-recovery1','evaluation-resume1','evaluation-keyed1','evaluation-lineage1')):
     arn='arn:aws:states:us-east-1:160885259244:execution:is459-aml-'+name+':fixture';arns.append(arn)
     (root/marker).write_text(json.dumps({'executionArn':arn}))
-   sf=Mock();sf.describe_execution.side_effect=lambda **kw:{'status':dict(zip(arns,('FAILED','ABORTED','ABORTED','RUNNING')))[kw['executionArn']]}
+   sf=Mock();sf.describe_execution.side_effect=lambda **kw:{'status':dict(zip(arns,('FAILED','ABORTED','ABORTED','FAILED','RUNNING')))[kw['executionArn']]}
    glue=Mock();glue.get_job_runs.side_effect=lambda **kw:{'JobRuns':[{'Id':'owned-eval','JobRunState':'RUNNING'}] if kw['JobName']=='is459-aml-full-evaluate' else []}
    result=stop_owned_processing(sf,glue,root)
    sf.stop_execution.assert_called_once_with(executionArn=arns[-1],cause='User project cleanup or budget control')

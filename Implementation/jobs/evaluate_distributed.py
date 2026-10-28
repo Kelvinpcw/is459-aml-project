@@ -32,6 +32,16 @@ def validate_calibration(policy,config):
     if not policy.get('improvement_target'):raise ValueError('Improvement target must be declared before holdout')
 
 
+def independent_frame(frame):
+    """Fresh expression IDs for joins of checkpoint-derived relations.
+
+    Values, column order/types and nullability are preserved. Glue's analyzer
+    can otherwise confuse shared LogicalRDD attributes on both join sides.
+    """
+    from pyspark.sql import functions as F
+    return frame.select(*(F.col(c).alias(c) for c in frame.columns))
+
+
 def complete_fan_pairs(fan,edges):
     """Reconstruct fan pairs with keyed joins; OR direction predicates are Cartesian.
 
@@ -73,7 +83,7 @@ def evaluate(facts,labels,index,pairs,evidence,prep,detector,attempts,calibratio
     for col in ('amount_paid','amount_received'):
         if facts.schema[col].dataType!=T.DecimalType(38,8):raise ValueError('Exact decimal contract required')
     if labels.filter(~F.coalesce(F.col('is_laundering').isin(0,1),F.lit(False))).limit(1).count():raise ValueError('Invalid label')
-    joined=facts.join(labels,keys).localCheckpoint(eager=True)
+    joined=facts.join(independent_frame(labels),keys).localCheckpoint(eager=True)
     if joined.count()!=expected:raise ValueError('Fact-label join differs')
     actual={r['payment_format']:(r['n'],r['l']) for r in joined.groupBy('payment_format').agg(F.count('*').alias('n'),F.sum('is_laundering').alias('l')).collect()}
     if actual!={r['payment_format']:(r['transactions'],r['labelled_laundering']) for r in prep['accepted_by_format']}:raise ValueError('Full per-format labels differ')
@@ -93,19 +103,19 @@ def evaluate(facts,labels,index,pairs,evidence,prep,detector,attempts,calibratio
     if index.count()!=detector['statistics']['case_count'] or index.groupBy('case_id').count().filter('count>1').limit(1).count():raise ValueError('Case index incomplete/duplicated')
     if evidence.count()!=detector['statistics']['case_evidence_rows_including_case_overlap']:raise ValueError('Evidence inventory incomplete')
     if evidence.groupBy('case_id','source_id').count().filter('count>1').limit(1).count():raise ValueError('Duplicate evidence membership')
-    if evidence.join(history.select('source_id'),'source_id','left_anti').limit(1).count():raise ValueError('Foreign/out-of-window evidence')
-    if evidence.select('case_id').distinct().join(index.select('case_id'),'case_id','left_anti').limit(1).count():raise ValueError('Foreign case evidence')
+    if evidence.join(independent_frame(history.select('source_id')),'source_id','left_anti').limit(1).count():raise ValueError('Foreign/out-of-window evidence')
+    if evidence.select('case_id').distinct().join(independent_frame(index.select('case_id')),'case_id','left_anti').limit(1).count():raise ValueError('Foreign case evidence')
     # Select only snapshots available within this scoring period. Future cases
     # must never turn historical payments into earlier alerts.
     index=index.filter((F.col('snapshot_cutoff')<=F.lit(score_end))&(F.col('snapshot_cutoff')>F.lit(score_start)))
     selected_ids=index.select('case_id')
-    evidence=evidence.join(selected_ids,'case_id')
-    pairs=pairs.join(selected_ids,'case_id')
+    evidence=evidence.join(independent_frame(selected_ids),'case_id')
+    pairs=pairs.join(independent_frame(selected_ids),'case_id')
     # Re-derive complete membership from frozen pairs and their case-local history.
     ed=history.withColumn('src',F.to_json(F.array('sender_bank','sender_account'))).withColumn('dst',F.to_json(F.array('receiver_bank','receiver_account'))).filter('src<>dst')
     fan=index.filter(F.col('pattern_type').isin('fan_in','fan_out')).select('case_id','hub','pattern_type','window_start','window_end','snapshot_cutoff')
     complete_fan=complete_fan_pairs(fan,ed)
-    actual_fan=pairs.join(fan.select('case_id'),'case_id').select('case_id','src','dst')
+    actual_fan=pairs.join(independent_frame(fan.select('case_id')),'case_id').select('case_id','src','dst')
     if complete_fan.exceptAll(actual_fan).limit(1).count() or actual_fan.exceptAll(complete_fan).limit(1).count():raise ValueError('Fan topology drops or adds counterparties')
     if complete_fan.groupBy('case_id').count().filter(F.col('count')<cfg['min_counterparties']).limit(1).count():raise ValueError('Fan does not meet frozen degree')
     cycle=index.filter(F.col('pattern_type').startswith('cycle_'))
@@ -113,12 +123,12 @@ def evaluate(facts,labels,index,pairs,evidence,prep,detector,attempts,calibratio
     if cycle.filter(invalid_cycle).limit(1).count():raise ValueError('Invalid oriented cycle participants')
     cycle_pairs=(cycle.select('case_id','ordered_nodes',F.posexplode('ordered_nodes').alias('pos','src'))
       .withColumn('dst',F.element_at('ordered_nodes',((F.col('pos')+1)%F.size('ordered_nodes'))+1)).select('case_id','src','dst'))
-    actual_cycle=pairs.join(cycle.select('case_id'),'case_id').select('case_id','src','dst')
+    actual_cycle=pairs.join(independent_frame(cycle.select('case_id')),'case_id').select('case_id','src','dst')
     if cycle_pairs.exceptAll(actual_cycle).limit(1).count() or actual_cycle.exceptAll(cycle_pairs).limit(1).count():raise ValueError('Cycle directional edges differ')
     if index.filter(~F.col('pattern_type').isin('fan_in','fan_out','cycle_2','cycle_3','cycle_4')).limit(1).count():raise ValueError('Unsupported case type')
     actual_counts=evidence.groupBy('case_id').agg(F.count('*').alias('observed_evidence'),F.min('event_time').alias('first'),F.max('event_time').alias('last'))
-    if index.join(actual_counts,'case_id','left').filter(F.col('observed_evidence').isNull()|(F.col('observed_evidence')!=F.col('evidence_transaction_count'))|(F.col('first')!=F.col('first_event_time'))|(F.col('last')!=F.col('last_event_time'))).limit(1).count():raise ValueError('Case evidence counts/times differ')
-    expected_members=(pairs.join(index.select('case_id','window_start','window_end','snapshot_cutoff'),'case_id').join(ed,['src','dst'])
+    if index.join(independent_frame(actual_counts),'case_id','left').filter(F.col('observed_evidence').isNull()|(F.col('observed_evidence')!=F.col('evidence_transaction_count'))|(F.col('first')!=F.col('first_event_time'))|(F.col('last')!=F.col('last_event_time'))).limit(1).count():raise ValueError('Case evidence counts/times differ')
+    expected_members=(pairs.join(independent_frame(index.select('case_id','window_start','window_end','snapshot_cutoff')),'case_id').join(independent_frame(ed),['src','dst'])
       .filter((F.col('event_time')>=F.col('window_start'))&(F.col('event_time')<F.col('window_end'))&(F.col('event_time')<=F.col('snapshot_cutoff'))).select('case_id','source_id'))
     actual_members=evidence.select('case_id','source_id')
     if expected_members.exceptAll(actual_members).limit(1).count() or actual_members.exceptAll(expected_members).limit(1).count():raise ValueError('Directional pair evidence is incomplete or extraneous')
@@ -127,24 +137,24 @@ def evaluate(facts,labels,index,pairs,evidence,prep,detector,attempts,calibratio
     if evidence.select(*fields).distinct().exceptAll(history.select(*fields)).limit(1).count():raise ValueError('Stored evidence differs from source facts')
     alerts=evidence.select('source_id').distinct().localCheckpoint(eager=True)
     def score(ids):
-        rows=eligible.join(ids.withColumn('alert',F.lit(1)),'source_id','left')
+        rows=eligible.join(independent_frame(ids.withColumn('alert',F.lit(1))),'source_id','left')
         r=rows.agg(F.count('*').alias('n'),F.sum('is_laundering').alias('l'),F.sum(F.coalesce('alert',F.lit(0))).alias('a'),F.sum(F.when(F.col('alert')==1,F.col('is_laundering')).otherwise(0)).alias('tp')).first()
         return metrics(r['n'],r['l'] or 0,r['a'] or 0,r['tp'] or 0)
-    budgets=eligible.join(alerts,'source_id').groupBy('payment_currency').count().withColumnRenamed('count','budget')
+    budgets=eligible.join(independent_frame(alerts),'source_id').groupBy('payment_currency').count().withColumnRenamed('count','budget')
     currency_pop=eligible.groupBy('payment_currency').count().withColumnRenamed('count','population')
-    matched_audit=currency_pop.join(budgets,'payment_currency','left').na.fill(0)
+    matched_audit=currency_pop.join(independent_frame(budgets),'payment_currency','left').na.fill(0)
     audit=matched_audit
     if calibration:
         rates=calibration['amount_alert_fraction_by_currency']
         # Decimal fractions avoid floating monetary values or cross-currency totals.
         rate_schema=T.StructType([T.StructField('payment_currency',T.StringType(),False),T.StructField('fraction',T.DecimalType(20,12),False)])
         rate_df=facts.sparkSession.createDataFrame([(k,Decimal(str(v))) for k,v in rates.items()],rate_schema)
-        if currency_pop.join(rate_df,'payment_currency','left_anti').limit(1).count():raise ValueError('Uncalibrated holdout currency')
-        audit=currency_pop.join(rate_df,'payment_currency').withColumn('budget',F.ceil(F.col('population')*F.col('fraction')).cast('long'))
+        if currency_pop.join(independent_frame(rate_df),'payment_currency','left_anti').limit(1).count():raise ValueError('Uncalibrated holdout currency')
+        audit=currency_pop.join(independent_frame(rate_df),'payment_currency').withColumn('budget',F.ceil(F.col('population')*F.col('fraction')).cast('long'))
     rank=Window.partitionBy('payment_currency').orderBy(F.col('amount_paid').desc(),F.col('source_id'))
     ranked=eligible.withColumn('rank',F.row_number().over(rank)).localCheckpoint(eager=True)
-    baseline=ranked.join(audit.select('payment_currency','budget'),'payment_currency').filter(F.col('rank')<=F.col('budget')).select('source_id').localCheckpoint(eager=True)
-    matched_baseline=(ranked.join(matched_audit.select('payment_currency','budget'),'payment_currency').filter(F.col('rank')<=F.col('budget')).select('source_id').localCheckpoint(eager=True)) if calibration else baseline
+    baseline=ranked.join(independent_frame(audit.select('payment_currency','budget')),'payment_currency').filter(F.col('rank')<=F.col('budget')).select('source_id').localCheckpoint(eager=True)
+    matched_baseline=(ranked.join(independent_frame(matched_audit.select('payment_currency','budget')),'payment_currency').filter(F.col('rank')<=F.col('budget')).select('source_id').localCheckpoint(eager=True)) if calibration else baseline
     detector_metrics=score(alerts);frozen_baseline_metrics=score(baseline)
     baseline_metrics=score(matched_baseline) if calibration else frozen_baseline_metrics
     # Reference shape/window checks use only the small checksum-bounded annotation file.
@@ -166,7 +176,7 @@ def evaluate(facts,labels,index,pairs,evidence,prep,detector,attempts,calibratio
     if refs:
         schema=T.StructType([T.StructField('attempt_id',T.StringType(),False),T.StructField('ordinal',T.IntegerType(),False)]+[T.StructField(k,T.TimestampType() if k=='event_time' else T.DecimalType(38,8) if k.startswith('amount_') else T.StringType(),False) for k in MATCH_COLUMNS])
         ref_df=facts.sparkSession.createDataFrame(refs,schema)
-        matches=ref_df.join(eligible.select('source_id','is_laundering',*MATCH_COLUMNS),list(MATCH_COLUMNS),'left').groupBy('attempt_id','ordinal').agg(F.count('source_id').alias('candidate_count'),F.min('source_id').alias('source_id'),F.min('is_laundering').alias('is_laundering'))
+        matches=ref_df.join(independent_frame(eligible.select('source_id','is_laundering',*MATCH_COLUMNS)),list(MATCH_COLUMNS),'left').groupBy('attempt_id','ordinal').agg(F.count('source_id').alias('candidate_count'),F.min('source_id').alias('source_id'),F.min('is_laundering').alias('is_laundering'))
         # At most 22,743 annotation occurrences, not the transaction population.
         for r in matches.collect():
             a=audits[r['attempt_id']]
@@ -183,10 +193,10 @@ def evaluate(facts,labels,index,pairs,evidence,prep,detector,attempts,calibratio
     recovered={};coverage={};basecoverage={};frozen_coverage={}
     if matched:
         mapping=facts.sparkSession.createDataFrame(matched,['attempt_id','source_id'])
-        relevant=evidence.select('case_id','source_id').join(mapping,'source_id').groupBy('attempt_id','case_id').count()
+        relevant=evidence.select('case_id','source_id').join(independent_frame(mapping),'source_id').groupBy('attempt_id','case_id').count()
         # Only reference-overlapping case summaries reach the driver; cap and fail,
         # never truncate or silently remove candidates from an eligible denominator.
-        joined_cases=relevant.join(index.select('case_id','pattern_type','hub','ordered_nodes'),'case_id').limit(100001).collect()
+        joined_cases=relevant.join(independent_frame(index.select('case_id','pattern_type','hub','ordered_nodes')),'case_id').limit(100001).collect()
         if len(joined_cases)>100000:raise ValueError('Annotation-overlapping case guard exceeded')
         from evaluate_q2 import node
         for r in joined_cases:
@@ -195,15 +205,15 @@ def evaluate(facts,labels,index,pairs,evidence,prep,detector,attempts,calibratio
                 nodes=r['ordered_nodes'];same=same and set(zip(nodes,nodes[1:]+nodes[:1]))==set(shape['edges'])
             if same and 5*r['count']>=4*a['annotation_transaction_count']:recovered[r['attempt_id']]=True
         for frame,target in ((alerts,coverage),(matched_baseline,basecoverage),(baseline,frozen_coverage)):
-            for row in mapping.join(frame,'source_id').groupBy('attempt_id').count().collect():target[row['attempt_id']]=5*row['count']>=4*audits[row['attempt_id']]['annotation_transaction_count']
+            for row in mapping.join(independent_frame(frame),'source_id').groupBy('attempt_id').count().collect():target[row['attempt_id']]=5*row['count']>=4*audits[row['attempt_id']]['annotation_transaction_count']
     eligible_n=hits=0
     for aid,a in audits.items():
         a['eligible']=not a['exclusion_reasons'];a['exclusion_reasons']=sorted(set(a['exclusion_reasons']))
         a.pop('shape',None)
         if a['eligible']:
             eligible_n+=1;hits+=int(recovered.get(aid,False));a.update(recovered=recovered.get(aid,False),detector_coverage_80pct=coverage.get(aid,False),amount_coverage_80pct=basecoverage.get(aid,False),frozen_amount_coverage_80pct=frozen_coverage.get(aid,False))
-    pattern_rows=(evidence.select('case_id','source_id').join(index.select('case_id','pattern_type'),'case_id').select('source_id','pattern_type').distinct()
-      .join(eligible.select('source_id','is_laundering'),'source_id').groupBy('pattern_type').agg(F.count('*').alias('n'),F.sum('is_laundering').alias('tp')).collect())
+    pattern_rows=(evidence.select('case_id','source_id').join(independent_frame(index.select('case_id','pattern_type')),'case_id').select('source_id','pattern_type').distinct()
+      .join(independent_frame(eligible.select('source_id','is_laundering')),'source_id').groupBy('pattern_type').agg(F.count('*').alias('n'),F.sum('is_laundering').alias('tp')).collect())
     per_pattern={r['pattern_type']:r for r in pattern_rows}
     volumes={r['pattern_type']:r['count'] for r in index.groupBy('pattern_type').count().collect()}
     pattern_metrics=[]

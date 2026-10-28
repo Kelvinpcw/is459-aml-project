@@ -3,7 +3,7 @@ import ast,datetime,os,random,sys,time,unittest
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 sys.path[:0]=[str(ROOT),str(ROOT/'jobs')]
-from evaluate_distributed import complete_fan_pairs
+from evaluate_distributed import complete_fan_pairs,independent_frame
 from pyspark.sql import SparkSession,functions as F,types as T
 
 class FanPlanTests(unittest.TestCase):
@@ -31,6 +31,35 @@ class FanPlanTests(unittest.TestCase):
   plan=actual._jdf.queryExecution().executedPlan().toString()
   self.assertNotIn('CartesianProduct',plan);self.assertNotIn('BroadcastNestedLoopJoin',plan)
   self.assertTrue('SortMergeJoin' in plan or 'BroadcastHashJoin' in plan or 'ShuffledHashJoin' in plan)
+ def test_wide_checkpoint_baseline_has_disjoint_expression_ids_and_exact_ranks(self):
+  import tempfile
+  from decimal import Decimal
+  from pyspark.sql import Window
+  rows=[('a','USD',Decimal('0.47209301')),('b','USD',Decimal('10000000.47209301')),('c','USD',Decimal('10000000.47209302')),('d','SGD',Decimal('9.00000001'))]
+  frame=self.spark.createDataFrame(rows,T.StructType([T.StructField('source_id',T.StringType()),T.StructField('payment_currency',T.StringType()),T.StructField('amount_paid',T.DecimalType(38,8))]))
+  for n in range(30):frame=frame.withColumn('extra_'+str(n),F.lit('preserved'))
+  with tempfile.TemporaryDirectory() as directory:
+   frame.write.parquet(directory+'/facts');eligible=self.spark.read.parquet(directory+'/facts').localCheckpoint(eager=True)
+   alerts=eligible.filter("source_id IN ('a','b','d')").select('source_id').localCheckpoint(eager=True)
+   budgets=eligible.join(independent_frame(alerts),'source_id').groupBy('payment_currency').count().withColumnRenamed('count','budget')
+   population=eligible.groupBy('payment_currency').count().withColumnRenamed('count','population')
+   audit=population.join(independent_frame(budgets),'payment_currency','left').na.fill(0)
+   ranked=eligible.withColumn('rank',F.row_number().over(Window.partitionBy('payment_currency').orderBy(F.col('amount_paid').desc(),'source_id'))).localCheckpoint(eager=True)
+   right=independent_frame(audit.select('payment_currency','budget'))
+   self.assertEqual(right.schema,audit.select('payment_currency','budget').schema)
+   def ids(df):
+    seq=df._jdf.queryExecution().analyzed().output();return {seq.apply(i).exprId().id() for i in range(seq.size())}
+   self.assertFalse(ids(ranked)&ids(right))
+   baseline=ranked.join(right,'payment_currency').filter(F.col('rank')<=F.col('budget'))
+   self.assertEqual({r['source_id'] for r in baseline.select('source_id').collect()},{'b','c','d'})
+   self.assertEqual({r['source_id']:r['amount_paid'] for r in baseline.select('source_id','amount_paid').collect()}['c'],Decimal('10000000.47209302'))
+ def test_every_evaluator_join_refreshes_its_right_relation(self):
+  source=(ROOT/'jobs/evaluate_distributed.py').read_text();fn=next(n for n in ast.parse(source).body if getattr(n,'name',None)=='evaluate');count=0
+  for node in ast.walk(fn):
+   if isinstance(node,ast.Call) and isinstance(node.func,ast.Attribute) and node.func.attr=='join':
+    count+=1;self.assertIsInstance(node.args[0],ast.Call);self.assertEqual(node.args[0].func.id,'independent_frame')
+  self.assertGreater(count,15)
+
  def test_legacy_plan_exposes_the_problem_without_running_large_data(self):
   fan=self.spark.createDataFrame([('H','fan_in')],['hub','pattern_type']).alias('f')
   edges=self.spark.createDataFrame([('A','H')],['src','dst']).alias('e')
@@ -40,7 +69,13 @@ class FanPlanTests(unittest.TestCase):
   before=(ROOT/'releases/full-v3/evaluate_distributed.py').read_text();after=(ROOT/'jobs/evaluate_distributed.py').read_text()
   a=before.index("    f,e=fan.alias('f'),ed.alias('e')");b=before.index('    actual_fan=',a)
   normalized=before[:a]+'    complete_fan=complete_fan_pairs(fan,ed)\n'+before[b:]
-  def function(source,name):return ast.dump(next(n for n in ast.parse(source).body if getattr(n,'name',None)==name))
+  def function(source,name):
+   node=next(n for n in ast.parse(source).body if getattr(n,'name',None)==name)
+   class StripAliases(ast.NodeTransformer):
+    def visit_Call(self,n):
+     self.generic_visit(n)
+     return n.args[0] if isinstance(n.func,ast.Name) and n.func.id=='independent_frame' else n
+   return ast.dump(StripAliases().visit(node))
   for name in ('evaluate','metrics','validate_calibration','freeze_calibration'):self.assertEqual(function(normalized,name),function(after,name))
 
 if __name__=='__main__':unittest.main()
