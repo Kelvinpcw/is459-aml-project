@@ -2,7 +2,7 @@
 
 Think of **Q1 as a reporting job** and **Q2 as an investigation job**. They share the same data preparation, but perform different analyses.
 
-**Design reference, updated28October2026:** The project-completion branch implements this path and its recovery. New AWS validation records and the detailed operational checkpoint remain local at the user's request; read the [checkpoint pointer](../../PROJECT_CHECKPOINT.md) before continuation. Configuration/local tests do not establish cloud completion or effectiveness. The IBM dataset is synthetic.
+**Design reference, updated 28 October 2026:** The project-completion branch implements this path and its recovery. New AWS validation records and the detailed operational checkpoint remain local at the user's request; read the [checkpoint pointer](../../PROJECT_CHECKPOINT.md) before continuation. Configuration/local tests do not establish cloud completion or effectiveness. The IBM dataset is synthetic.
 
 **Architecture diagrams:** [Simplified PDF](Simplified/AWS_Architecture_Pack.pdf) · [Detailed PDF](Detailed/AWS_Architecture_Pack.pdf)
 

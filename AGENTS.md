@@ -39,10 +39,22 @@ The current user's task sets the scope. Do not implement the whole backlog or pr
 - Evaluate on the declared eligible population, not only detected transactions. Incomplete annotations are not exhaustive case-level truth. Keep development/calibration (1–8 September), holdout (9–16), and sparse tail (17–28) separate; freeze settings before holdout evaluation.
 - Propagate dataset/run/analysis identities. A future dashboard must pin all reads to one published release; partial failures must not replace the previous successful release.
 
+## Team workflow (humans and AI agents)
+
+This repository is shared by the whole team and is public. Teammates and their AI assistants both push here; treat every branch, work tree and cloud run as potentially someone else's work.
+
+- Work on your own branch (`feature/<task>` or `agent/<tool>-<task>`), push it and open a pull request. Do not commit to `main` directly, and do not merge your own work without a teammate's review.
+- Do not run `git add .` or `git add -A`. The working tree may contain another person's uncommitted edits, local-only AWS records or sync artifacts. Stage explicit paths only.
+- Before starting, `git fetch origin` and rebase or merge `origin/main` into your branch. Long-lived branches drift and produce conflicting evidence files.
+- `Implementation/aws/reviews/*`, ledger entries for new runs and the detailed checkpoint are local-only by policy and are gitignored. Do not force-add them; this repository is public.
+- macOS/iCloud sometimes creates byte-identical `Name 2.md` copies. They are ignored by `* 2.*`; delete them instead of committing them, and never let a `test_* 2.py` reach pytest.
+- A branch does not isolate AWS. Before any cloud action, confirm nobody else is using the same job or output prefix, and use your own paths and run/analysis IDs.
+- Pull requests should state what changed, which contracts were touched, the tests actually run, any AWS resources or costs affected, and whether compute was stopped.
+
 ## Code, tests and collaboration
 
 - Make focused changes in `Implementation/jobs/`, `scripts/`, `sql/` and their tests. Preserve frozen `Implementation/releases/` and historical run/review artifacts. Create a new release/attempt when authorised rather than editing evidence to match changed code.
-- Use a feature branch and a pull request. Do not revert others' changes, force-push shared history, or edit the same shared cloud job without coordination. Agree schemas/manifest/case contracts with downstream owners.
+- Do not revert others' changes, force-push shared history, or edit the same shared cloud job without coordination. Agree schemas/manifest/case contracts with downstream owners.
 - Use synthetic fixtures for local tests; see `Implementation/SETUP.md`. A fresh clone intentionally lacks original/generated datasets. Do not fabricate missing inputs or report cloud/replay tests that were not run.
 - Run relevant local tests for code changes. Keep golden frozen outputs unchanged unless a versioned contract change is explicitly intended/reviewed. Documentation changes need link/config checks, not paid AWS validation.
 - Update `Implementation/STATUS.md` for changed completion state, and checkpoint/resource ledger for actual cloud actions. Record exact tested/deployed code, inputs, scope, output namespace, observed result, estimated cost and whether compute ended. Label proposals, local tests, saved evidence and fresh cloud observations separately.

@@ -37,6 +37,11 @@ __pycache__/
 .DS_Store
 Icon*
 
+# macOS/iCloud duplicate copies ("RUNBOOK 2.md"). Identical twins, never commit;
+# they also make pytest collect test_* 2.py twice.
+* 2.*
+* 2
+
 # User request: keep new AWS operational records and detailed checkpoints local.
 # Previously committed review evidence remains historical; do not add new runs.
 /Implementation/aws/reviews/*

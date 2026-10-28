@@ -13,4 +13,4 @@ Completion means tested working components and an observed full-data result, wit
 
 ## Current progress
 
-The software path and immutable full-v1/full-v2 payloads are implemented. Recovery passed68local regressions, complete export checks and unchanged-rule comparisons; recovery templates pass cfn-lint. Actual deployment/processing/cleanup evidence is retained locally by the user's source-only publication instruction. Read the private operator checkpoint through the root checkpoint pointer to continue; this public plan is not a live AWS inventory or a success claim.
+The software path and immutable full-v1/full-v2 payloads are implemented. Recovery passed 68 local regressions, complete export checks and unchanged-rule comparisons; recovery templates pass cfn-lint. Actual deployment/processing/cleanup evidence is retained locally by the user's source-only publication instruction. Read the private operator checkpoint through the root checkpoint pointer to continue; this public plan is not a live AWS inventory or a success claim.

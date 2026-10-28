@@ -2,7 +2,7 @@
 
 Shared implementation and design context for a six-person team using the synthetic IBM HI-Medium anti-money-laundering dataset.
 
-**The complete software path is implemented on the project-completion branch.** Actual new AWS validation records and the detailed operational checkpoint remain local at the user's request. Read the [checkpoint pointer](PROJECT_CHECKPOINT.md) before resuming deployment; source/configuration is not proof of live cloud state.
+**The complete software path is implemented on `main`.** Actual new AWS validation records and the detailed operational checkpoint remain local at the user's request. Read the [checkpoint pointer](PROJECT_CHECKPOINT.md) before resuming deployment; source/configuration is not proof of live cloud state.
 
 ## Start here — humans and AI assistants
 
@@ -40,9 +40,9 @@ Step Functions coordinates the target workflow; EC2 hosts the target dashboard.
 
 ## Implementation and evidence
 
-The branch adds conditional publication, a pinned read-only Streamlit dashboard, distributed fan/cycle detection, a separate chronological evaluator, on-demand orchestration and cleanup. The latest evaluator corrections passed87synthetic tests; the deployment templates pass cfn-lint. Frozen detection rules and evaluator settings are preserved while complete evidence is packed into bounded, checksum-verified schema3 ZIP shards.
+The branch adds conditional publication, a pinned read-only Streamlit dashboard, distributed fan/cycle detection, a separate chronological evaluator, on-demand orchestration and cleanup. The latest evaluator corrections passed 87 synthetic tests; the deployment templates pass cfn-lint. Frozen detection rules and evaluator settings are preserved while complete evidence is packed into bounded, checksum-verified schema3 ZIP shards.
 
-The full implementation uses distributed fan aggregation and bounded, degree-eligible2–4cycle joins over overlapping seven-day daily snapshots. The frozen first-minute driver detector is preserved separately; its pilot is not proof of full-data effectiveness. See [status](Implementation/STATUS.md) and [runbook](Implementation/RUNBOOK.md).
+The full implementation uses distributed fan aggregation and bounded, degree-eligible 2–4-cycle joins over overlapping seven-day daily snapshots. The frozen first-minute driver detector is preserved separately; its pilot is not proof of full-data effectiveness. See [status](Implementation/STATUS.md) and [runbook](Implementation/RUNBOOK.md).
 
 New AWS reports, measured results, costs and detailed checkpoints are intentionally local. Fresh clones contain neither these operational records nor source/generated data. Previously committed pilot records are historical; never infer current resource state or deployment authority from them.
 
@@ -81,6 +81,8 @@ git add path/to/your/files
 git commit -m "Describe your change"
 git push -u origin feature/your-task
 ```
+
+Do not `git add .`: the tree may contain someone else's edits, gitignored AWS records or macOS `Name 2.md` duplicates. Stage explicit paths. `main` is shared — push your branch and open a PR rather than committing to `main`.
 
 Include changed contracts, tests actually run, and any AWS effects/costs in the pull request. Record the deployed Git commit and job arguments when deploying. Review schema changes with downstream owners before merging.
 
