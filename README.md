@@ -16,6 +16,8 @@ Shared implementation and design context for a six-person team using the synthet
 | [Detailed architecture](Proposal/Architecture/Detailed/AWS_Architecture_Pack.pdf) | Technical diagrams; editable source is in the same folder |
 | [PROJECT_CHECKPOINT.md](PROJECT_CHECKPOINT.md) | Historical deployment handoff, exact resource IDs and evidence |
 
+To view an existing published release without restarting processing or EC2, follow [local visualization setup](Implementation/SETUP.md#visualization-without-restarting-cloud-compute).
+
 The newest scoped evidence wins over older status sentences. Read the checkpoint when resuming deployment, but **reading it is not an instruction to resume paid work**.
 
 ## What are we building?
