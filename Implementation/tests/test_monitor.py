@@ -12,7 +12,7 @@ class MonitorTests(unittest.TestCase):
         ledger={'full_completion':{},'paid_resources_started_by_this_project':[],'active_paid_resources':[]}
         (private/'resource-ledger.json').write_text(json.dumps(ledger))
         reviews=root/'Implementation/aws/reviews';reviews.mkdir(parents=True)
-        (reviews/'full-recovery1-start.json').write_text(json.dumps({'executionArn':'recovery'}))
+        (reviews/'full-recovery1-start.json').write_text(json.dumps({'executionArn':'arn:aws:states:us-east-1:160885259244:execution:is459-aml-full-recovery1:fixture'}))
         public=root/'Implementation/aws/resource-ledger.json';public.write_text('historical-public-snapshot')
         sts=Mock();sts.get_caller_identity.return_value={'Account':'160885259244'}
         sf=Mock();sf.describe_execution.return_value={'status':'RUNNING'}

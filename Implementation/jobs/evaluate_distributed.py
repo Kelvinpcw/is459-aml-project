@@ -225,6 +225,16 @@ def freeze_calibration(results,development_analyses,min_counterparties,max_cycle
     return policy
 
 
+def evaluation_suffix(config,evaluation_id,attempt_id=''):
+    from q2_detect import Config
+    Config(config['dataset_version'],config['run_id'],evaluation_id,config['window_start'],config['window_end'],config['snapshot_cutoff']).times()
+    from pipeline.release import safe_id
+    safe_id(config['analysis_id'])
+    if attempt_id:safe_id(attempt_id)
+    suffix=f"dataset_version={config['dataset_version']}/run_id={config['run_id']}/analysis_id={config['analysis_id']}/evaluation_id={evaluation_id}/"
+    return suffix+('attempt='+attempt_id+'/' if attempt_id else '')
+
+
 def main():
     import argparse,boto3
     from datetime import timezone
@@ -233,6 +243,7 @@ def main():
     p=argparse.ArgumentParser()
     for name in ('preparation-report','detector-report','annotations','annotations-sha256','output-root','evaluation-id'):
         p.add_argument('--'+name,required=True)
+    p.add_argument('--attempt-id',default='')
     args,_=p.parse_known_args();s3=boto3.client('s3',region_name='us-east-1')
     def read(uri,limit=5_000_000):
         loc=urlparse(uri)
@@ -247,10 +258,8 @@ def main():
     annotations=parse_annotations(read(args.annotations).decode(),args.annotations_sha256)
     out=urlparse(args.output_root)
     if out.scheme!='s3':raise ValueError('Explicit output root required')
-    from q2_detect import Config
-    Config(config['dataset_version'],config['run_id'],args.evaluation_id,config['window_start'],config['window_end'],config['snapshot_cutoff']).times()
     base=out.path.strip('/');base=base+'/' if base else ''
-    suffix=f"dataset_version={config['dataset_version']}/run_id={config['run_id']}/analysis_id={config['analysis_id']}/evaluation_id={args.evaluation_id}/"
+    suffix=evaluation_suffix(config,args.evaluation_id,args.attempt_id)
     prefix=base+'evaluation/'+suffix;qualitykey=base+'quality/evaluation/'+suffix+'report.json'
     for key in (prefix,base+'quality/evaluation/'+suffix):
         if s3.list_objects_v2(Bucket=out.netloc,Prefix=key,MaxKeys=1).get('KeyCount',0):raise ValueError('Fresh evaluation attempt required')
@@ -259,7 +268,7 @@ def main():
         s3.put_object(Bucket=out.netloc,Key=key,Body=body,IfNoneMatch='*',ContentType='application/json')
         return {'uri':f's3://{out.netloc}/{key}','bytes':len(body),'sha256':hashlib.sha256(body).hexdigest()}
     report={'schema_version':2,'stage':'evaluation','status':'FAILED','dataset_version':config['dataset_version'],'run_id':config['run_id'],
-      'evaluation_id':args.evaluation_id,'detector_analysis_id':config['analysis_id'],'detector_report_sha256':hashlib.sha256(read(args.detector_report)).hexdigest()}
+      'evaluation_id':args.evaluation_id,'attempt_id':args.attempt_id,'detector_analysis_id':config['analysis_id'],'detector_report_sha256':hashlib.sha256(read(args.detector_report)).hexdigest()}
     spark=SparkSession.builder.appName('is459-evaluation-distributed').config('spark.sql.session.timeZone','UTC').config('spark.sql.shuffle.partitions','64').getOrCreate()
     try:
         def clear_blocks():

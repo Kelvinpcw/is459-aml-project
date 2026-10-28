@@ -36,6 +36,31 @@ class DeploymentTests(unittest.TestCase):
   from build_dashboard_stack import build as base_dashboard
   self.assertEqual(base_dashboard()['Resources']['Role'],dashboard()['Resources']['Role'])
 
+ def test_evaluation_resume_has_only_two_tasks_and_unchanged_grants(self):
+  from build_evaluation_resume import build as resume,MAXIMUM_COMPUTE_USD
+  from build_recovery import build as recovery
+  old=recovery();stack=resume()
+  for key,value in old['Resources'].items():
+   if value['Type']=='AWS::IAM::Role' or key in ('PrepareJob','RiskJob','DetectJob','FullDatabase','RecoveryWorkflow','Workflow'):
+    self.assertEqual(value,stack['Resources'][key])
+  definition=json.loads(stack['Resources']['EvaluationResumeWorkflow']['Properties']['DefinitionString']['Fn::Sub'][0])
+  self.assertEqual(set(definition['States']),{'Evaluate','Publish','Failed'})
+  self.assertEqual(definition['StartAt'],'Evaluate');self.assertEqual(definition['TimeoutSeconds'],4200)
+  self.assertTrue(all('Retry' not in s for s in definition['States'].values()))
+  self.assertEqual(stack['Resources']['EvaluateJob']['Properties']['DefaultArguments']['--attempt-id'],'evaluation-resume1')
+  self.assertIn('attempt=evaluation-resume1/report.json',stack['Resources']['ControlJob']['Properties']['DefaultArguments']['--evaluation-report']['Fn::Sub'])
+  self.assertAlmostEqual(MAXIMUM_COMPUTE_USD,1.7966666667)
+
+ def test_dashboard_validation_self_terminates_without_new_grants(self):
+  from build_dashboard_validation import build as validate
+  from build_recovery import dashboard
+  original=dashboard();stack=validate();instance=stack['Resources']['Instance']['Properties']
+  self.assertEqual(original['Resources']['Role'],stack['Resources']['Role'])
+  self.assertEqual(instance['InstanceInitiatedShutdownBehavior'],'terminate')
+  self.assertIn('shutdown -h +60',instance['UserData']['Fn::Base64'])
+  self.assertTrue(instance['BlockDeviceMappings'][0]['Ebs']['DeleteOnTermination'])
+  self.assertEqual(stack['Resources']['Group']['Properties']['SecurityGroupIngress'],[])
+
  def test_schedule_overlaps_and_preserves_full_daily_history(self):
   windows=schedule('2022-09-02T00:00:00','2022-09-29T00:00:00')
   self.assertEqual(len(windows),28)

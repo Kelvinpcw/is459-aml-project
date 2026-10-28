@@ -9,6 +9,36 @@ ROOT=Path(__file__).resolve().parents[2];REV=ROOT/'Implementation/aws/reviews'
 STACK='is459-aml-full-v1';DASHBOARD='is459-aml-dashboard-v1'
 
 
+EXECUTION_MARKERS=('full-workflow-start.json','full-recovery1-start.json','evaluation-resume1-start.json')
+TERMINAL_JOBS={'SUCCEEDED','FAILED','STOPPED','TIMEOUT','ERROR','EXPIRED'}
+
+
+def execution_arns(reviews):
+ result=[]
+ for name in EXECUTION_MARKERS:
+  marker=reviews/name
+  if marker.exists():
+   arn=json.loads(marker.read_text())['executionArn']
+   if not arn.startswith(f'arn:aws:states:{REGION}:{ACCOUNT}:execution:is459-aml-'):raise ValueError('Execution marker is outside this project')
+   result.append(arn)
+ return list(dict.fromkeys(result))
+
+
+def stop_owned_processing(sf,glue,reviews):
+ workflows=[];stopped=[]
+ # Abort every known active orchestration before stopping its workers. Terminal
+ # executions are skipped, so an old failed execution cannot block cleanup.
+ for arn in execution_arns(reviews):
+  status=sf.describe_execution(executionArn=arn)['status']
+  if status=='RUNNING':sf.stop_execution(executionArn=arn,cause='User project cleanup or budget control')
+  workflows.append({'execution_arn':arn,'state_before_request':status,'stop_requested':status=='RUNNING'})
+ for stage in ('prepare','risk','detect','evaluate','control'):
+  job='is459-aml-full-'+stage
+  active=[r['Id'] for r in glue.get_job_runs(JobName=job)['JobRuns'] if r['JobRunState'] not in TERMINAL_JOBS]
+  if active:stopped.append(glue.batch_stop_job_run(JobName=job,JobRunIds=active))
+ return {'workflow_requests':workflows,'job_requests':stopped,'terminal_verification_still_required':True}
+
+
 def save(name,value):
     def encoder(x):return x.isoformat() if isinstance(x,datetime.datetime) else str(x)
     (REV/name).write_text(json.dumps(value,indent=2,default=encoder)+'\n')
@@ -18,7 +48,7 @@ def main():
  p=argparse.ArgumentParser()
  p.add_argument('--profile',required=True);p.add_argument('--region',default=REGION)
  p.add_argument('--phase',required=True,choices=['upload','create','start','status','dashboard','dashboard-status','stop','remove-dashboard'])
- p.add_argument('--dashboard-template',choices=['dashboard-stack.json','dashboard-recovery1-stack.json'],default='dashboard-stack.json')
+ p.add_argument('--dashboard-template',choices=['dashboard-stack.json','dashboard-recovery1-stack.json','dashboard-validation-stack.json'],default='dashboard-stack.json')
  p.add_argument('--code-version',default='full-v1')
  p.add_argument('--run-id',default='full-20261028-v1');p.add_argument('--release-id',default='full-20261028-v1')
  args=p.parse_args()
@@ -56,8 +86,8 @@ def main():
   save('full-workflow-start.json',result);print(json.dumps(result,default=str))
  elif args.phase=='status':
   result={'stack':cfn.describe_stacks(StackName=STACK)['Stacks'][0]}
-  marker=REV/'full-workflow-start.json'
-  if marker.exists():result['execution']=sf.describe_execution(executionArn=json.loads(marker.read_text())['executionArn'])
+  result['executions']=[sf.describe_execution(executionArn=arn) for arn in execution_arns(REV)]
+  if result['executions']:result['execution']=result['executions'][-1]
   result['jobs']={}
   for name in ['prepare','risk','detect','evaluate','control']:
    try:result['jobs'][name]=glue.get_job_runs(JobName='is459-aml-full-'+name)['JobRuns']
@@ -78,13 +108,7 @@ def main():
  elif args.phase=='remove-dashboard':
   result=cfn.delete_stack(StackName=DASHBOARD);save('dashboard-stack-delete-request.json',{'requested':True,'response':result});print('Dashboard stack deletion requested; verify terminal deletion before handoff.')
  elif args.phase=='stop':
-  marker=REV/'full-workflow-start.json'
-  if marker.exists():sf.stop_execution(executionArn=json.loads(marker.read_text())['executionArn'],cause='User project cleanup or budget control')
-  stopped=[]
-  for name in ['prepare','risk','detect','evaluate','control']:
-   job='is459-aml-full-'+name
-   active=[r['Id'] for r in glue.get_job_runs(JobName=job)['JobRuns'] if r['JobRunState'] in ('STARTING','RUNNING','WAITING','STOPPING')]
-   if active:stopped.append(glue.batch_stop_job_run(JobName=job,JobRunIds=active))
-  save('full-stop-request.json',{'responses':stopped});print('Stop requested for known full-project executions; verify terminal states.')
+  result=stop_owned_processing(sf,glue,REV)
+  save('full-stop-request.json',result);print('Stop requested for all known project executions/jobs; inspect status to verify terminal states.')
 
 if __name__=='__main__':main()

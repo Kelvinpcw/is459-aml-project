@@ -13,6 +13,22 @@ def paths(run):
       'manifest':'manifests/detector-inputs/'+suffix+'manifest.json'}
 
 
+def report_keys(run,overrides):
+    import re
+    from pipeline.release import split_uri,safe_id
+    safe_id(run)
+    keys=paths(run)
+    for stage,uri in overrides.items():
+        if stage not in ('q1','q2','evaluation'):raise ValueError('Unsupported report override')
+        if uri:
+            bucket,key=split_uri(uri)
+            prefix=keys[stage].rsplit('/',1)[0]+'/attempt='
+            if not key.startswith(prefix) or not re.fullmatch(r'[A-Za-z0-9_-]{1,100}/report\.json',key[len(prefix):]):
+                raise ValueError('Recovery report escapes the original analysis/evaluation')
+            keys[stage]=key
+    return keys
+
+
 def hive_type(kind):
     if isinstance(kind,dict) and kind['type']=='array':return 'array<'+hive_type(kind['elementType'])+'>'
     if isinstance(kind,str):return {'long':'bigint','integer':'int'}.get(kind,kind)
@@ -37,17 +53,12 @@ def main():
     p=argparse.ArgumentParser()
     p.add_argument('--phase',choices=['manifests','catalog','publish'],required=True)
     p.add_argument('--run-id',required=True);p.add_argument('--release-id',required=True)
-    p.add_argument('--q1-report');p.add_argument('--q2-report');
+    p.add_argument('--q1-report');p.add_argument('--q2-report');p.add_argument('--evaluation-report');
     p.add_argument('--expected-pointer-etag');args,_=p.parse_known_args()
     from pipeline.release import safe_id
     safe_id(args.run_id);safe_id(args.release_id)
-    session=boto3.Session(region_name=REGION);s3=session.client('s3');glue=session.client('glue');keys=paths(args.run_id)
-    from pipeline.release import split_uri
-    for stage,uri in [('q1',args.q1_report),('q2',args.q2_report)]:
-        if uri:
-            bucket,key=split_uri(uri)
-            if not key.startswith(keys[stage].rsplit('/',1)[0]+'/attempt='):raise ValueError('Recovery report escapes the original analysis')
-            keys[stage]=key
+    session=boto3.Session(region_name=REGION);s3=session.client('s3');glue=session.client('glue')
+    keys=report_keys(args.run_id,{'q1':args.q1_report,'q2':args.q2_report,'evaluation':args.evaluation_report})
     raw={};reports={}
     def read(stage):
         body=s3.get_object(Bucket=BUCKET,Key=keys[stage])['Body'].read(5_000_001)

@@ -3,6 +3,7 @@ import argparse,datetime,json,subprocess
 from pathlib import Path
 import boto3
 from build_stack import ACCOUNT,REGION,BUCKET
+from deploy import execution_arns
 ROOT=Path(__file__).resolve().parents[2]
 TERMINAL={'SUCCEEDED','FAILED','STOPPED','TIMEOUT','ERROR','EXPIRED'}
 
@@ -12,9 +13,9 @@ def main():
  s=boto3.Session(profile_name=args.profile,region_name=REGION)
  if s.client('sts').get_caller_identity()['Account']!=ACCOUNT:raise ValueError('Wrong project account')
  sf=s.client('stepfunctions');glue=s.client('glue');now=datetime.datetime.now(datetime.timezone.utc)
- marker=ROOT/'Implementation/aws/reviews/full-recovery1-start.json'
- if not marker.exists():marker=ROOT/'Implementation/aws/reviews/full-workflow-start.json'
- start=json.loads(marker.read_text())
+ arns=execution_arns(ROOT/'Implementation/aws/reviews')
+ if not arns:raise ValueError('No known project execution marker; inspect before monitoring')
+ start={'executionArn':arns[-1]}
  execution=sf.describe_execution(executionArn=start['executionArn']);jobs={};compute=0;active=[]
  for stage in ('prepare','risk','detect','evaluate','control'):
   name='is459-aml-full-'+stage;rows=glue.get_job_runs(JobName=name)['JobRuns'];jobs[stage]=[]

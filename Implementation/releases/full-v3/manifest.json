@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "version": "full-v3",
+  "files": {
+    "q1_risk.py": {
+      "sha256": "83813f52104db9d402e2c2a3db8b45bb52881d8ecb8fcc335ecb0e3031cb96b0",
+      "bytes": 8398,
+      "s3_key": "scripts/full-v1/evaluation-resume1/q1_risk.py"
+    },
+    "q2_detect.py": {
+      "sha256": "549b2ac6f3f2ba93bd6de7190b7ccc25befc975269008c50cb5179a93eb656f0",
+      "bytes": 19715,
+      "s3_key": "scripts/full-v1/evaluation-resume1/q2_detect.py"
+    },
+    "q2_distributed.py": {
+      "sha256": "ba684592909f5f7f67c9379d2ca1e7e21fb6bf18a63b25667f3e99df6309f209",
+      "bytes": 18864,
+      "s3_key": "scripts/full-v1/evaluation-resume1/q2_distributed.py"
+    },
+    "q2_bundle_shards.py": {
+      "sha256": "a25bf4651214d9d4727aab26185869fbc4a1717f6e37698bd69047cf20d6990d",
+      "bytes": 5001,
+      "s3_key": "scripts/full-v1/evaluation-resume1/q2_bundle_shards.py"
+    },
+    "q2_snapshots.py": {
+      "sha256": "cf2f4e4b0382e0e96eadb840d7b79690c40ac2268a05325fbed34e0bda22245b",
+      "bytes": 9306,
+      "s3_key": "scripts/full-v1/evaluation-resume1/q2_snapshots.py"
+    },
+    "evaluate_q2.py": {
+      "sha256": "0416846ba0c00b93b77c122c4d663051d8480131de89b0f6cd2cc2b35639a9ec",
+      "bytes": 36563,
+      "s3_key": "scripts/full-v1/evaluation-resume1/evaluate_q2.py"
+    },
+    "evaluate_distributed.py": {
+      "sha256": "38690be991e02752ed2f4f553d80e57dcdd3a9bc6108f4a092cad84a1e0283a9",
+      "bytes": 29721,
+      "s3_key": "scripts/full-v1/evaluation-resume1/evaluate_distributed.py"
+    },
+    "control.py": {
+      "sha256": "43879aa7975cf09cbadf64a3f7d9a7d0f31a639464883d8c28f1d21ef42ada55",
+      "bytes": 5717,
+      "s3_key": "scripts/full-v1/evaluation-resume1/control.py"
+    },
+    "prepare.py": {
+      "sha256": "881acd5d9bb0064d090e333d9c2939a57c530863711ab783613aee0f6e24406b",
+      "bytes": 16265,
+      "s3_key": "scripts/full-v1/evaluation-resume1/prepare.py"
+    },
+    "make_q2_input_manifest.py": {
+      "sha256": "3ffc71a7475e286a0ca1fa7f09ea17f4f5c605918b0912a8005192b4fbc3737b",
+      "bytes": 1678,
+      "s3_key": "scripts/full-v1/evaluation-resume1/make_q2_input_manifest.py"
+    },
+    "jobs.zip": {
+      "sha256": "f64358c63768266777ba97735c21ac33b37f8f1a70a9ceeffbeeab9910383e02",
+      "bytes": 52424,
+      "s3_key": "scripts/full-v1/evaluation-resume1/jobs.zip"
+    },
+    "dashboard.zip": {
+      "sha256": "50c145bf26ce8bf0c91120ae2d15ab2762cb77743efd567b9a86ed667eedd84d",
+      "bytes": 14301,
+      "s3_key": "published/software/full-v3/dashboard.zip"
+    }
+  },
+  "source_tree_sha256": "bf5b390ef30b32c1ad78df89af3854888d3819c28fe5a0cc7ce784f939c477ca",
+  "immutable": true,
+  "recovery_of": "full-v2",
+  "namespace_reason": "New evaluator output-attempt/control routing only; completed detection and scoring/calibration functions unchanged. All grants preserved."
+}

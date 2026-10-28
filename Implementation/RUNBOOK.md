@@ -1,6 +1,6 @@
 # Run and demonstrate the complete pipeline
 
-Current implementation/results: [STATUS.md](STATUS.md). Cost/resource state: [checkpoint](../PROJECT_CHECKPOINT.md) and [ledger](aws/resource-ledger.json). New full-data definitions are isolated from the validated pilot. A configuration file or local test is not evidence of cloud completion.
+Current implementation/results: [STATUS.md](STATUS.md). Cost/resource state: follow the [checkpoint pointer](../PROJECT_CHECKPOINT.md) to the ignored private operator checkpoint/ledger. The tracked ledger is historical. New full-data definitions are isolated from the validated pilot. A configuration file or local test is not evidence of cloud completion.
 
 ## Authentication and budgets
 
@@ -61,6 +61,14 @@ The evaluator validates full fact/label joins and frozen case identities, pair t
 
 A baseline alert fraction per currency is frozen from development alert volume before holdout scoring. A separate matched-volume amount diagnostic uses exactly the detector’s per-currency alert count, so core comparisons also control for alert volume. The predeclared recovery margin target is5percentage points against that matched-volume comparison. Holdout/tail never tune it or detection settings. The predeclared improvement target and whether it was met are reported; unsuccessful/no-denominator results are not hidden. Annotation absence does not prove a case false.
 
+## Evaluator-only continuation after shutdown
+
+`deployment/evaluation-resume1-stack.json` is a prepared definition, not evidence of deployment. It starts at evaluation, then publishes; it never reruns preparation/Q1/Q2/Catalog. The evaluator adds `--attempt-id` to write a fresh nested namespace, and control accepts only the exact report under the same analysis/evaluation. Scoring/calibration functions and holdout target are unchanged. All original IAM resource blocks are retained.
+
+`deployment/resume_evaluation.py` separates upload/update/verify/start/status. A start requires a recorded exact-scope approval, verified deployment and one-time request marker. Obtain the current scoped approval after a pause; old attempt approvals are consumed. Never restart the failed/aborted original executions. The source-only public repository deliberately lacks private authorization/run markers.
+
+For final validation, `dashboard-validation-stack.json` adds a one-time60minute shutdown and terminate behavior to the existing private dashboard. Root disk deletes on termination. Delete its stack sooner after validation and verify instance/disk/IPv4 removal; do not rely on the timer as proof of cleanup. The stop phase now aborts all known workflow markers before stopping active full jobs. Verify terminal states afterward.
+
 ## Private dashboard and demo
 
 Create the separate temporary dashboard stack only when ready to demonstrate. It uses an existing default VPC/subnet, one`t3.small`, an encrypted8GB root disk with delete-on-termination, IMDSv2 and no inbound security-group rules. Access is through SSM port forwarding, not a public web port. Its role reads published analysis and metrics only, never raw facts/labels, and writes only its restricted Athena result prefix. The dashboard workgroup has a512MB/query scan cutoff and app queries cancel after30seconds.
@@ -74,7 +82,7 @@ aws ssm start-session --target INSTANCE_ID --document-name AWS-StartPortForwardi
   --profile IS-459-BDA --region us-east-1
 ```
 
-Open `http://127.0.0.1:8502`. Replace `INSTANCE_ID` with the observed stack output. Verify service health and active SSM registration first; never assume a newly launched instance is ready.
+For the reviewed bounded validation use `--dashboard-template dashboard-validation-stack.json` instead of the recovery-only template. Open `http://127.0.0.1:8502`. Replace `INSTANCE_ID` with the observed stack output. Verify service health and active SSM registration first; never assume a newly launched instance is ready.
 
 Demo checks: explain supported Q1 comparisons with the common baseline and low-support warning; change currency side/date/format without mixing populations; inspect a selected Q2 snapshot/rule/participants/entities and full source evidence; display honest evaluation denominators and cycle/history limitations; refresh one published release. Record measured initial/cached timings and unmet acceptance targets rather than claiming proposed targets were achieved.
 
@@ -82,8 +90,11 @@ For a case larger than the50MB in-app ZIP download limit, download its evidence 
 
 ```bash
 AML_ATHENA_WORKGROUP=is459-aml-dashboard python Implementation/scripts/export_case.py --profile IS-459-BDA \
-  --release-id RELEASE_ID --case-id COMPLETE_CASE_ID --output Implementation/data/case-export-new
+  --release-id RELEASE_ID --case-id COMPLETE_CASE_ID \
+  --snapshot-end EXACT_PUBLISHED_CUTOFF --output Implementation/data/case-export-new
 ```
+
+`--snapshot-end` is an optional exact cutoff from the pinned published schedule. With it, the CLI queries only that snapshot; without it, the CLI searches declared partitions one at a time. Queries select only the case locator fields. Evidence is still downloaded and checksum-checked in full.
 
 ## End-of-run cleanup
 
