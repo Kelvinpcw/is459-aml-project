@@ -27,3 +27,9 @@ Read [setup](SETUP.md), [runbook](RUNBOOK.md), [completion plan](COMPLETION_PLAN
 The dashboard evaluation screen displays the exact holdout payment interval, precision alongside recall, both amount-baseline comparisons, the eligible annotation denominator and frozen recovery target. These are distinct measures; attempt recovery does not establish better individual-payment precision or recall. The immutable `releases/dashboard-v1` package contains this presentation change. Eight release/dashboard checks and the updated temporary-dashboard template validation pass.
 
 A local visualization launcher verifies an explicit project profile, uses the bounded dashboard workgroup and binds to localhost. This avoids applying the smaller development scan limit to full-data case queries. It starts no AWS processing or EC2; normal Athena/S3 read charges may apply. See the visualization section in SETUP.md.
+
+## Dashboard presentation refresh — 29 October 2026
+
+The current source adds compact reporting filters, a supported-lift ranking with a consistent-population baseline, an alternate volume/rate view, readable exact-value tables, and a deterministic bounded case graph with click-to-inspect account details and fit/zoom controls. Evaluation separates transaction classification from eligible-pattern recovery and keeps the baseline comparison visible. Only the selected page loads its data; filters persist across navigation. Source query contracts, money strings, graph/evidence bounds, detector thresholds, evaluator settings and frozen releases remain unchanged.
+
+Validation: five display/graph safety checks, one synthetic interactive navigation/filter test, and eight existing release/dashboard checks pass. The local dashboard uses the new source; the previously frozen cloud software remains historical. New browser screenshots and operational observations remain private. No processing run, IAM change or EC2 deployment is part of this refresh.
