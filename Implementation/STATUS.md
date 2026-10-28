@@ -33,3 +33,11 @@ A local visualization launcher verifies an explicit project profile, uses the bo
 The current source adds compact reporting filters, a supported-lift ranking with a consistent-population baseline, an alternate volume/rate view, readable exact-value tables, and a deterministic bounded case graph with click-to-inspect account details and fit/zoom controls. Evaluation separates transaction classification from eligible-pattern recovery and keeps the baseline comparison visible. Only the selected page loads its data; filters persist across navigation. Source query contracts, money strings, graph/evidence bounds, detector thresholds, evaluator settings and frozen releases remain unchanged.
 
 Validation: five display/graph safety checks, one synthetic interactive navigation/filter test, and eight existing release/dashboard checks pass. The local dashboard uses the new source; the previously frozen cloud software remains historical. New browser screenshots and operational observations remain private. No processing run, IAM change or EC2 deployment is part of this refresh.
+
+## Daily trend view — 29 October 2026
+
+Monitoring now accepts the complete published date range. A new bounded daily query sums additive N/L counts from the common Q1 base, with the same release, date, currency-side and payment-format filters. The chart aligns daily labels, laundering rate and total traffic, shades the sparse tail and keeps rate traces separate across the boundary. First-to-last-day comparisons state the observed counts/rates and flag comparisons across different traffic populations.
+
+Main-period and sparse-tail rankings retain separate date ranges and baselines. Mixed-range overview counts are additive; no pooled headline rate is displayed. Known filtered zero-traffic days have no measurable rate; dates outside published coverage remain gaps. Segment support and exact monetary amounts are unchanged. The detector, evaluator, chronological calibration and frozen releases are unaffected.
+
+Validation: 18 focused tests passed, including independent synthetic SQL aggregation, both currency sides, weighted count totals, zero/gap handling, period boundaries and full-range navigation with separate ranking queries. Browser observations and query records remain private. No Glue run, EC2 deployment or IAM change was needed.

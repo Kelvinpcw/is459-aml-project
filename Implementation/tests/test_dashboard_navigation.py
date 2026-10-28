@@ -16,6 +16,7 @@ class DashboardNavigationTests(unittest.TestCase):
         def query(client,sql):
             sqls.append(sql)
             if 'DISTINCT' in sql:return [{'currency':'US Dollar'}]
+            if 'GROUP BY event_date' in sql:return [{'event_date':'2022-09-01','n':'2000','l':'3'}]
             if 'FROM fixture.q2' in sql:return [{'case_id':'a'*64,'pattern_type':'cycle_3','participant_count':'3','evidence_transaction_count':'3'}]
             return [{'payment_format':'ACH','n':'2000','l':'3','baseline_n':'2000','baseline_l':'3','rate':'.0015','lift':'1','support':'supported','selected_currency_amount':'0.47209301'}]
         tx={'population':2000,'positive_labels':3,'unique_alerted_transactions':1,'precision':None,'recall':None}
@@ -24,7 +25,7 @@ class DashboardNavigationTests(unittest.TestCase):
         with patch.dict(os.environ,{'AML_AWS_PROFILE':'synthetic-test','AML_USE_INSTANCE_ROLE':''}),patch('boto3.Session',return_value=session),patch('pipeline.release.load_current',return_value=release),patch('pipeline.release.verify_ref',return_value=metrics) as metric_read,patch('dashboard.data.run_query',side_effect=query),patch('dashboard.data.get_case',return_value=(case,b'{}')) as case_read:
             app=AppTest.from_file(str(Path(__file__).resolve().parents[1]/'dashboard/app.py')).run(timeout=20)
             self.assertEqual(len(app.exception),0);self.assertEqual(len(app.error),0);self.assertFalse(case_read.called);self.assertFalse(metric_read.called);self.assertTrue(any("payment_currency='US Dollar'" in x for x in sqls))
-            self.assertEqual(app.dataframe[0].value['US Dollar amount (paid)'].iloc[0],'0.47209301')
+            self.assertEqual(next(x.value for x in app.dataframe if 'US Dollar amount (paid)' in x.value.columns)['US Dollar amount (paid)'].iloc[0],'0.47209301')
             app.selectbox(key='q1_side').set_value('receiving').run(timeout=20)
             self.assertEqual(len(app.error),0);self.assertTrue(any("receiving_currency='US Dollar'" in x for x in sqls));self.assertFalse(case_read.called)
             app.button_group(key='workspace_page').set_value('Case explorer').run(timeout=20)

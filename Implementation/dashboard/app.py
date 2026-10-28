@@ -4,8 +4,9 @@ from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 import pandas as pd
 import streamlit as st
-from dashboard.data import q1_query,case_query,run_query,get_case,evidence_csv,wilson,dimension_query,full_evidence_archive
+from dashboard.data import q1_query,q1_trend_query,case_query,run_query,get_case,evidence_csv,wilson,dimension_query,full_evidence_archive
 from dashboard.presentation import CSS,PATTERNS,esc,kpis,period,exposure_chart,graph_html
+from dashboard.trends import reporting_periods,daily_population,population_total,endpoint_comparison,trend_chart
 from pipeline.release import ACCOUNT,REGION,load_current,verify_ref
 
 st.set_page_config(page_title='AML | Investigation workspace',page_icon='◈',layout='wide',initial_sidebar_state='collapsed')
@@ -66,16 +67,36 @@ def monitoring():
         supports=[1000,500,100] if end<='2022-09-08' else [1000]
         support=select_filter('Minimum ranking support',supports,key='q1_support_'+str(end<='2022-09-08'),help='Sensitivity settings are available only during development. Low-support rows remain available but are not ranked.')
     caption(period(start,end)+' · '+('Paid' if side=='payment' else 'Received')+' in '+currency+' · '+('All formats' if fmt=='All' else fmt)+' · Minimum '+f'{support:,}'+' payments')
-    if start<'2022-09-17'<=end:st.warning('Select the main period or sparse tail separately; their traffic distributions differ.');return
     if start>end:st.warning('Choose an end date on or after the start date.');return
-    with st.spinner('Loading published summaries…'):
-        rows=query_cached(release['release_id'],q1_query(release,start,end,currency,side,grain,None if fmt=='All' else fmt,support))
-    if not rows:st.info('No transactions match these reporting filters.');return
+    periods=reporting_periods(start,end);mixed=len(periods)>1
+    with st.spinner('Loading daily published counts…'):
+        trend_rows=query_cached(release['release_id'],q1_trend_query(release,start,end,currency,side,None if fmt=='All' else fmt))
+    daily=daily_population(trend_rows,start,end,dates);n,l,rate=population_total(daily)
+    count=lambda value:f'{value:,}' if value is not None else 'Not available'
+    cards([('Transactions',count(n),'Selected currency population'),('Labelled laundering',count(l),'Historical labels, not predictions'),('Reporting periods' if mixed else 'Population rate','2 separate' if mixed else (f'{rate:.4%}' if rate is not None else 'Not measurable'),'Main + sparse tail; no pooled rate' if mixed else 'Population rate · same filters')])
+    st.subheader('How exposure changed')
+    if mixed:st.info('The shaded dates from 17 September are a sparse, different traffic population. Trends remain visible; rates and rankings are interpreted separately.')
+    if any(r['n'] is None for r in daily):st.warning('Some dates are absent from the published coverage. They appear as gaps, not zero-count days.')
+    st.plotly_chart(trend_chart(daily),width='stretch',config={'displayModeBar':False})
+    st.caption('Daily counts, rate and total traffic use the same currency side and format filter. Hover for exact values. Rates are calculated from counts; a day with no payments has no measurable rate.')
+    comparison=endpoint_comparison(daily)
+    if comparison:st.caption(comparison)
+    with st.expander('Daily counts behind the trend'):
+        st.dataframe(pd.DataFrame(daily).rename(columns={'date':'Date','n':'Transactions','l':'Labelled laundering','rate':'Laundering rate','period':'Reporting period'}),hide_index=True,width='stretch',column_config={'Laundering rate':st.column_config.NumberColumn(format='percent')})
+    if mixed:
+        selected_period=st.segmented_control('Ranking period',[p[0] for p in periods],default=periods[0][0],required=True,key='q1_ranking_period',persist_state='session')
+        ranking=next(p for p in periods if p[0]==selected_period)
+    else:ranking=periods[0]
+    _,rank_start,rank_end=ranking
+    with st.spinner('Loading published segment comparisons…'):
+        rows=query_cached(release['release_id'],q1_query(release,rank_start,rank_end,currency,side,grain,None if fmt=='All' else fmt,support))
+    if not rows:st.info('No transactions match the selected ranking period.');return
     frame=pd.DataFrame(rows)
     for col in ['n','l','baseline_n','baseline_l']:frame[col]=pd.to_numeric(frame[col])
     for col in ['rate','lift']:frame[col]=pd.to_numeric(frame[col],errors='coerce')
-    n=int(frame.iloc[0].baseline_n);l=int(frame.iloc[0].baseline_l)
-    cards([('Transactions',f'{n:,}','Selected currency population'),('Labelled laundering',f'{l:,}','Historical labels, not predictions'),('Population rate',f'{l/n:.4%}' if n else 'Not measurable','Baseline for every comparison')])
+    baseline_n=int(frame.iloc[0].baseline_n);baseline_l=int(frame.iloc[0].baseline_l)
+    baseline_rate=f'{baseline_l/baseline_n:.4%}' if baseline_n else 'Not measurable'
+    caption(ranking[0]+' ranking · '+period(rank_start,rank_end)+f' · Baseline: {baseline_n:,} payments / {baseline_l:,} labels / '+baseline_rate)
     frame['group']=frame.apply(lambda r:' → '.join(str(r[k]) for k in ['sender_bank','receiver_bank','payment_format'] if k in r),axis=1)
     st.subheader('Where exposure is concentrated')
     mode=st.segmented_control('Chart view',['Risk lift','Volume vs rate'],default='Risk lift',required=True,label_visibility='collapsed',key='q1_chart',persist_state='session')
