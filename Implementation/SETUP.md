@@ -27,6 +27,18 @@ python -m pytest Implementation/tests -q
 
 These tests use local fixtures and local Spark, not paid AWS jobs. A fresh clone does not require the 3 GB original dataset for the regression suite. Do not claim a test passed until you run it; report missing Python/Java/dependencies as setup blockers. This documentation update did not rerun the suite.
 
+## Visualization without restarting cloud compute
+
+If the pipeline already has a published release, run only the dashboard on your laptop. No Spark, raw dataset, EC2 instance or new processing run is needed. This still makes bounded Athena queries and S3 reads, which can incur small query/request charges.
+
+```bash
+python3.11 -m venv .venv-dashboard
+.venv-dashboard/bin/python -m pip install -r Implementation/dashboard/requirements.txt 'botocore[crt]==1.43.119'
+bash Implementation/scripts/start_local_dashboard.sh YOUR_PROJECT_PROFILE
+```
+
+Use your actual authorized project profile. Open `http://127.0.0.1:8501/` after startup. The launcher verifies the account/region, selects the dashboard workgroup (512 MB per query instead of the smaller development limit), and binds only to localhost. Application queries have a 30-second cancellation limit. All reads remain pinned to the published release; the launcher does not upload, deploy, change IAM, or start Glue/Step Functions. Stop the local server with Ctrl+C. If you intentionally use another environment, set `AML_DASHBOARD_PYTHON` to its Python executable.
+
 ## 3. Original data and generated artifacts
 
 The following are deliberately ignored and absent from a fresh clone:

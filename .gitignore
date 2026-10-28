@@ -45,3 +45,6 @@ Icon*
 # User request: keep new AWS operational records and detailed checkpoints local.
 # Previously committed review evidence remains historical; do not add new runs.
 /Implementation/aws/reviews/*
+
+# Lightweight local visualization environment
+.venv-dashboard/
