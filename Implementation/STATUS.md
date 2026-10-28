@@ -41,3 +41,13 @@ Monitoring now accepts the complete published date range. A new bounded daily qu
 Main-period and sparse-tail rankings retain separate date ranges and baselines. Mixed-range overview counts are additive; no pooled headline rate is displayed. Known filtered zero-traffic days have no measurable rate; dates outside published coverage remain gaps. Segment support and exact monetary amounts are unchanged. The detector, evaluator, chronological calibration and frozen releases are unaffected.
 
 Validation: 18 focused tests passed, including independent synthetic SQL aggregation, both currency sides, weighted count totals, zero/gap handling, period boundaries and full-range navigation with separate ranking queries. Browser observations and query records remain private. No Glue run, EC2 deployment or IAM change was needed.
+
+## Rolling reporting windows — 29 October 2026
+
+At the user's clarification, the dashboard now uses last-7-day, last-30-day and custom reporting windows anchored to the latest published date. Sample-specific main/tail controls are superseded. Overview counts, rates and segment baselines all use one consistently filtered selected window; rates are ratios of summed counts. Case exploration defaults to the latest published snapshot, with an explicit historical selector.
+
+Daily volume below 1,000 selected payments is an informational flag and never removes records or implies incomplete ingestion. Missing release dates remain gaps. Whole-day completeness is unknown unless the release explicitly supplies optional day coverage; no date is automatically marked complete or partial from its volume. Refresh data preserves the chosen rolling preset and advances it when a newer release arrives; refresh failure retains the previous release. Query windows remain bounded to 500 calendar days.
+
+The historical sample profile and frozen development/holdout/sparse-tail evaluation are unchanged. This is a reporting change; automatic scheduled ingestion, incremental processing and new publication metadata are not implemented or deployed by it. No new AWS processing, EC2 or IAM changes are part of this scope.
+
+Validation for the rolling view: 21 focused checks passed, including arbitrary future dates, short-history clipping, cross-year release growth, consistent ranking/date filters, refresh failure retention and explicit completeness handling. The existing synthetic SQL, graph safety, exact-money and release checks remain included.

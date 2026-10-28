@@ -6,7 +6,7 @@ import pandas as pd
 import streamlit as st
 from dashboard.data import q1_query,q1_trend_query,case_query,run_query,get_case,evidence_csv,wilson,dimension_query,full_evidence_archive
 from dashboard.presentation import CSS,PATTERNS,esc,kpis,period,exposure_chart,graph_html
-from dashboard.trends import reporting_periods,daily_population,population_total,endpoint_comparison,trend_chart
+from dashboard.trends import range_options,date_window,daily_population,population_total,coverage_counts,LOW_DAILY_VOLUME,endpoint_comparison,trend_chart
 from pipeline.release import ACCOUNT,REGION,load_current,verify_ref
 
 st.set_page_config(page_title='AML | Investigation workspace',page_icon='◈',layout='wide',initial_sidebar_state='collapsed')
@@ -51,52 +51,65 @@ def select_filter(*args,**kwargs):
     return st.selectbox(*args,persist_state='session',**kwargs)
 
 
+def refresh_data():
+    try:updated=load_current(s3)
+    except Exception as error:
+        st.error('Refresh failed; the previous release is still selected. '+str(error));return
+    st.session_state.release=updated;st.session_state.pop('prepared_archive',None);st.rerun()
+
+
 def monitoring():
     st.title('Monitoring allocation')
     caption('Compare historical exposure with transaction volume. Find supported segments for control review.')
-    dates=release['q1']['dates']
+    dates=sorted(set(release['q1']['dates']))
     with st.popover('Reporting filters',icon=':material/tune:'):
         st.caption('All counts and baselines use these same filters.')
-        a,b=st.columns(2)
-        start=a.selectbox('From date',dates,persist_state='session',index=0,key='q1_start');end=b.selectbox('Through date',dates,persist_state='session',index=dates.index('2022-09-16') if '2022-09-16' in dates else len(dates)-1,key='q1_end')
+        if st.button('Refresh data',icon=':material/refresh:',key='refresh_monitoring'):refresh_data()
+        preset=select_filter('Date range',range_options(dates),index=1,key='q1_range')
+        custom_start=custom_end=None
+        if preset=='Custom dates':
+            for key in ('q1_start','q1_end'):
+                if key in st.session_state and st.session_state[key] not in dates:del st.session_state[key]
+            a,b=st.columns(2)
+            custom_start=a.selectbox('From date',dates,persist_state='session',index=0,key='q1_start')
+            custom_end=b.selectbox('Through date',dates,persist_state='session',index=len(dates)-1,key='q1_end')
         side=select_filter('Currency side',['payment','receiving'],format_func=lambda x:'Paid' if x=='payment' else 'Received',key='q1_side')
         currencies=[r['currency'] for r in query_cached(release['release_id'],dimension_query(release,side))]
         currency=select_filter('Currency',currencies,index=currencies.index('US Dollar') if 'US Dollar' in currencies else 0,key='q1_currency_'+side)
         grain=select_filter('Compare',['format','bank_pair','segment'],format_func=lambda x:{'format':'Payment formats','bank_pair':'Bank pairs','segment':'Bank pair + format'}[x],key='q1_grain')
         fmt=select_filter('Payment format',['All','ACH','Cash','Cheque','Credit Card','Reinvestment','Wire','Bitcoin'],key='q1_format')
-        supports=[1000,500,100] if end<='2022-09-08' else [1000]
-        support=select_filter('Minimum ranking support',supports,key='q1_support_'+str(end<='2022-09-08'),help='Sensitivity settings are available only during development. Low-support rows remain available but are not ranked.')
+        support=1000
+        st.caption('Ranked segments require at least 1,000 payments. Low-support rows remain available in the details.')
+    try:start,end=date_window(dates,preset,custom_start,custom_end)
+    except ValueError as error:st.warning(str(error));return
     caption(period(start,end)+' · '+('Paid' if side=='payment' else 'Received')+' in '+currency+' · '+('All formats' if fmt=='All' else fmt)+' · Minimum '+f'{support:,}'+' payments')
-    if start>end:st.warning('Choose an end date on or after the start date.');return
-    periods=reporting_periods(start,end);mixed=len(periods)>1
+    caption('Latest published date: '+period(dates[-1],dates[-1]).split(' – ')[0]+' · Rolling windows end on that date, not today.')
     with st.spinner('Loading daily published counts…'):
         trend_rows=query_cached(release['release_id'],q1_trend_query(release,start,end,currency,side,None if fmt=='All' else fmt))
-    daily=daily_population(trend_rows,start,end,dates);n,l,rate=population_total(daily)
+    daily=daily_population(trend_rows,start,end,dates,release['q1'].get('day_coverage'));n,l,rate=population_total(daily)
     count=lambda value:f'{value:,}' if value is not None else 'Not available'
-    cards([('Transactions',count(n),'Selected currency population'),('Labelled laundering',count(l),'Historical labels, not predictions'),('Reporting periods' if mixed else 'Population rate','2 separate' if mixed else (f'{rate:.4%}' if rate is not None else 'Not measurable'),'Main + sparse tail; no pooled rate' if mixed else 'Population rate · same filters')])
+    cards([('Transactions',count(n),'Selected currency population'),('Labelled laundering',count(l),'Historical labels, not predictions'),('Population rate',f'{rate:.4%}' if rate is not None else 'Not measurable','Labels ÷ payments in this selection')])
     st.subheader('How exposure changed')
-    if mixed:st.info('The shaded dates from 17 September are a sparse, different traffic population. Trends remain visible; rates and rankings are interpreted separately.')
-    if any(r['n'] is None for r in daily):st.warning('Some dates are absent from the published coverage. They appear as gaps, not zero-count days.')
+    coverage=coverage_counts(daily)
+    if coverage['missing']:st.warning(f"{coverage['missing']} dates are absent from the published coverage. They remain gaps, not zero-count days.")
+    if coverage['partial']:st.warning(f"{coverage['partial']} dates have explicitly reported partial coverage. Counts are retained; comparisons are provisional.")
+    if coverage['low_volume']:st.info(f"{coverage['low_volume']} low-volume days: fewer than {LOW_DAILY_VOLUME:,} payments in this filtered population. Rates can be unstable. Low volume alone does not establish incomplete or bad data.")
     st.plotly_chart(trend_chart(daily),width='stretch',config={'displayModeBar':False})
     st.caption('Daily counts, rate and total traffic use the same currency side and format filter. Hover for exact values. Rates are calculated from counts; a day with no payments has no measurable rate.')
     comparison=endpoint_comparison(daily)
     if comparison:st.caption(comparison)
     with st.expander('Daily counts behind the trend'):
-        st.dataframe(pd.DataFrame(daily).rename(columns={'date':'Date','n':'Transactions','l':'Labelled laundering','rate':'Laundering rate','period':'Reporting period'}),hide_index=True,width='stretch',column_config={'Laundering rate':st.column_config.NumberColumn(format='percent')})
-    if mixed:
-        selected_period=st.segmented_control('Ranking period',[p[0] for p in periods],default=periods[0][0],required=True,key='q1_ranking_period',persist_state='session')
-        ranking=next(p for p in periods if p[0]==selected_period)
-    else:ranking=periods[0]
-    _,rank_start,rank_end=ranking
+        st.dataframe(pd.DataFrame(daily).rename(columns={'date':'Date','n':'Transactions','l':'Labelled laundering','rate':'Laundering rate','coverage':'Day completeness','low_volume':'Low volume'}),hide_index=True,width='stretch',column_config={'Laundering rate':st.column_config.NumberColumn(format='percent')})
+    if coverage['unknown']:st.caption('Whole-day completeness metadata was not supplied for some published dates. Publication alone does not certify a full day of source coverage.')
     with st.spinner('Loading published segment comparisons…'):
-        rows=query_cached(release['release_id'],q1_query(release,rank_start,rank_end,currency,side,grain,None if fmt=='All' else fmt,support))
-    if not rows:st.info('No transactions match the selected ranking period.');return
+        rows=query_cached(release['release_id'],q1_query(release,start,end,currency,side,grain,None if fmt=='All' else fmt,support))
+    if not rows:st.info('No transactions match the selected reporting window.');return
     frame=pd.DataFrame(rows)
     for col in ['n','l','baseline_n','baseline_l']:frame[col]=pd.to_numeric(frame[col])
     for col in ['rate','lift']:frame[col]=pd.to_numeric(frame[col],errors='coerce')
     baseline_n=int(frame.iloc[0].baseline_n);baseline_l=int(frame.iloc[0].baseline_l)
     baseline_rate=f'{baseline_l/baseline_n:.4%}' if baseline_n else 'Not measurable'
-    caption(ranking[0]+' ranking · '+period(rank_start,rank_end)+f' · Baseline: {baseline_n:,} payments / {baseline_l:,} labels / '+baseline_rate)
+    caption('Selected-window ranking · '+period(start,end)+f' · Published baseline: {baseline_n:,} payments / {baseline_l:,} labels / '+baseline_rate)
     frame['group']=frame.apply(lambda r:' → '.join(str(r[k]) for k in ['sender_bank','receiver_bank','payment_format'] if k in r),axis=1)
     st.subheader('Where exposure is concentrated')
     mode=st.segmented_control('Chart view',['Risk lift','Volume vs rate'],default='Risk lift',required=True,label_visibility='collapsed',key='q1_chart',persist_state='session')
@@ -119,8 +132,12 @@ def explorer():
     case_release={**release,'q2':dict(release['q2'])};snapshots=release['q2'].get('snapshots')
     with st.popover('Case filters',icon=':material/tune:'):
         if snapshots:
-            ends=[x['window_end'] for x in snapshots]
-            choice=select_filter('Daily snapshot cutoff',ends,index=ends.index('2022-09-17T00:00:00') if '2022-09-17T00:00:00' in ends else len(ends)-1,format_func=lambda x:period(x,x).split(' – ')[0],key='q2_snapshot')
+            ends=sorted(x['window_end'] for x in snapshots)
+            snapshot_mode=select_filter('Snapshot view',['Latest published','Custom snapshot'],key='q2_snapshot_mode')
+            if snapshot_mode=='Latest published':choice=ends[-1]
+            else:
+                if 'q2_snapshot' in st.session_state and st.session_state.q2_snapshot not in ends:del st.session_state['q2_snapshot']
+                choice=select_filter('Daily snapshot cutoff',ends,index=len(ends)-1,format_func=lambda x:period(x,x).split(' – ')[0],key='q2_snapshot')
             snapshot=next(x for x in snapshots if x['window_end']==choice)
             case_release['q2'].update({k:snapshot[k] for k in ('window_start','window_end','snapshot_cutoff','case_count')})
         else:snapshot={}
@@ -198,9 +215,4 @@ with st.expander('Published release & scope'):
     st.caption('Q1: '+period(release['q1']['dates'][0],release['q1']['dates'][-1])+' · Q2 snapshots: '+period(release['q2']['window_start'],release['q2']['window_end']))
     st.caption(release['timestamp_policy'])
     for warning in release['warnings']:st.write(warning)
-    if st.button('Refresh published release'):
-        updated=load_current(s3)
-        if updated['release_id']!=release['release_id']:
-            for key in list(st.session_state):
-                if key.startswith(('q1_','q2_','selected_case_','labels_')):del st.session_state[key]
-        st.session_state.release=updated;st.session_state.pop('prepared_archive',None);st.rerun()
+    if st.button('Refresh published release'):refresh_data()
