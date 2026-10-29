@@ -79,7 +79,7 @@ def main():
     parser.add_argument('--phase',required=True,choices=['upload','create','apply','verify','start','status','stop','dashboard','dashboard-status','remove-dashboard'])
     args=parser.parse_args();plan=json.loads(args.plan.read_text());folder=args.plan.parent
     if plan.get('approved') is not True or plan.get('budget_usd')!=BUDGET_USD or plan.get('run_id')!=RUN_ID or plan.get('code_version')!=CODE_VERSION:raise ValueError('Require this exact approved private plan')
-    template=build();raw=(ROOT/'Implementation/deployment/rerun29-stack.json').read_bytes()
+    template=build();raw=(ROOT/'Implementation/deployment/run30-stack.json').read_bytes()
     if json.loads(raw)!=template:raise ValueError('Generated template is stale')
     if plan.get('template_sha256')!=hashlib.sha256(raw).hexdigest():raise ValueError('Plan/template mismatch')
     s=identity(args.profile);s3=s.client('s3');cfn=s.client('cloudformation');sf=s.client('stepfunctions',config=Config(retries={'total_max_attempts':1}));glue=s.client('glue')

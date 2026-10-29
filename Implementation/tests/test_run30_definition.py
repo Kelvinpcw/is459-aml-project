@@ -27,6 +27,15 @@ class WholeRunTests(unittest.TestCase):
                     with self.assertRaises(ValueError):run30.main()
                     identity.assert_not_called()
 
+    def test_valid_new_plan_reaches_identity_with_generated_new_template(self):
+        raw=(run30.ROOT/'Implementation/deployment/run30-stack.json').read_bytes()
+        valid={'approved':True,'budget_usd':90,'run_id':build_run30.RUN_ID,'code_version':build_run30.CODE_VERSION,'template_sha256':hashlib.sha256(raw).hexdigest()}
+        with tempfile.TemporaryDirectory() as d:
+            p=Path(d)/'plan.json';p.write_text(json.dumps(valid))
+            with patch.object(sys,'argv',['run30.py','--profile','fixture','--plan',str(p),'--phase','upload']),patch.object(run30,'identity',side_effect=RuntimeError('fixture identity reached')) as identity:
+                with self.assertRaisesRegex(RuntimeError,'fixture identity reached'):run30.main()
+                identity.assert_called_once_with('fixture')
+
     def test_label_isolation_and_frozen_thresholds(self):
         from build_rerun import build
         old=build();new=build_run30.build();a=old['Resources']['DetectJob']['Properties']['DefaultArguments'];b=new['Resources']['DetectJob']['Properties']['DefaultArguments']
