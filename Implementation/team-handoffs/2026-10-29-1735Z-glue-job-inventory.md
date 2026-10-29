@@ -1,7 +1,7 @@
 # Session: read-only Glue job inventory
 
 - **Owner / GitHub handle:** Kelvinpcw (session run with an OpenCode agent)
-- **Branch / PR:** `agent/opencode-glue-inventory`; PR link added after creation.
+- **Branch / PR:** `agent/opencode-glue-inventory`; [PR #16](https://github.com/Kelvinpcw/is459-aml-project/pull/16).
 - **Updated at / observation interval:** 2026-10-29T17:33Z–17:36Z (2026-10-30 01:33–01:36 +08:00)
 - **Status:** COMPLETED
 - **Evidence kind:** fresh AWS observations (read-only `get-jobs` / `get-job-runs`)
