@@ -14,7 +14,7 @@ Commands/results, fixture versus real input, and checks not run with reasons. Do
 
 ## AWS scope and cleanup
 
-`AWS: none`, or a short activity summary: read-only viewing/status, approved processing/deployment, etc. State compute/cleanup actually observed and unknowns. Keep detailed records, measurements/costs, logs/screenshots and credentials private. Link the sanitised team handoff.
+`AWS: none`, or a short activity summary: approved processing/deployment, cleanup, etc. For AWS state changes, state compute/cleanup actually observed and unknowns. Keep detailed records, measurements/costs, logs/screenshots and credentials private. Link the sanitised team handoff when the change includes AWS state changes; a purely read-only check needs none.
 
 ## Handoff and merge
 

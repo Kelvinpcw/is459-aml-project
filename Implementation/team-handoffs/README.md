@@ -6,7 +6,7 @@ This folder is the team's durable update feed for humans and AI agents. Read it 
 
 ## When to write one
 
-Write/update one record for a meaningful task's plan, progress/blocker or completion. Group related actions; don't create a file per command. Every AWS work session needs a record, including read-only, failed and cleanup-only sessions; see [AWS_HANDOFF.md](../AWS_HANDOFF.md). Local-only tasks say **AWS: none**.
+Write/update one record for a meaningful change, plan, blocker or completion. Group related actions; don't create a file per command. State-changing, failed/aborted mutation attempts and cleanup sessions need a record; **a purely read-only AWS check does not need one or a PR** unless the user asks. See [AWS_HANDOFF.md](../AWS_HANDOFF.md). Local-only tasks say **AWS: none**.
 
 Copy [_TEMPLATE.md](_TEMPLATE.md) to `YYYY-MM-DD-HHMMZ-owner-task.md` using the actual UTC time and a unique owner/task name. Add a PR link when available. Existing older naming is retained for stable links. Don't overwrite another person's record or fabricate ownership.
 

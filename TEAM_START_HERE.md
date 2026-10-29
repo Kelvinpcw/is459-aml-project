@@ -116,7 +116,7 @@ delete anything. Record the timestamp, scope, unknowns and next step.
 Keep detailed observations private and push a sanitised team handoff.
 ```
 
-Read [VERIFY_PROGRESS.md](Implementation/VERIFY_PROGRESS.md) for what that check can establish. Follow the [AWS handoff](Implementation/AWS_HANDOFF.md) even for read-only sessions. The connected dashboard can make chargeable Athena/S3 reads; a new processing run needs separate approval.
+Read [VERIFY_PROGRESS.md](Implementation/VERIFY_PROGRESS.md) for what that check can establish. A purely read-only status check needs no handoff; follow the [AWS handoff](Implementation/AWS_HANDOFF.md) for any change, paid run, deployment or cleanup. The connected dashboard can make chargeable Athena/S3 reads; a new processing run needs separate approval.
 
 ## 5. Make your work visible
 
