@@ -20,11 +20,10 @@
 - **Actions/commands actually run:** `sts get-caller-identity` via the profile guard; Step Functions `list-state-machines`, `describe-state-machine`, `list-executions`, `describe-execution`, `get-execution-history`; Glue `get-job-runs`; CloudFormation `describe-stack-resources`; S3 read of the small `published/current.json`.
 - **Created:** five `STANDARD` state machines exist as resources of the prior full-run stack: one main full pipeline plus four versioned recovery/retry definitions (a Q1/Q2/Catalog recovery and three evaluator/publisher-only attempts). The main definition matches the reviewed full template; the recovery definitions deliberately contain only the stages that had not completed. Failures end the execution without replacing the previous release. The workflow has a bounded timeout, no retries and no recurring schedule.
 - **Executed:** yes, the workflows really ran. Outcome categories:
-  - the original full-pipeline execution **failed** in the parallel detection stage (Spark join internal error) and cancelled the Q1 branch;
+  - the original full-pipeline execution **failed** in the parallel detection stage (Spark join internal error) and cancelled the Q1 branch; the diagnosed cause was an evidence-export join attribute-ID collision, and a frozen code fix added fresh expression IDs before the successful Q2 recovery;
   - a targeted recovery completed Q1, Q2 and Catalog, then was **deliberately aborted** for a cost pause;
   - two evaluator-only attempts were **aborted/failed**;
   - a final evaluator+publish recovery **succeeded** and produced the current published pointer.
-- **Failure cause:** the original Q2 failure and the first evaluator retry were Glue/Spark analyzer `INTERNAL_ERROR`s on joins over checkpoint-derived relations; later frozen packages alias right-side columns to fresh expression IDs. The evaluator also replaced an OR-predicate fan reconstruction (Cartesian plan) with two keyed equi-joins. These are code/join-plan defects, not bad input data or an IAM problem.
 - **Important qualification:** no single execution completed the whole chain end to end. The successful release reused completed upstream outputs and a targeted recovery machine, not a clean single-pass run of the main workflow. This should be stated accurately in reports/demos.
 - **Publication pointer / consumers affected:** unchanged; the current release and manifest hash remain as previously verified.
 - **Contracts/source/config changed:** none.
