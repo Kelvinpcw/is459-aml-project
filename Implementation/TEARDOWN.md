@@ -33,3 +33,19 @@ Q1 also finished Succeeded at 16:29:25 Singapore. All three approved Glue runs a
 ### Athena validation observed then
 
 Three metadata statements and three data validations succeeded; one initial ordering check failed before scanning and was corrected. All seven SQL executions are terminal; no query or other project compute is active. Retain idle workgroup/Catalog table/partition and S3 query results. No Glue rerun, new role grant, crawler or continuously billed service was introduced.
+
+## Definition cleanup — 30 October 2026
+
+The user authorised removal of unused definitions. The maintained full stack is
+[`deployment/full-maintained-stack.json`](deployment/full-maintained-stack.json),
+which retains the five full-data Glue jobs and main workflow while removing the
+four one-time recovery workflows. Historical deployment templates are retained
+for evidence; do not apply them to the maintained stack merely to restore deleted
+recovery definitions. The four standalone pilot Glue definitions are also removed.
+
+The single project S3 bucket remains required for raw inputs, scripts, curated data,
+case evidence and publication; no bucket or object is deleted by this cleanup.
+Catalog tables, IAM roles, logs and unrelated shared-account resources remain.
+This does not establish a successful end-to-end execution of the retained main
+workflow or authorise another run. See the
+[cleanup handoff](team-handoffs/2026-10-30-kelvin-resource-cleanup.md) for observed outcome.

@@ -78,3 +78,15 @@ A read-only AWS check in account `160885259244` / `us-east-1` (profile verified;
 ## Fresh rerun preparation — 29 October 2026
 
 US$90 is now a saved planning ceiling. The user clarified that only GitHub configuration was requested: **do not run the full pipeline or deploy services now**. New isolated definitions/driver and immutable full-v6 software are retained for future review; core processing files match full-v5 and the updated TRACE dashboard is included. Local suite/template/guard checks passed. An incorrectly started preparation attempt was cancelled and verified stopped, without any downstream stage or dashboard starting; cleanup is recorded in the [handoff](team-handoffs/2026-10-29-1215Z-kelvin-fresh-full-rerun.md). It is not a completed new cloud run and must not be resumed. Future paid work requires fresh scoped permission; previous successful results remain unchanged.
+
+## Obsolete definition cleanup — 30 October 2026
+
+User-authorised AWS cleanup removed four standalone pilot Glue definitions and four
+one-time recovery workflows. Fresh verification found five unchanged full-data
+Glue definitions, one retained main workflow and a stable CloudFormation stack.
+The sole S3 bucket is required and retained; the publication pointer is byte-identical.
+No processing, query or dashboard was started and no data, Catalog table or IAM
+role was deleted. This does not change historical execution/completion evidence.
+Use `deployment/full-maintained-stack.json` for future reviewed stack maintenance;
+historical templates can recreate the removed workflows. See the
+[cleanup handoff](team-handoffs/2026-10-30-kelvin-resource-cleanup.md).
