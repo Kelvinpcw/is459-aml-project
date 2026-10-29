@@ -90,3 +90,21 @@ role was deleted. This does not change historical execution/completion evidence.
 Use `deployment/full-maintained-stack.json` for future reviewed stack maintenance;
 historical templates can recreate the removed workflows. See the
 [cleanup handoff](team-handoffs/2026-10-30-kelvin-resource-cleanup.md).
+
+## Fresh full execution completed — 30 October 2026
+
+The newly authorised full-data execution completed successfully in one Step
+Functions execution: preparation, detector manifest, parallel Q1/Q2, Catalog,
+evaluation and publication all succeeded. Independent readback verified the current
+manifest and all four PASSED report hashes, population/identity/calibration gates
+and Catalog output locations. No processing remains active. This adds fresh
+single-execution completion evidence; it does not alter earlier historical
+recovery outcomes or establish scheduled/incremental ingestion or formal user testing.
+
+The approved temporary EC2 visualization passed service and actual browser/data
+verification. Superseded generated S3 outputs and proven-stale Catalog tables were
+removed and their absence verified; current data/raw inputs/annotations/software
+remain. The EC2 viewing session is temporarily live under its verified termination
+guard; final instance/disk/stack teardown is still pending. Follow the
+[session handoff](team-handoffs/2026-10-30-kelvin-full-pipeline.md) and
+[end-to-end guide](END_TO_END_GUIDE.md).

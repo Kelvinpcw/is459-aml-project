@@ -177,6 +177,9 @@ billing cap. Never launch from a historical approval or reuse an old plan file.
 
 ## 7. Commands for the newly authorised attempt
 
+`deployment/full-maintained-stack.json` now mirrors the successfully deployed
+configuration in `run30-stack.json`; earlier stack templates are historical.
+
 These show the phases used by the dated driver. `PRIVATE_PLAN` means the path to
 the operator's ignored, approved plan for this exact new attempt. Set it in your
 shell along with `PROJECT_PROFILE`. Do not paste credentials into either variable
@@ -291,3 +294,15 @@ At session end, publish the sanitised observed outcome and update status/runbook
 Keep exact run/input/output identities, raw logs, inventories, cost records and
 private plans ignored. A successful source push is not a successful cloud run; both
 must be verified separately.
+
+## Observed completion for this attempt
+
+The fresh processing execution SUCCEEDED across all stages. Independent readback
+verified the published manifest, four PASSED reports, reconciled populations and
+Catalog locations. The EC2 visualization subsequently passed health and actual browser checks of
+Monitoring, Cases, complete evidence preparation and Evaluation on the new release.
+Superseded generated S3 objects and four proven-stale Catalog tables were removed
+and verified absent; new data/raw inputs/annotations/software remain. The temporary
+EC2 viewing window remains live under its verified shutdown guard; final teardown
+is tracked separately in the session handoff. The command examples above describe a consumed run identity, not
+authorisation to start it again.
