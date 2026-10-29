@@ -17,12 +17,12 @@ Only the operator's maintained AML stack, source staging and generated output pa
 - New `build_run30.py` / `run30.py` define a fresh ingestion namespace/run on the maintained stack. Deployment uses an inspected change set and rejects resource additions/removals/replacements. Exact deployment verification and one-start private markers are required.
 - Reuse immutable full-v6 processing software; frozen detector/evaluator settings stay unchanged. The stopped prior attempt remains consumed and revoked.
 - `upload_input.py` supports an explicit scoped new raw prefix and private observation path. Complete stable-ID input artifacts are uploaded with conditional completion and streaming/server-part checksum verification. Original source records/checksums/ordinals remain unchanged.
-- Ten local deployment/plan/isolation/dashboard checks passed. Both new templates will be validated before apply; no cloud success is claimed yet.
+- Fourteen local cleanup/deployment/plan/isolation/dashboard checks passed. Both new templates passed AWS validation. Fresh ingestion and immutable software were uploaded/verified; the modification-only stack update reached UPDATE_COMPLETE and exact deployment verification passed. Processing start is next.
 - Old generated outputs are inventoried privately. Deletion is deferred until the new release and EC2 dashboard are verified, retaining a working previous publication on failure. Preserve original/raw source, annotations, required software and current new outputs. Do not delete a bucket that is still used.
 
 ## AWS scope and cleanup
 
-Read-only source and output inventory completed with the explicit verified project profile/region. No run/deployment/upload/deletion has started at plan publication. New compute will be monitored against the private cost reserve; stop requests require terminal verification. The private EC2 dashboard has no inbound ports, uses SSM and a one-hour terminate guard, with root disk deletion. No processing retries or automatic recovery are authorised. S3 cleanup must use the exact pre-run object inventory with fresh pointer and object-identity checks.
+Read-only source and output inventory completed with the explicit verified project profile/region. At plan publication no mutations had started. Since then fresh ingestion/software verification and the reviewed existing-stack update completed; no processing start yet. New compute will be monitored against the private cost reserve; stop requests require terminal verification. The private EC2 dashboard has no inbound ports, uses SSM and a one-hour terminate guard, with root disk deletion. No processing retries or automatic recovery are authorised. S3 cleanup must use the exact pre-run object inventory with fresh pointer and object-identity checks.
 
 ## Next teammate / agent
 

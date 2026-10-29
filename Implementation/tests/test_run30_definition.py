@@ -36,6 +36,13 @@ class WholeRunTests(unittest.TestCase):
                 with self.assertRaisesRegex(RuntimeError,'fixture identity reached'):run30.main()
                 identity.assert_called_once_with('fixture')
 
+    def test_reused_job_monitor_excludes_historical_runs(self):
+        from datetime import datetime,timezone
+        old={'Id':'old','StartedOn':datetime(2026,10,28,tzinfo=timezone.utc)}
+        new={'Id':'new','StartedOn':datetime(2026,10,30,tzinfo=timezone.utc)}
+        with patch.object(run30,'jobs_status',return_value={'prepare':[new,old]}):
+            self.assertEqual(run30.run_jobs_since(None,'2026-10-29T00:00:00+00:00'),{'prepare':[new]})
+
     def test_label_isolation_and_frozen_thresholds(self):
         from build_rerun import build
         old=build();new=build_run30.build();a=old['Resources']['DetectJob']['Properties']['DefaultArguments'];b=new['Resources']['DetectJob']['Properties']['DefaultArguments']

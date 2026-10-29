@@ -30,6 +30,11 @@ def jobs_status(glue):
     return result
 
 
+def run_jobs_since(glue,started):
+    started=datetime.datetime.fromisoformat(str(started))
+    return {stage:[r for r in rows if r['StartedOn']>=started] for stage,rows in jobs_status(glue).items()}
+
+
 def resolve(value,params):
     if isinstance(value,list):return [resolve(v,params) for v in value]
     if not isinstance(value,dict):return value
@@ -133,8 +138,9 @@ def main():
         save(folder,'request.json',{'workflow':workflow,'execution_name':RUN_ID,'input':body,'plan_sha256':hashlib.sha256(args.plan.read_bytes()).hexdigest()},True)
         result=sf.start_execution(stateMachineArn=workflow,name=RUN_ID,input=json.dumps(body,sort_keys=True));save(folder,'start.json',result,True);print('One new full workflow started; private request/start markers saved.')
     elif args.phase=='status':
-        stack=cfn.describe_stacks(StackName=STACK_NAME)['Stacks'][0];jobs=jobs_status(glue);execution=None
-        if (folder/'start.json').exists():execution=sf.describe_execution(executionArn=json.loads((folder/'start.json').read_text())['executionArn'])
+        stack=cfn.describe_stacks(StackName=STACK_NAME)['Stacks'][0];jobs={};execution=None
+        if (folder/'start.json').exists():
+            start=json.loads((folder/'start.json').read_text());execution=sf.describe_execution(executionArn=start['executionArn']);jobs=run_jobs_since(glue,start['startDate'])
         now=datetime.datetime.now(datetime.timezone.utc);compute=0;active=[]
         for stage,rows in jobs.items():
             for row in rows:
@@ -152,7 +158,9 @@ def main():
         if (folder/'start.json').exists():
             arn=json.loads((folder/'start.json').read_text())['executionArn']
             if sf.describe_execution(executionArn=arn)['status']=='RUNNING':sf.stop_execution(executionArn=arn,cause='User-authorised owned rerun cleanup')
-        for stage,rows in jobs_status(glue).items():
+        if not (folder/'start.json').exists():raise ValueError('No owned start marker; inspect before stopping shared jobs')
+        start=json.loads((folder/'start.json').read_text())
+        for stage,rows in run_jobs_since(glue,start['startDate']).items():
             ids=[r['Id'] for r in rows if r['JobRunState'] not in TERMINAL]
             if ids:glue.batch_stop_job_run(JobName=PREFIX+'-'+stage,JobRunIds=ids)
         save(folder,'stop-request.json',{'at':datetime.datetime.now(datetime.timezone.utc),'terminal_verification_required':True});print('Owned rerun stop requested; verify terminal states.')
