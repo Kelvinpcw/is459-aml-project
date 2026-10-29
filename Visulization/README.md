@@ -2,6 +2,8 @@
 
 An **independent, proposal-led dashboard concept** for the two business questions in [`Proposal/Project_Proposal.md`](../Proposal/Project_Proposal.md). It is a working visual prototype, not a production dashboard or a report of project results.
 
+The connected Streamlit dashboard now adapts this visual direction while retaining real published-result reads, rolling windows and full evidence downloads. See [`Implementation/dashboard/`](../Implementation/dashboard/) and the [setup guide](../Implementation/SETUP.md#visualization-without-restarting-cloud-compute). This folder remains an independent fixture-based concept.
+
 ## Open the dashboard
 
 **Double-click [`index.html`](index.html)**. No installation, account, internet access or build step is required. Keep `index.html`, `styles.css`, `data.js`, `model.js` and `app.js` together.

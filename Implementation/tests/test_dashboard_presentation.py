@@ -1,7 +1,7 @@
 import copy,json,sys,unittest
 from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
-from dashboard.presentation import graph_payload,graph_html,exposure_chart,kpis
+from dashboard.presentation import graph_payload,graph_html,exposure_chart,kpis,monitoring_lead,priority_card,rule_card
 
 
 def case_fixture():
@@ -39,8 +39,30 @@ class DashboardPresentationTests(unittest.TestCase):
     def test_ranking_uses_supplied_rates_excludes_low_support_and_no_amount_math(self):
         rows=[{'group':'supported','n':'2000','l':'3','rate':.0015,'lift':2.3,'support':'supported','selected_currency_amount':'0.47209301'},{'group':'small','n':'2','l':'2','rate':1,'lift':1000,'support':'low_support'},{'group':'zero','n':'2000','l':'0','rate':0,'lift':0,'support':'supported'}]
         prior=copy.deepcopy(rows);f=exposure_chart(rows);self.assertEqual(list(f.data[0].y),['supported']);self.assertEqual(list(f.data[0].x),[2.3]);self.assertEqual(f.data[0].customdata[0][2],.0015);self.assertEqual(rows,prior)
-        scatter=exposure_chart(rows,'Volume vs rate');self.assertEqual(scatter.layout.xaxis.type,'log');self.assertEqual(list(scatter.data[0].y),[.0015])
+        scatter=exposure_chart(rows,'Volume vs rate');self.assertEqual(scatter.layout.xaxis.type,'log');self.assertEqual(list(scatter.data[0].y),[.0015,0])
         self.assertIsNone(exposure_chart(rows[1:]))
+
+    def test_monitoring_explanation_uses_supplied_population_not_preview_totals(self):
+        row={'group':'Bank A → Bank B','n':'2000','l':'30','baseline_n':'20000','baseline_l':'100','rate':.015,'lift':3,'support':'supported'}
+        prior=copy.deepcopy(row);lead=monitoring_lead([row])
+        self.assertEqual((lead['traffic_share'],lead['label_share']),(.1,.3));self.assertEqual(row,prior)
+        markup=priority_card(lead);self.assertIn('10.0%',markup);self.assertIn('30.0%',markup)
+        self.assertIn('ranking preview',markup)
+        for change in ({'n':2,'l':2},{'support':'low_support'},{'baseline_l':0},{'lift':1},{'lift':float('nan')}):
+            self.assertIsNone(monitoring_lead([{**row,**change}]))
+        self.assertIn('No supported',priority_card(None))
+        unsafe={**row,'group':'<script>alert(1)</script>'}
+        self.assertNotIn('<script>',priority_card(monitoring_lead([unsafe])))
+        self.assertNotIn('<script>',rule_card({'interpretation':'<script>x</script>','rule_version':'<script>y</script>'}))
+
+    def test_volume_chart_includes_zero_label_supported_groups_and_selected_baseline(self):
+        rows=[{'group':'ACH','n':2000,'l':30,'baseline_n':10000,'baseline_l':50,'rate':.015,'lift':3,'support':'supported'},
+              {'group':'Wire','n':5000,'l':0,'baseline_n':10000,'baseline_l':50,'rate':0,'lift':0,'support':'supported'},
+              {'group':'Small','n':5,'l':5,'baseline_n':10000,'baseline_l':50,'rate':1,'lift':200,'support':'low_support'}]
+        fig=exposure_chart(rows,'Volume vs rate')
+        self.assertEqual(list(fig.data[0].text),['ACH','Wire'])
+        self.assertAlmostEqual(fig.layout.shapes[0].y0,.005)
+        self.assertEqual(list(exposure_chart(rows).data[0].y),['ACH'])
 
 
 if __name__=='__main__':unittest.main()

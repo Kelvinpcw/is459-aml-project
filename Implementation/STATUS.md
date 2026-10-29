@@ -58,3 +58,12 @@ Daily volume below 1,000 selected payments is an informational flag and never re
 The historical sample profile and frozen development/holdout/sparse-tail evaluation are unchanged. This is a reporting change; automatic scheduled ingestion, incremental processing and new publication metadata are not implemented or deployed by it. No new AWS processing, EC2 or IAM changes are part of this scope.
 
 Validation for the rolling view: 21 focused checks passed, including arbitrary future dates, short-history clipping, cross-year release growth, consistent ranking/date filters, refresh failure retention and explicit completeness handling. The existing synthetic SQL, graph safety, exact-money and release checks remain included.
+
+
+## Connected TRACE layout — 29 October 2026
+
+The connected Streamlit source now adapts the offline TRACE concept's forest-green palette, persistent sidebar, monitoring insight card and case queue. Monitoring prioritises supported segment comparisons before the retained rolling daily trend. The volume/rate chart includes supported zero-label groups and a filtered-population baseline. Explanatory traffic/label shares use the full query baseline, never a capped preview total. Preview counts are explicitly named as such; low-support groups are inspectable but unranked. Exact monetary strings and descriptive intervals remain available in segment details.
+
+Connected cases put the bounded case queue beside the graph, rule explanation and evidence counts; complete evidence export remains unchanged. Evaluation retains actual denominators and baseline comparisons. Release & provenance is a separate page with no additional data query. The offline `Visulization/` prototype and its invented fixtures remain separate; they are not used by the connected app. No detector, evaluator, SQL, frozen release, IAM or publication contract changes are included.
+
+Local validation: 23 focused trend/navigation/presentation/release checks and one complete-source-evidence app check passed. Browser and AWS preview observations are recorded separately in the [task handoff](team-handoffs/2026-10-29-trace-connected-dashboard.md).

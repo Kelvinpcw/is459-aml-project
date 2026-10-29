@@ -5,13 +5,12 @@ sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 import pandas as pd
 import streamlit as st
 from dashboard.data import q1_query,q1_trend_query,case_query,run_query,get_case,evidence_csv,wilson,dimension_query,full_evidence_archive
-from dashboard.presentation import CSS,PATTERNS,esc,kpis,period,exposure_chart,graph_html
+from dashboard.presentation import CSS,PATTERNS,esc,kpis,period,exposure_chart,graph_html,monitoring_lead,priority_card,rule_card
 from dashboard.trends import range_options,date_window,daily_population,population_total,coverage_counts,LOW_DAILY_VOLUME,endpoint_comparison,trend_chart
 from pipeline.release import ACCOUNT,REGION,load_current,verify_ref
 
-st.set_page_config(page_title='AML | Investigation workspace',page_icon='◈',layout='wide',initial_sidebar_state='collapsed')
+st.set_page_config(page_title='TRACE | AML intelligence',page_icon='◈',layout='wide',initial_sidebar_state='expanded')
 st.markdown(CSS,unsafe_allow_html=True)
-st.markdown('<div class="brand"><strong>◈ AML</strong><span>INVESTIGATION WORKSPACE · SYNTHETIC IBM DATA</span></div>',unsafe_allow_html=True)
 
 @st.cache_resource
 def clients(profile,instance):
@@ -38,7 +37,14 @@ except Exception as error:
     st.code('bash Implementation/scripts/start_local_dashboard.sh YOUR_PROJECT_PROFILE')
     st.caption(str(error));st.stop()
 
-page=st.segmented_control('Workspace',['Monitoring','Case explorer','Evaluation'],default='Monitoring',required=True,label_visibility='collapsed',width='stretch',key='workspace_page')
+with st.sidebar:
+    st.markdown('<div class="brand"><strong>trace.</strong><span>AML<br>INTELLIGENCE</span></div><div class="eyebrow">YOUR WORKSPACE</div>',unsafe_allow_html=True)
+    page=st.radio('Workspace',['Monitoring','Case explorer','Evaluation','Release & provenance'],format_func=lambda x:{'Monitoring':'Monitoring overview','Case explorer':'Connected cases','Evaluation':'Evaluation & coverage','Release & provenance':'Release & provenance'}[x],label_visibility='collapsed',key='workspace_page')
+    st.divider()
+    st.caption('Synthetic data. Human judgement.')
+    st.caption('Published results · Read-only workspace')
+    st.caption('Historical labels describe exposure. Connected cases are investigation leads.')
+st.markdown('<div class="workspace-bar"><span>Workspace / <b>'+esc(page)+'</b></span><span class="release-pill">Published release · '+esc(release['release_id'])+'</span></div>',unsafe_allow_html=True)
 
 
 def caption(text):st.markdown('<div class="context">'+esc(text)+'</div>',unsafe_allow_html=True)
@@ -59,8 +65,9 @@ def refresh_data():
 
 
 def monitoring():
-    st.title('Monitoring allocation')
-    caption('Compare historical exposure with transaction volume. Find supported segments for control review.')
+    st.markdown('<div class="eyebrow">01 / COMPLIANCE MANAGEMENT</div>',unsafe_allow_html=True)
+    st.title('Monitoring overview')
+    caption('See where historical exposure outweighs transaction volume.')
     dates=sorted(set(release['q1']['dates']))
     with st.popover('Reporting filters',icon=':material/tune:'):
         st.caption('All counts and baselines use these same filters.')
@@ -88,7 +95,56 @@ def monitoring():
         trend_rows=query_cached(release['release_id'],q1_trend_query(release,start,end,currency,side,None if fmt=='All' else fmt))
     daily=daily_population(trend_rows,start,end,dates,release['q1'].get('day_coverage'));n,l,rate=population_total(daily)
     count=lambda value:f'{value:,}' if value is not None else 'Not available'
-    cards([('Transactions',count(n),'Selected currency population'),('Labelled laundering',count(l),'Historical labels, not predictions'),('Population rate',f'{rate:.4%}' if rate is not None else 'Not measurable','Labels ÷ payments in this selection')])
+    with st.spinner('Loading published segment comparisons…'):
+        rows=query_cached(release['release_id'],q1_query(release,start,end,currency,side,grain,None if fmt=='All' else fmt,support))
+    if not rows:
+        st.info('No transactions match the selected reporting window.');return
+    frame=pd.DataFrame(rows)
+    for col in ['n','l','baseline_n','baseline_l']:frame[col]=pd.to_numeric(frame[col])
+    for col in ['rate','lift']:frame[col]=pd.to_numeric(frame[col],errors='coerce')
+    baseline_n=int(frame.iloc[0].baseline_n);baseline_l=int(frame.iloc[0].baseline_l)
+    baseline_rate=f'{baseline_l/baseline_n:.4%}' if baseline_n else 'Not measurable'
+    frame['group']=frame.apply(lambda r:' → '.join(str(r[k]) for k in ['sender_bank','receiver_bank','payment_format'] if k in r),axis=1)
+    records=frame.to_dict('records');lead=monitoring_lead(records)
+    priorities=sum(r['support']=='supported' and pd.notna(r['lift']) and r['lift']>1 for r in records)
+    cards([('Transactions in scope',count(n),'Selected currency population'),('Historically labelled',count(l),'Known labels, not new detections'),('Labelled rate',f'{rate:.4%}' if rate is not None else 'Not measurable','Σ labels ÷ Σ payments'),('Above-baseline groups',f'{priorities:,}','Supported groups in the ranking preview')])
+    chart_col,insight_col=st.columns([2,1],gap='large')
+    with chart_col:
+        st.subheader('Volume isn’t the whole story.')
+        st.caption('Compare scale with supported historical labelled exposure.')
+        mode=st.segmented_control('Chart view',['Volume vs rate','Risk lift'],default='Volume vs rate',required=True,label_visibility='collapsed',key='q1_chart',persist_state='session')
+        chart=exposure_chart(records,mode)
+        if chart is None:st.info('No supported groups have positive labelled exposure in this selection.')
+        else:
+            st.plotly_chart(chart,width='stretch',config={'displayModeBar':False})
+            st.caption('Up to 10 supported groups by lift · Hover for exact counts · Log volume axis in volume/rate view · 1× lift matches the selected baseline.')
+    with insight_col:
+        st.markdown(priority_card(lead),unsafe_allow_html=True)
+    st.subheader('Where to focus your attention')
+    caption('Selected-window ranking · '+period(start,end)+f' · Baseline: {baseline_n:,} payments / {baseline_l:,} labels / '+baseline_rate)
+    summary=frame.head(10).copy()
+    summary['Rate']=summary.rate.map(lambda x:f'{x:.4%}')
+    summary['Lift']=summary.apply(lambda r:f'{r.lift:.2f}×' if r.support=='supported' and pd.notna(r.lift) else 'Not ranked',axis=1)
+    summary['Traffic share']=summary.n.map(lambda value:f'{value/baseline_n:.1%}' if baseline_n else 'Not measurable')
+    summary=summary.rename(columns={'group':'Segment','n':'Transactions','l':'Labels','support':'Support'})
+    st.dataframe(summary[['Segment','Transactions','Labels','Rate','Lift','Traffic share','Support']],hide_index=True,width='stretch')
+    st.caption(f'Showing {len(summary):,} of {len(frame):,} returned groups (query cap: 500). Support ≥ 1,000 payments. Low-support rows are inspectable counts, never ranked priorities.')
+    inspect_key='q1_inspect_'+grain
+    if st.session_state.get(inspect_key,0)>=len(frame):st.session_state.pop(inspect_key,None)
+    selected_group=select_filter('Inspect a segment',range(len(frame)),format_func=lambda i:frame.iloc[i]['group'],key='q1_inspect_'+grain)
+    inspected=frame.iloc[selected_group]
+    with st.expander('Selected segment details',expanded=False):
+        cards([('Segment payments',f'{int(inspected.n):,}','Denominator for this segment'),('Historical labels',f'{int(inspected.l):,}','Historical association'),('Support',str(inspected.support).replace('_',' ').title(),'Required minimum: 1,000 payments')])
+        st.write('Selected-currency amount: '+str(inspected.selected_currency_amount)+' '+currency+' ('+('paid' if side=='payment' else 'received')+')')
+        st.caption('Descriptive 95% interval: '+' – '.join(f'{x:.4%}' for x in wilson(int(inspected.l),int(inspected.n)))+'. Related payments may violate independence. Transferred value is not unique criminal proceeds.')
+    with st.expander('Explore exact counts, amounts and uncertainty',expanded=False):
+        display=frame.copy();display['Rate']=display.rate.map(lambda x:f'{x:.4%}');display['Lift']=display.apply(lambda r:f'{r.lift:.2f}×' if r.support=='supported' and pd.notna(r.lift) else 'Not ranked',axis=1);display['Descriptive 95% interval']=display.apply(lambda r:' – '.join(f'{x:.4%}' for x in wilson(int(r.l),int(r.n))),axis=1)
+        display=display.rename(columns={'group':'Segment','n':'Transactions','l':'Labels','support':'Support','selected_currency_amount':currency+' amount ('+('paid' if side=='payment' else 'received')+')'})
+        amount=currency+' amount ('+('paid' if side=='payment' else 'received')+')'
+        st.dataframe(display[['Segment','Transactions','Labels','Rate','Lift','Support',amount,'Descriptive 95% interval']],hide_index=True,width='stretch')
+        st.caption('Up to 500 groups. Low-support groups are unranked. Amount strings retain exact precision in the selected currency. Intervals are descriptive; related payments may violate independence. Transferred value is not unique criminal proceeds.')
+
+    st.divider()
     st.subheader('How exposure changed')
     coverage=coverage_counts(daily)
     if coverage['missing']:st.warning(f"{coverage['missing']} dates are absent from the published coverage. They remain gaps, not zero-count days.")
@@ -101,34 +157,12 @@ def monitoring():
     with st.expander('Daily counts behind the trend'):
         st.dataframe(pd.DataFrame(daily).rename(columns={'date':'Date','n':'Transactions','l':'Labelled laundering','rate':'Laundering rate','coverage':'Day completeness','low_volume':'Low volume'}),hide_index=True,width='stretch',column_config={'Laundering rate':st.column_config.NumberColumn(format='percent')})
     if coverage['unknown']:st.caption('Whole-day completeness metadata was not supplied for some published dates. Publication alone does not certify a full day of source coverage.')
-    with st.spinner('Loading published segment comparisons…'):
-        rows=query_cached(release['release_id'],q1_query(release,start,end,currency,side,grain,None if fmt=='All' else fmt,support))
-    if not rows:st.info('No transactions match the selected reporting window.');return
-    frame=pd.DataFrame(rows)
-    for col in ['n','l','baseline_n','baseline_l']:frame[col]=pd.to_numeric(frame[col])
-    for col in ['rate','lift']:frame[col]=pd.to_numeric(frame[col],errors='coerce')
-    baseline_n=int(frame.iloc[0].baseline_n);baseline_l=int(frame.iloc[0].baseline_l)
-    baseline_rate=f'{baseline_l/baseline_n:.4%}' if baseline_n else 'Not measurable'
-    caption('Selected-window ranking · '+period(start,end)+f' · Published baseline: {baseline_n:,} payments / {baseline_l:,} labels / '+baseline_rate)
-    frame['group']=frame.apply(lambda r:' → '.join(str(r[k]) for k in ['sender_bank','receiver_bank','payment_format'] if k in r),axis=1)
-    st.subheader('Where exposure is concentrated')
-    mode=st.segmented_control('Chart view',['Risk lift','Volume vs rate'],default='Risk lift',required=True,label_visibility='collapsed',key='q1_chart',persist_state='session')
-    chart=exposure_chart(frame.to_dict('records'),mode)
-    if chart is None:st.info('No supported groups have positive labelled exposure in this selection.')
-    else:
-        st.plotly_chart(chart,width='stretch',config={'displayModeBar':False})
-        st.caption('Supported groups only · Up to 10 shown · 1× is the same historical rate as the selected population.' if mode=='Risk lift' else 'Supported groups only · Logarithmic volume axis · Hover for exact counts, rates and lift.')
-    with st.expander('Explore exact counts, amounts and uncertainty',expanded=False):
-        display=frame.copy();display['Rate']=display.rate.map(lambda x:f'{x:.4%}');display['Lift']=display.lift.map(lambda x:f'{x:.2f}×' if pd.notna(x) else 'Not measurable');display['Descriptive 95% interval']=display.apply(lambda r:' – '.join(f'{x:.4%}' for x in wilson(int(r.l),int(r.n))),axis=1)
-        display=display.rename(columns={'group':'Segment','n':'Transactions','l':'Labels','support':'Support','selected_currency_amount':currency+' amount ('+('paid' if side=='payment' else 'received')+')'})
-        amount=currency+' amount ('+('paid' if side=='payment' else 'received')+')'
-        st.dataframe(display[['Segment','Transactions','Labels','Rate','Lift','Support',amount,'Descriptive 95% interval']],hide_index=True,width='stretch')
-        st.caption('Up to 500 groups. Low-support groups are unranked. Amount strings retain exact precision in the selected currency. Intervals are descriptive; related payments may violate independence. Transferred value is not unique criminal proceeds.')
 
 
 def explorer():
-    st.title('Connected cases')
-    caption('Follow the accounts behind a structural lead, then inspect the supporting payments.')
+    st.markdown('<div class="eyebrow">02 / CONNECTED-ACCOUNT INVESTIGATION</div>',unsafe_allow_html=True)
+    st.title('Follow the connections.')
+    caption('Explainable structures. Traceable evidence. A starting point for investigation.')
     case_release={**release,'q2':dict(release['q2'])};snapshots=release['q2'].get('snapshots')
     with st.popover('Case filters',icon=':material/tune:'):
         if snapshots:
@@ -147,15 +181,23 @@ def explorer():
     with st.spinner('Finding published cases…'):rows=query_cached(release['release_id'],case_query(case_release,None if pattern=='All' else pattern))
     if not rows:st.info('No cases match this pattern.');return
     st.caption(f"{len(rows):,} cases available in this preview · {case_release['q2']['case_count']:,} across all patterns in this snapshot")
-    selected=select_filter('Investigation case',range(len(rows)),format_func=lambda i:f"{PATTERNS.get(rows[i]['pattern_type'],rows[i]['pattern_type'])} · {int(rows[i]['participant_count']):,} accounts · {int(rows[i]['evidence_transaction_count']):,} payments · {rows[i]['case_id'][:10]}",key='selected_case_'+case_release['q2']['window_end']+'_'+pattern)
-    with st.spinner('Opening case evidence…'):case,raw=case_cached(release,rows[selected])
-    cards([('Pattern',PATTERNS.get(case['pattern_type'],case['pattern_type']),'Structural lead, not proof'),('Accounts',f"{case['participant_count']:,}",'Distinct participating bank/accounts'),('Evidence payments',f"{case['evidence_transaction_count']:,}",'Complete evidence is downloadable')])
-    labels=st.toggle('Show account labels',value=len(case['nodes'])<=20,key='labels_'+case['case_id'],persist_state='session',help='Hover or click an account for the full identifier. Large graphs start without labels to avoid overlap.')
-    markup,data=graph_html(case,labels)
-    st.iframe(markup,height=485,alt='Interactive directed account graph. Click an account for full identifiers; use Fit graph or zoom controls.')
-    st.caption('Arrows show payment direction · Edge numbers show payment counts · Colors group entities; the palette repeats · Drag to explore, scroll to zoom')
-    if case.get('display_capped') or len(case['nodes'])>100 or len(case['edges'])>500:st.warning(f"Graph preview: {data['visible_accounts']} accounts / {data['visible_edges']} links. Complete stored evidence is retained beyond this preview.")
-    if snapshot.get('cycle_excluded_nodes_above_degree',0):st.caption(f"Cycle coverage excludes {snapshot['cycle_excluded_nodes_above_degree']:,} high-degree accounts; fan evidence remains complete.")
+    queue,case_view=st.columns([1,2.7],gap='large')
+    with queue:
+        st.markdown('<div class="eyebrow">INVESTIGATION LEADS</div>',unsafe_allow_html=True)
+        st.caption('Preview ordered by case identity. No severity score or label-derived ranking.')
+        with st.container(height=430,border=True):
+            selected=st.radio('Investigation case',range(len(rows)),format_func=lambda i:f"{PATTERNS.get(rows[i]['pattern_type'],rows[i]['pattern_type'])} · {int(rows[i]['participant_count']):,} accounts · {int(rows[i]['evidence_transaction_count']):,} payments · {rows[i]['case_id'][:10]}",label_visibility='collapsed',persist_state='session',key='selected_case_'+release['release_id']+'_'+case_release['q2']['window_end']+'_'+pattern)
+    with case_view:
+        with st.spinner('Opening case evidence…'):case,raw=case_cached(release,rows[selected])
+        cards([('Pattern',PATTERNS.get(case['pattern_type'],case['pattern_type']),'Structural lead, not proof'),('Accounts',f"{case['participant_count']:,}",'Distinct participating bank/accounts'),('Evidence payments',f"{case['evidence_transaction_count']:,}",'Complete evidence is downloadable')])
+        caption('Case '+case['case_id'][:16]+'… · '+PATTERNS.get(case['pattern_type'],case['pattern_type'])+' · '+str(case['rule_version']))
+        st.markdown(rule_card(case),unsafe_allow_html=True)
+        labels=st.toggle('Show account labels',value=len(case['nodes'])<=20,key='labels_'+case['case_id'],persist_state='session',help='Hover or click an account for the full identifier. Large graphs start without labels to avoid overlap.')
+        markup,data=graph_html(case,labels)
+        st.iframe(markup,height=485,alt='Interactive directed account graph. Click an account for full identifiers; use Fit graph or zoom controls.')
+        st.caption('Arrows show payment direction · Edge numbers show payment counts · Colors group entities; the palette repeats · Drag to explore, scroll to zoom')
+        if case.get('display_capped') or len(case['nodes'])>100 or len(case['edges'])>500:st.warning(f"Graph preview: {data['visible_accounts']} accounts / {data['visible_edges']} links. Complete stored evidence is retained beyond this preview.")
+        if snapshot.get('cycle_excluded_nodes_above_degree',0):st.caption(f"Cycle coverage excludes {snapshot['cycle_excluded_nodes_above_degree']:,} high-degree accounts; fan evidence remains complete.")
     accounts,evidence=st.tabs(['Accounts & entities','Evidence preview'])
     with accounts:
         fields=['bank','account','entity_name','entity_id','entity_unknown'];available=[k for k in fields if any(k in n for n in case['nodes'])]
@@ -177,7 +219,8 @@ def explorer():
 
 
 def evaluation():
-    st.title('Evaluation & limitations')
+    st.markdown('<div class="eyebrow">03 / EVALUATION & COVERAGE</div>',unsafe_allow_html=True)
+    st.title('Understand the limits.')
     caption('Separate connected-pattern recovery from individual-payment classification.')
     metrics=verify_ref(s3,release['evaluation']['metrics']);window=metrics.get('scoring_window')
     if window:caption('Holdout: '+period(window['start_inclusive'],window['end_exclusive'])+' · Start inclusive, end exclusive · Dataset-local time')
@@ -203,13 +246,31 @@ def evaluation():
         st.caption('Labels and annotations enter offline evaluation only. Structural leads are not proof of laundering.')
 
 
+def provenance():
+    st.markdown('<div class="eyebrow">04 / RELEASE & PROVENANCE</div>',unsafe_allow_html=True)
+    st.title('Know your source.')
+    caption('Every view reads the same verified published release. A refresh switches only after the new manifest passes validation.')
+    cards([('Source','IBM HI-Medium','Synthetic transaction dataset'),('Connection','Published outputs','Read-only Athena and private S3'),('Time policy','Dataset-local','Exclusive snapshot cutoffs; timezone unspecified')])
+    st.write('Release: '+release['release_id'])
+    st.write('Dataset: '+release['dataset_version'])
+    st.write('Preparation run: '+release['run_id'])
+    st.caption('Q1: '+period(min(release['q1']['dates']),max(release['q1']['dates']))+' · Q2 snapshots: '+period(release['q2']['window_start'],release['q2']['window_end']))
+    st.caption(release['timestamp_policy'])
+    st.write('Published manifest → matching summaries and immutable case evidence → separate offline evaluation.')
+    st.caption('Display caps do not remove stored evidence. Q2 case discovery does not read historical labels, Q1 scores or evaluation answers. Failed refreshes retain the prior selected release.')
+    for warning in release['warnings']:st.info(warning)
+    if st.button('Refresh published release',key='refresh_provenance'):refresh_data()
+
+
 try:
     if page=='Monitoring':monitoring()
     elif page=='Case explorer':explorer()
-    else:evaluation()
+    elif page=='Evaluation':evaluation()
+    else:provenance()
 except Exception as error:st.error('This view could not load. '+str(error))
 
 st.divider()
+st.caption('TRACE / AML research workspace · Synthetic IBM data · Historical exposure and structural leads')
 with st.expander('Published release & scope'):
     st.write('Release: '+release['release_id']);st.caption('Dataset: '+release['dataset_version']+' · Preparation: '+release['run_id'])
     st.caption('Q1: '+period(release['q1']['dates'][0],release['q1']['dates'][-1])+' · Q2 snapshots: '+period(release['q2']['window_start'],release['q2']['window_end']))

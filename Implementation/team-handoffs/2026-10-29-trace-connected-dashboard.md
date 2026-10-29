@@ -2,9 +2,9 @@
 
 - **Owner:** Kelvinpcw, assisted by Codex.
 - **Branch:** `feature/trace-connected-dashboard`.
-- **Status:** PLANNED — local implementation first.
+- **Status:** IN_PROGRESS — source and synthetic checks complete; bounded connected preview next.
 - **Date:** 29 October 2026, Asia/Singapore.
-- **Evidence kind:** source inspection; no fresh AWS observations yet.
+- **Evidence kind:** source inspection and local synthetic tests; no fresh AWS observations yet.
 
 ## Authorised scope and coordination
 
@@ -22,3 +22,9 @@ Only local dashboard source, synthetic tests and documentation will change. Plan
 ## Current state
 
 AWS: none so far. Account/region, active cloud compute and current billing were not inspected. Local port 8501 had no listener at task start. Private operational records remain with the operator. GitHub sync: planned record published on the task branch; verify the remote head before preview.
+
+## Local implementation progress
+
+TRACE-inspired layout is implemented on this branch, with no SQL, detector, evaluator or frozen-release changes. Twenty-three focused trend/navigation/presentation/release checks passed; a further complete-source-evidence app check passed. The new explanation is tested against full supplied baseline counts and refuses low-support, zero-baseline or non-finite rankings. Supported zero-label segments stay visible in volume/rate comparisons. Provenance navigation makes no additional data reads. Browser verification is next; current cloud state and costs remain not verified.
+
+PR: https://github.com/Kelvinpcw/is459-aml-project/pull/10 (draft). The exact pushed source commit is recorded in the PR history and final report, not self-referentially in this file.
