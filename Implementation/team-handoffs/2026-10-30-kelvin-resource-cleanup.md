@@ -1,9 +1,9 @@
 # Task: remove obsolete AML definitions, preserve the published project
 
 - **Owner:** Kelvinpcw, with Codex
-- **Branch / PR:** `agent/codex-aws-resource-cleanup`; PR pending
+- **Branch / PR:** `agent/codex-aws-resource-cleanup`; [PR #18](https://github.com/Kelvinpcw/is459-aml-project/pull/18)
 - **Updated at:** 2026-10-30 (+08:00)
-- **Status:** PLANNED
+- **Status:** IN_PROGRESS
 - **Evidence kind:** fresh AWS inventory and cleanup plan
 
 ## Scope and coordination
@@ -28,4 +28,4 @@ Read-only inventory completed. No AWS mutation yet. Only obsolete definitions ar
 
 - Next safe step: publish this plan, mark IN_PROGRESS, archive history privately, inspect and execute the deletion-only change set, remove terminal standalone pilot definitions, then verify and publish the outcome.
 - Completed outputs and consumed attempts must not be rerun. Any future processing/deployment requires fresh scoped permission.
-- GitHub sync: pending push and draft PR.
+- GitHub sync: plan pushed; draft PR #18 opened.
