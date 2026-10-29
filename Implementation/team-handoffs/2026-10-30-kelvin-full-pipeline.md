@@ -26,7 +26,7 @@ Read-only source and output inventory completed with the explicit verified proje
 
 ## Next teammate / agent
 
-- Plan published, fresh ingestion/software verified, reviewed stack update applied and verified; one new execution started. Monitor it; never invoke start again.
+- Plan published, fresh ingestion/software verified, reviewed stack update applied and verified; one new execution started. Monitor it; never invoke start again. At the user's request, frequent local status readers are stopped and a current-chat continuation checks at 20-minute intervals, notifying only meaningful changes/problems. This is a local Codex continuation, not an AWS recurring schedule.
 - After successful publication, launch/verify EC2 visualization; delete old generated S3 outputs and stale Catalog tables only when proven superseded, then verify and publish outcome. Keep operational identities and measurements private.
 - Document the actual end-to-end setup, repeatable commands, access and shutdown steps. Do not claim success until directly verified.
 - GitHub sync: plan pushed; draft PR #19 opened. No other owner should start or update these shared jobs until this session is terminal.
