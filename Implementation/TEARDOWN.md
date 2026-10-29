@@ -2,11 +2,11 @@
 
 User instruction on 25 October 2026: tear down project-created services that incur substantial expenses after the project work/demo is finished. S3 data may remain. The user subsequently selected **prepare everything, but wait before paid runs** for the first prototype.
 
-## Current boundary
+## Current operating rule
 
-Do not start Glue jobs, crawlers, interactive sessions, notebooks, Athena queries, EC2 instances or paid network services until the user authorizes a concrete run. Saving a batch job definition is permitted. Two separately approved preparation test runs have finished; their approvals are consumed. Any further run needs authorization. No recurring schedule should be enabled.
+Read [VERIFY_PROGRESS.md](VERIFY_PROGRESS.md), the relevant owner's latest handoff and [AWS_HANDOFF.md](AWS_HANDOFF.md) first. This document's dated observations are historical; this repository cleanup performed no cloud inventory or teardown. Establish the currently requested resources/scope before acting. Never use an old single-run approval, saved definition or old cleanup result as fresh permission. Do not introduce recurring schedules.
 
-Track every project-created resource in `aws/resource-ledger.json`, including identifiers, runtime settings, status and teardown action. Use the project prefix `is459-aml` and project tags where supported.
+Keep exact resource inventory, observed states, measurements and costs in the private operator ledger/checkpoint. Push a sanitised activity/cleanup summary in [team-handoffs](team-handoffs/README.md); the old tracked resource ledger is historical and should not receive new private records.
 
 ## After an authorized demo or processing run
 
@@ -20,14 +20,16 @@ Track every project-created resource in `aws/resource-ledger.json`, including id
 
 Do not delete or modify unrelated resources in the shared AWS account. Do not claim the entire AWS account is free of charges based on this project's teardown.
 
-## Verified cleanup on 26 October 2026
+## Historical observations — 26 October 2026
+
+### Cleanup observed then
 
 Both preparation runs finished Succeeded; no project compute remains active. Corrected v2 report/manifest checks passed. At the user's request, deleted only superseded v1 synthetic test outputs under curated, references/labels, quarantine/preparation and quality/preparation: 35 objects, approximately 414 MB, zero failures. Retained raw inputs, scripts, all v2 output, local v1 review evidence and small static CloudWatch logs. See `aws/reviews/v1-output-cleanup-results.json`. No log retention setting changed.
 
-## Latest pause — 26 October 2026
+### Pause observed then
 
 Q1 also finished Succeeded at 16:29:25 Singapore. All three approved Glue runs are terminal. No Athena queries were started. Retain idle Athena workgroup is459-aml-dev (engine 3, enforced private SSE-S3 results, 50 MB/query scan limit), Q1 role/policy/job, raw/prepared/Q1 S3 data and static logs. No ongoing project compute to stop. User requested checkpoint/pause; wait for resume.
 
-## Athena validation completion — 26 October 2026
+### Athena validation observed then
 
 Three metadata statements and three data validations succeeded; one initial ordering check failed before scanning and was corrected. All seven SQL executions are terminal; no query or other project compute is active. Retain idle workgroup/Catalog table/partition and S3 query results. No Glue rerun, new role grant, crawler or continuously billed service was introduced.

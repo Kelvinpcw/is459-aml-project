@@ -1,5 +1,7 @@
 # Implementation status
 
+**How to use this file:** this is an implementation/evidence timeline, not a live AWS inventory or task queue. Start with the [team guide](../TEAM_START_HERE.md), use [progress verification](VERIFY_PROGRESS.md), and read relevant [handoffs](team-handoffs/README.md) plus open PRs before continuing. Older dated sections describe their stated scope; later relevant changes can supersede them. Missing private evidence does not block local source work.
+
 `main` contains the complete software path: shared preparation, Q1 summaries, distributed Q2 fan/cycle detection, a separate evaluator, conditional publication, a read-only dashboard, and on-demand AWS deployment/cleanup tooling. Architecture/configuration files and local tests alone do not establish a successful full cloud run.
 
 Batch refreshes have no fixed completion-time requirement. Observed runtime and cost remain operational measurements, not pass/fail completion criteria. Configured job timeouts and dashboard shutdown guards remain safety controls; interactive UI response targets are separate.

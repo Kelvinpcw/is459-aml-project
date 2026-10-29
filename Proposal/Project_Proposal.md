@@ -4,7 +4,7 @@
 
 **Dataset:** IBM Transactions for Anti-Money Laundering, HI-Medium.
 
-**Status:** Business Questions 1 and 2 are confirmed. This is the requirements and target-design reference; architecture, thresholds and performance targets are not proof of implementation or measured performance. A limited prototype now exists; see [current implementation status](../Implementation/STATUS.md) for its verified scope and remaining gaps. Historical document-only notes below concern preparation of this proposal, not instructions to stop implementation.
+**Status:** Business Questions 1 and 2 are confirmed. This is the requirements and target-design reference; architecture, thresholds and performance targets are not proof of implementation or measured performance. The batch software path is implemented; see [current implementation status](../Implementation/STATUS.md) for its verified scope and remaining gaps. Historical document-only notes below concern preparation of this proposal, not instructions to stop implementation.
 
 ## 1. Business questions and intended value
 
@@ -290,4 +290,4 @@ The supplied brief specifies a Week 9 proposal pitch and Week 13 final presentat
 7. **Athena SQL over S3:** https://docs.aws.amazon.com/athena/latest/ug/what-is.html
 8. **Session Manager / port forwarding:** https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-sessions-start.html
 
-**Next team decisions:** Assign owners, verify AWS permissions/region, agree the initial rule scope, and validate runtime/UI targets on a small end-to-end prototype. No additional business-question selection is needed.
+**Historical planning note:** the initial implementation decisions above are not a current task queue. The batch software path is implemented; use current status and scoped evidence for completion claims. Team members can learn/explore or make changes without assigned roles and can self-merge checked PRs under [CONTRIBUTING.md](../CONTRIBUTING.md). No additional business-question selection is needed.

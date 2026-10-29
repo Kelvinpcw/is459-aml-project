@@ -1,17 +1,17 @@
-# Glue ↔ GitHub connection
+# Historical Glue ↔ GitHub connection reference
 
-Verified 27 October 2026, Singapore. Setup is paused at the user's request after successful Q1 push and pull. No processing job was run.
+Observed 27 October 2026, Singapore; not freshly verified. Read [progress verification](../VERIFY_PROGRESS.md) before touching the shared job. Setup is paused at the user's request after successful Q1 push and pull. No processing job was run.
 
 | Setting | Value |
 | --- | --- |
 | AWS account / Region | `160885259244` / `us-east-1` |
 | Connected job | `is459-aml-q1-dev` |
 | Repository | `Kelvinpcw/is459-aml-project` |
-| Current branch | `codex/glue-github-connection` |
+| Branch observed then | `codex/glue-github-connection` |
 | Sync folder | `Implementation/glue/is459-aml-q1-dev` |
 | Verified sync commit | `24ec9b68e380910843932472113a93aebe6d3091` |
 
-Only Q1 is connected. At the connection checkpoint, preparation/Q2 were unchanged and the evaluator was unsaved. Its later cloud completion is recorded in [current status](../STATUS.md); it has no GitHub connection. No automatic deployment, execution or schedule is configured. The integration branch has not been merged into main.
+Only Q1 is connected. At the connection checkpoint, preparation/Q2 were unchanged and the evaluator was unsaved. Its later cloud completion is recorded in [current status](../STATUS.md); it has no GitHub connection. No automatic deployment, execution or schedule is configured. The historical source integration was merged via [PR #3](https://github.com/Kelvinpcw/is459-aml-project/pull/3); that does not switch or verify the live Glue job branch.
 
 ## What the buttons do
 

@@ -1,16 +1,5 @@
-# Completion plan — 28 October 2026
+# Completion plan reference
 
-The user requested completion of the whole project, then a full-data run with a **US$30 total project ceiling** (revised by the user from US$80 before the paid full run) after implementation and checks. The earlier US$1 ceiling applies to the current development phase until that final run. This is authorisation for the scoped project, not unrelated account resources. Keep explicit identity verification, timeouts, no recurring schedules and cleanup after validation. Actual spend is not a hard billing cap.
+The older phase plan is preserved in [archive/2026-10-28-completion-plan.md](archive/2026-10-28-completion-plan.md). It is historical scope, not a new approval or a list of unfinished components.
 
-1. Shared release gate: pinned quality/identity/output checks, conditional immutable release and compare-and-swap current pointer; failed attempts retain the previous release. Label the existing mixed one-day/one-minute release as a pilot.
-2. Dashboard: Q1 date/currency/format/segment filters, honest support/denominator warnings; Q2 bounded graph and full evidence download; all reads pinned to one release. Read-only role and private on-demand EC2 through SSM.
-3. Scalable Q2: Spark aggregations/pruned 2–4-cycle joins over complete lookbacks, distributed cases/evidence; declared exclusion accounting and expansion guards. Preserve the frozen pilot.
-4. Wider evaluator: distributed eligible-population metrics, exact annotation source matching, frozen development calibration before holdout. No performance claim from the pilot.
-5. On-demand Step Functions workflow, per-stage failure paths, publication/recovery checks and reproducible deployment/teardown.
-6. Full input accounting and final costed AWS run up to the authorised US$30 total; runtime/cost/quality/evaluation/UI validation, user-test/demo runbook and cleanup. Flag material changes before starting.
-
-Completion means tested working components and an observed full-data result, with limitations and unmet acceptance targets stated. Local tests/configuration alone are not a deployed full run.
-
-## Current progress
-
-The software path and immutable full-v1/full-v2 payloads are implemented. Recovery passed 68 local regressions, complete export checks and unchanged-rule comparisons; recovery templates pass cfn-lint. Actual deployment/processing/cleanup evidence is retained locally by the user's source-only publication instruction. Read the private operator checkpoint through the root checkpoint pointer to continue; this public plan is not a live AWS inventory or a success claim.
+For current work, use [STATUS.md](STATUS.md), [VERIFY_PROGRESS.md](VERIFY_PROGRESS.md), relevant [handoffs](team-handoffs/README.md) and open PRs. Use the [runbook](RUNBOOK.md) for the requested task and [CONTRIBUTING.md](../CONTRIBUTING.md) to publish changes.
