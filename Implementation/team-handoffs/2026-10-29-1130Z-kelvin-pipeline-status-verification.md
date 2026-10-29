@@ -1,7 +1,7 @@
 # Session: read-only pipeline completion verification
 
 - **Owner / GitHub handle:** Kelvinpcw (session run with an OpenCode agent)
-- **Branch / PR:** `agent/opencode-pipeline-verification`; PR link added in a follow-up commit.
+- **Branch / PR:** `agent/opencode-pipeline-verification`; [PR #11](https://github.com/Kelvinpcw/is459-aml-project/pull/11).
 - **Updated at / observation interval:** 2026-10-29T11:20Z–11:35Z (19:20–19:35 +08:00).
 - **Status:** COMPLETED
 - **Evidence kind:** fresh AWS observations (read-only control-plane calls and S3 reads)
@@ -45,6 +45,6 @@ Read-only call types actually run: `sts get-caller-identity`; `aws configure get
 - **Next safe step and responsible owner:** reuse the published release and its outputs; do not rerun preparation, Q1, Q2 or evaluation. If a live visual demo is required, the operator can either run the local pinned dashboard against the published release (normal Athena/S3 read charges) or deploy the temporary private dashboard stack under a fresh, explicit approval. A separate decision is needed for scheduled/incremental ingestion; it is not implemented.
 - **Blockers / do not repeat:** there is no continuously hosted dashboard right now. UI latency targets (10 s initial / 3 s cached) and formal user-acceptance scenarios were not re-measured in this session. The detector precision (0.197%) should be reported as a substantive limitation. Consumed run approvals must not be reused.
 - **Supersedes/follows:** follows the [29 October connected-dashboard handoff](2026-10-29-trace-connected-dashboard.md), which covers the local UI preview. This record adds the first shared, sanitised observation of the full-data cloud release and its current compute state.
-- **GitHub sync:** branch and this record pushed in this session; the PR link is added in a follow-up commit.
+- **GitHub sync:** source and this record pushed on the task branch; PR #11 opened for teammate review. Do not merge without review.
 
 <!-- Sanitised summary only. Raw operational checkpoints, query logs, screenshots and billing records remain private. -->
