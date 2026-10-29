@@ -1,7 +1,7 @@
 # Team guides, pipeline learning and change tracking
 
 - **Owner:** Kelvinpcw, assisted by Codex.
-- **Branch:** `feature/team-workspace-guide`; PR linked in final report/history.
+- **Branch:** `feature/team-workspace-guide`; [PR #12](https://github.com/Kelvinpcw/is459-aml-project/pull/12).
 - **Updated at:** 2026-10-29T11:55:50.112207+00:00.
 - **Status:** COMPLETED — documentation/helper cleanup; commit/push/merge state is reported in the linked PR.
 - **Evidence kind:** source inspection and local checks only.
