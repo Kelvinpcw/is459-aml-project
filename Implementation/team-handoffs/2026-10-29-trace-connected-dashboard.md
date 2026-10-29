@@ -21,13 +21,11 @@ The planned record was pushed and a draft PR opened before cloud reads. Only the
 - **25 local tests passed** in 2.272 seconds: trends, navigation, explanation support/shares/escaping, graph safety, complete source evidence, release retention and bundle assets. Final CSS corrections were verified in the browser. Markdown local file links: 22 checked, zero missing. `git diff --check` passed. No Spark/backend processing suite or new full-data replay was run.
 - Browser verified monitoring, the case queue/graph/window explanation, evaluation and provenance. Wide 1440px and narrow 618px layouts checked; viewport override reset. Screenshots and raw query records remain private with the operator.
 
-## AWS observations, cost and cleanup
+## AWS scope and private evidence
 
-- Explicit project profile passed the account/region launcher guard for expected project account / `us-east-1`. The app independently checked its SDK identity. A separate short-timeout SDK diagnostic timed out; the connected app subsequently loaded the published outputs successfully. No credentials or profile files were published.
-- Reused the existing immutable published release. Dashboard interactions made read-only S3 requests and bounded Athena queries; no Glue processing, EC2, IAM, orchestration or publication changes occurred.
-- Query metadata observation: **14 queries, all SUCCEEDED**, total scanned bytes **623,367,146**, zero unprocessed IDs. The requests were bounded to the existing dashboard workgroup's 512 MB/query limit and app's 30-second cancellation policy. Related preview retries/restarts are included. No observed preview query remained running at this check.
-- Cost basis: measured scan volume only; actual billed AWS dollars and account-wide remaining budget were not queried. Small Athena/S3 read charges apply. No hourly cloud compute was started by this task. This is not an account-wide cleanup/cost audit; pre-existing cloud resource state was not rechecked.
-- Earlier local preview processes were stopped. The final localhost-only dashboard remains running intentionally for the user's review at port 8501. It is laptop compute; further interaction can make bounded AWS reads. No automatic polling/schedule was added.
+Only the existing dashboard's bounded read-only path was used for preview. No processing, deployment, IAM, orchestration, publication or recurring schedule was introduced. The laptop-only preview remains available intentionally for the user. Account-wide resource state was not audited.
+
+Detailed AWS observations, request identities, scan measurements, billing information and screenshots remain in the operator's private checkpoint. They are omitted here under the user's source-only publication preference. This task does not authorise new cloud processing.
 
 ## Handoff
 
