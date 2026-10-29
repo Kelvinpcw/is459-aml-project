@@ -1,29 +1,35 @@
-# Fresh isolated full-pipeline rerun
+# US$90 planning ceiling and future rerun configuration
 
 - **Owner:** Kelvinpcw, assisted by Codex.
 - **Branch:** `feature/full-rerun-20261029`; [PR #13](https://github.com/Kelvinpcw/is459-aml-project/pull/13).
-- **Updated at:** 2026-10-29T12:23:42.509622+00:00.
-- **Status:** IN_PROGRESS — exact deployment verification passed; the one authorised fresh full workflow is running preparation. Later stages and dashboard validation are pending.
-- **Evidence kind:** local tests and private read-only preflight; detailed operational records stay private.
+- **Updated at:** 30 October 2026 (Asia/Singapore; continuation after token interruption).
+- **Status:** STOPPED — user clarified GitHub configuration only; no full run or service deployment is authorised now. Cleanup verified after refreshing the operator login; no compute from this attempt remains active.
+- **Evidence kind:** local source checks plus private cloud stop/cleanup observations. Detailed operational records stay private.
 
-## Scope and coordination
+## Current scope and permission
 
-The user explicitly requested a new full-pipeline rerun and required service deployment under the revised project ceiling, preserving the earlier requirement to stop expensive services after validation and retain S3. This is a new scoped attempt, not reuse of old approval/start markers. No overlapping open PR was present at preflight. The current operator owns this isolated attempt.
+Save US$90 as the planning ceiling for future work. **Do not start or resume processing or deploy services from this record.** Future paid work needs fresh, scoped user authorisation, ownership checks and a new unused attempt identity. The earlier requirement to stop expensive compute remains.
 
-## Prepared changes
+Codex initially interpreted the budget change as an immediate rerun request, uploaded the frozen package, created isolated definitions and started preparation. The user corrected that interpretation. The workflow was cancelled and preparation was directly verified stopped; Q1, Q2, evaluation, publication and the dashboard did not start. The previous published release was verified unchanged. Deletion of only the new idle stack was directly verified complete: its jobs, roles and workflow definition are absent, and no temporary dashboard instance exists. S3 and prior resources are preserved. This interrupted attempt must not be reused.
 
-- New isolated job/role/workflow/temp namespace and new run/release identity; reuse the already ingested immutable full dataset and existing shared Catalog/workgroup. Previous jobs, outputs and the current successful release stay intact until conditional publication succeeds.
-- Freeze a new full-v6 package. Core Q1/Q2/snapshot/evaluator/control files are byte-identical to full-v5; the package includes the updated connected TRACE dashboard and stylesheet. No detector/evaluator thresholds or chronological rules change.
-- Deliberate upload/create/verify/start/status/stop phases. An exact private plan and template hash are required before cloud calls; start uses a one-time private request marker, fresh output checks and prior-pointer compare-and-swap. Budget status includes a conservative reserve and owned-run stop guard; estimates are not account billing caps.
-- Five isolated Glue roles, one workflow role and a temporary dashboard role. Q2 retains label/annotation/Q1/evaluation denies. The dashboard has no inbound access, SSM-only access, a one-hour termination timer and delete-on-termination root disk. Deploy it only after successful publication; verify teardown afterward.
+## Source retained for future review
 
-## Checks and observations
+- New isolated definitions/driver and immutable full-v6 package use the revised ceiling. Core Q1/Q2/snapshot/evaluator/control files match full-v5; the updated connected TRACE dashboard and stylesheet are included. No detector/evaluator thresholds or chronological rules changed.
+- Deliberate upload/create/verify/start/status/stop phases require an exact private approval/plan and template hash. Start has one-time request markers, fresh output checks and publication compare-and-swap. No retries or recurring schedule are introduced. Estimates are not billing caps.
+- Q2 retains label/annotation/Q1/evaluation denies. The proposed temporary dashboard has no inbound access, SSM-only access, a one-hour termination timer and delete-on-termination root disk. It was not launched.
+- `AGENTS.md` explicitly distinguishes the saved ceiling from permission to execute. Private approval/plan flags are revoked; existing one-time markers also prevent reuse.
 
-- Full existing synthetic suite: 115 tests passed after correcting a local Python driver/worker mismatch. The initial run failed because workers used system Python 3.13 with a 3.11 driver; no pipeline code was changed to hide this failure.
-- Six focused rerun tests passed, including isolation/label denies, complete workflow/CAS, dashboard safeguards and rejection of wrong/unapproved plans before any identity/cloud call.
-- Both new templates pass cfn-lint; Python compile and diff checks pass. No previous frozen package changed.
-- Read-only preflight verified the explicit project account/region, existing publication/raw inputs and fresh output/resource names; no active owned compute was found in the inspected scope. Existing annotations match the frozen identity. Raw observations, counts, cost review and exact locators remain private with the operator.
+## Checks
 
-## AWS boundary and next step
+- Full existing synthetic suite: 115 tests passed after correcting a local Python driver/worker mismatch. The initial run failed because workers used system Python 3.13 with a 3.11 driver; pipeline code was unchanged by that environment fix.
+- Six focused rerun checks passed again during this continuation, including isolation/label denies, complete workflow/CAS, dashboard safeguards and rejection of wrong/unapproved plans before identity/cloud calls.
+- Both new templates passed cfn-lint and Python compilation during preparation. Continuation checks verified 27 local Markdown link targets across the four corrected documents; diff checks pass. No previous frozen package changed.
+- Cloud observations are scoped to stopping/removing this interrupted attempt. They do not establish a completed new pipeline run or deployment.
 
-The new immutable package is uploaded and verified. Exact deployed grants, jobs and workflow checks passed; the one explicitly requested full attempt is now running preparation. Monitor this attempt rather than repeating starts. Deploy the private dashboard only after successful publication, validate it, then remove its temporary compute and verify cleanup. Retain old results; do not repeat legacy starts or alter unrelated shared resources. This record is coordination, not a reusable spending approval for another agent/member.
+## Cleanup outcome
+
+The refreshed-login check verified deletion of the isolated definitions and retention of the prior published release. Saved predeletion evidence verified the cancelled workflow and stopped preparation; execution history is now absent with the deleted workflow. This was a scoped cleanup check, not a whole-account audit. No additional run, role grant or dashboard launch is authorised.
+
+## Next safe step
+
+Review the source/configuration in GitHub or continue local work. Do not start AWS work automatically. Consult this record and the private checkpoint before any separately authorised future session; the interrupted namespace and markers are consumed.
