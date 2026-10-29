@@ -1,7 +1,7 @@
 # Session: read-only Step Functions orchestration check
 
 - **Owner / GitHub handle:** Kelvinpcw (session run with an OpenCode agent)
-- **Branch / PR:** `agent/opencode-stepfunctions-check`; PR link added after creation.
+- **Branch / PR:** `agent/opencode-stepfunctions-check`; [PR #14](https://github.com/Kelvinpcw/is459-aml-project/pull/14).
 - **Updated at / observation interval:** 2026-10-29T12:16Z–12:20Z (20:16–20:20 +08:00)
 - **Status:** COMPLETED
 - **Evidence kind:** fresh AWS observations (read-only control-plane and one small S3 read)
