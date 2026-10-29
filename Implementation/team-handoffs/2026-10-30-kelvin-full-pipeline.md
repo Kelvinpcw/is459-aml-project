@@ -36,3 +36,9 @@ Read-only source and output inventory completed with the explicit verified proje
 Read-only execution/job status check with the explicit verified project profile found preparation, manifest creation and Q1 successful, with Q2 detection active. The stack is stable. No run/retry, query, deployment or deletion was started by this check. Previous publication and old-output retention remain in effect pending verified completion. Detailed timings/estimates stay private. Continue at the user-requested 20-minute interval.
 
 The next scheduled observation found Q2 detection and Catalog registration successful, with evaluation active. No failures or extra starts were observed; the existing execution continues. Publication and EC2 remain pending. No outputs were deleted.
+
+## Full workflow and publication verified — 30 October 2026
+
+The single new full execution SUCCEEDED, including preparation, manifest creation, Q1/Q2, Catalog, evaluation and publication. All inspected new Glue runs are SUCCEEDED and no processing remains active. Independent readback verified the current manifest hash, four PASSED report hashes, declared population/identity/calibration gates and Catalog output locations. This is fresh cloud completion evidence for one full execution, distinct from the earlier recovery-based release. Detailed measurements and identities remain private.
+
+Next authorised action: create and verify the planned temporary SSM-only EC2 visualization using the reviewed immutable dashboard package. Then remove only inventoried superseded S3 outputs and proven-stale Catalog entries; no processing rerun is needed. EC2 creation is still pending at this update.
