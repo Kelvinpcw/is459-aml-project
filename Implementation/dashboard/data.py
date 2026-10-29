@@ -43,6 +43,19 @@ def q1_query(release,start,end,currency,side='payment',grain='format',payment_fo
     FROM grouped_segments g CROSS JOIN baseline b ORDER BY CASE WHEN g.n>={min_support} THEN 0 ELSE 1 END, CASE WHEN g.n>={min_support} THEN lift ELSE NULL END DESC,n DESC,{cols} LIMIT 500'''
 
 
+def q1_trend_query(release,start,end,currency,side='payment',payment_format=None):
+    """Daily additive counts from the common Q1 base, never ranked/top-N rows."""
+    if side not in ('payment','receiving'):raise ValueError('Invalid currency side')
+    start,end=date.fromisoformat(start),date.fromisoformat(end)
+    dates=[date.fromisoformat(x) for x in release['q1']['dates']]
+    if not min(dates)<=start<=end<=max(dates):raise ValueError('Date filter outside published scope')
+    if (end-start).days>=500:raise ValueError('Trend exceeds the bounded display window')
+    filters=[f'dataset_version={literal(release["dataset_version"])}',f'run_id={literal(release["run_id"])}',
+             f"event_date BETWEEN DATE '{start}' AND DATE '{end}'",f'{side}_currency={literal(currency)}']
+    if payment_format:filters.append('payment_format='+literal(payment_format))
+    return f"SELECT event_date,SUM(transaction_count) n,SUM(laundering_count) l FROM {table(release,'q1_table')} WHERE {' AND '.join(filters)} GROUP BY event_date ORDER BY event_date"
+
+
 def case_query(release,pattern=None,limit=200):
     if not isinstance(limit,int) or not 1<=limit<=500:raise ValueError('Invalid display limit')
     where=[f'dataset_version={literal(release["dataset_version"])}',f'run_id={literal(release["run_id"])}',

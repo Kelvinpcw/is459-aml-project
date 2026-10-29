@@ -24,7 +24,7 @@ cfn-lint Implementation/deployment/full-pipeline-stack.json Implementation/deplo
 AML_AWS_PROFILE=IS-459-BDA streamlit run Implementation/dashboard/app.py
 ```
 
-The app reads `published/current.json` once per refresh, verifies its immutable release manifest hash, and pins every table, identity, snapshot, metrics and bundle read. Q1 amounts stay in the selected currency side; baseline filters match counts. The default main reporting period ends 16 September; the sparse tail is selected separately. Ranking support sensitivity is available only in development. Cases show at most 100 nodes/500 edges/200 evidence rows, while downloads retain complete evidence.
+The app reads `published/current.json` once per refresh, verifies its immutable release manifest hash, and pins every table, identity, snapshot, metrics and bundle read. Q1 amounts stay in the selected currency side; baseline filters match counts. The reporting default is the last 30 calendar days ending at the latest published date, with last-7-day and custom alternatives. No fixed September boundary is used in reporting. Days below 1,000 selected payments carry an informational volume flag; this does not imply incomplete ingestion. Whole-day completeness is unknown unless explicitly supplied by the release. Missing published dates remain gaps. Ranking support remains 1,000. Refresh data loads a new immutable release and advances rolling windows; no recurring ingestion schedule is created. Cases show at most 100 nodes/500 edges/200 evidence rows, while downloads retain complete evidence.
 
 ## Full input and release packaging
 

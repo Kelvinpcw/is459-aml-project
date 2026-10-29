@@ -27,3 +27,27 @@ Read [setup](SETUP.md), [runbook](RUNBOOK.md), [completion plan](COMPLETION_PLAN
 The dashboard evaluation screen displays the exact holdout payment interval, precision alongside recall, both amount-baseline comparisons, the eligible annotation denominator and frozen recovery target. These are distinct measures; attempt recovery does not establish better individual-payment precision or recall. The immutable `releases/dashboard-v1` package contains this presentation change. Eight release/dashboard checks and the updated temporary-dashboard template validation pass.
 
 A local visualization launcher verifies an explicit project profile, uses the bounded dashboard workgroup and binds to localhost. This avoids applying the smaller development scan limit to full-data case queries. It starts no AWS processing or EC2; normal Athena/S3 read charges may apply. See the visualization section in SETUP.md.
+
+## Dashboard presentation refresh — 29 October 2026
+
+The current source adds compact reporting filters, a supported-lift ranking with a consistent-population baseline, an alternate volume/rate view, readable exact-value tables, and a deterministic bounded case graph with click-to-inspect account details and fit/zoom controls. Evaluation separates transaction classification from eligible-pattern recovery and keeps the baseline comparison visible. Only the selected page loads its data; filters persist across navigation. Source query contracts, money strings, graph/evidence bounds, detector thresholds, evaluator settings and frozen releases remain unchanged.
+
+Validation: five display/graph safety checks, one synthetic interactive navigation/filter test, and eight existing release/dashboard checks pass. The local dashboard uses the new source; the previously frozen cloud software remains historical. New browser screenshots and operational observations remain private. No processing run, IAM change or EC2 deployment is part of this refresh.
+
+## Daily trend view — 29 October 2026
+
+Monitoring now accepts the complete published date range. A new bounded daily query sums additive N/L counts from the common Q1 base, with the same release, date, currency-side and payment-format filters. The chart aligns daily labels, laundering rate and total traffic, shades the sparse tail and keeps rate traces separate across the boundary. First-to-last-day comparisons state the observed counts/rates and flag comparisons across different traffic populations.
+
+Main-period and sparse-tail rankings retain separate date ranges and baselines. Mixed-range overview counts are additive; no pooled headline rate is displayed. Known filtered zero-traffic days have no measurable rate; dates outside published coverage remain gaps. Segment support and exact monetary amounts are unchanged. The detector, evaluator, chronological calibration and frozen releases are unaffected.
+
+Validation: 18 focused tests passed, including independent synthetic SQL aggregation, both currency sides, weighted count totals, zero/gap handling, period boundaries and full-range navigation with separate ranking queries. Browser observations and query records remain private. No Glue run, EC2 deployment or IAM change was needed.
+
+## Rolling reporting windows — 29 October 2026
+
+At the user's clarification, the dashboard now uses last-7-day, last-30-day and custom reporting windows anchored to the latest published date. Sample-specific main/tail controls are superseded. Overview counts, rates and segment baselines all use one consistently filtered selected window; rates are ratios of summed counts. Case exploration defaults to the latest published snapshot, with an explicit historical selector.
+
+Daily volume below 1,000 selected payments is an informational flag and never removes records or implies incomplete ingestion. Missing release dates remain gaps. Whole-day completeness is unknown unless the release explicitly supplies optional day coverage; no date is automatically marked complete or partial from its volume. Refresh data preserves the chosen rolling preset and advances it when a newer release arrives; refresh failure retains the previous release. Query windows remain bounded to 500 calendar days.
+
+The historical sample profile and frozen development/holdout/sparse-tail evaluation are unchanged. This is a reporting change; automatic scheduled ingestion, incremental processing and new publication metadata are not implemented or deployed by it. No new AWS processing, EC2 or IAM changes are part of this scope.
+
+Validation for the rolling view: 21 focused checks passed, including arbitrary future dates, short-history clipping, cross-year release growth, consistent ranking/date filters, refresh failure retention and explicit completeness handling. The existing synthetic SQL, graph safety, exact-money and release checks remain included.

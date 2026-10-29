@@ -51,12 +51,12 @@ Millions of transactions make manual AML review impractical. Transaction volume 
 | --- | --- | --- |
 | Required inputs | Event time, bank pair, format, paid/received amounts and currencies, historical label | Event time, sender/receiver account keys, amounts/currencies, account-to-entity mappings |
 | Primary scope | Formats and bank-pair/format segments; minimum-volume filter | Fan-in, fan-out, and bounded 2–4-account cycles; broader patterns are extensions |
-| Time policy | Default reporting period: 1–16 Sep 2022; sparse later dates shown separately | Daily event-time snapshots; proposed 24-hour and 7-day lookbacks; no future edges |
+| Time policy | Last 7 / 30 days or custom dates, anchored to the latest published date; volume and coverage warnings | Daily event-time snapshots; proposed 24-hour and 7-day lookbacks; no future edges |
 | Refresh need | Daily reporting is sufficient; run manually for the project demo | Daily batch case discovery is sufficient; not real-time prevention |
 | User interactions | Filter date/format/currency, compare rate with volume, inspect a segment | Filter pattern/date, select a case, inspect accounts/entities, export supporting records |
 | Required explanation | Counts, denominators, baseline rate, support threshold, and uncertainty | Triggered rule, lookback, pattern participants, evidence IDs, and limitations |
 
-The full file remains in scope for ingestion and processing. Separate reporting of the sparse tail is a presentation/evaluation policy, not deletion of those records.
+The full file remains in scope for ingestion and processing. User clarification on 29 October 2026 makes the reporting interface calendar-independent: uneven daily volumes are shown with counts and warnings, without permanent sample-specific date categories. The historical development/holdout/sparse-tail evaluation splits remain frozen and separate. This UI change does not implement scheduled or incremental ingestion.
 
 ### 2.2 Non-functional requirements and proposed targets
 
@@ -134,7 +134,7 @@ Retain additive transaction counts N and laundering counts L at the grain of dat
 
 **Support policy:** Start with N >= 1,000 for ranked bank-pair segments; compare sensitivity at 100, 500, and 1,000 during development. Show low-support segments as counts with a warning, not confidently ranked risk. Show sample sizes and descriptive proportion intervals; related transactions limit independence assumptions.
 
-**Decision view:** Compare the highest-volume segments with the highest supported rate/lift segments. A user should be able to explain why a lower-volume segment deserves control review. The default period is 1–16 September; make the sparse tail clearly identifiable.
+**Decision view:** Compare the highest-volume segments with the highest supported rate/lift segments. A user should be able to explain why a lower-volume segment deserves control review. Offer rolling windows ending on the latest published date, plus custom dates. Keep transaction volume visible alongside labels/rates and flag low-volume or explicitly partial days without deleting records or treating low volume alone as bad data. Period rates and lift use summed counts for the same selected population.
 
 Transferred value is not the amount of unique criminal proceeds: the same money can move through multiple transactions. No cross-currency total or jurisdictional risk claim is made without suitable additional data.
 
