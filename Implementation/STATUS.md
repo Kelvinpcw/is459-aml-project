@@ -73,3 +73,8 @@ Local validation: 25 focused checks passed, including trends, navigation, baseli
 ## Full-data release observed — 29 October 2026
 
 A read-only AWS check in account `160885259244` / `us-east-1` (profile verified; no mutations, queries, job starts or deployments) found `full-20261028-v1` as the current publication pointer. The pointer SHA256 matches the manifest bytes, and the preparation, Q1, Q2 and evaluation quality reports all report `PASSED`. Preparation accounts for all **31,898,238** transactions and **35,230** labels; Q1 has 28 date partitions and Q2 has 28 daily snapshots. The frozen holdout evaluation reports **0.197% precision / 65.9% recall**, and typed eligible-attempt recovery is **122/122** versus 91.8% for the matched-volume amount baseline, meeting the frozen +5 pp target. No Glue run, Athena query, Step Functions execution or EC2 instance was active; the temporary dashboard stack is deleted and the dashboard workgroup is idle. Published data, Catalog tables and idle definitions are retained. This observation does not authorise rerunning processing or redeploying the dashboard. Scope, cost basis and cleanup state: [handoff](team-handoffs/2026-10-29-1130Z-kelvin-pipeline-status-verification.md).
+
+
+## Fresh rerun preparation — 29 October 2026
+
+A separately requested full rerun has new isolated definitions/driver and an immutable full-v6 package. Core processing files match full-v5; the updated TRACE dashboard is included. Local suite/template/guard checks passed; this source preparation alone is not a completed new cloud run. Follow the newest rerun handoff and private operator plan for actual execution/cleanup state. Older successful outputs and consumed attempts remain unchanged.

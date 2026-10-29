@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "version": "full-v6",
+  "files": {
+    "q1_risk.py": {
+      "sha256": "83813f52104db9d402e2c2a3db8b45bb52881d8ecb8fcc335ecb0e3031cb96b0",
+      "bytes": 8398,
+      "s3_key": "scripts/full-v6/q1_risk.py"
+    },
+    "q2_detect.py": {
+      "sha256": "549b2ac6f3f2ba93bd6de7190b7ccc25befc975269008c50cb5179a93eb656f0",
+      "bytes": 19715,
+      "s3_key": "scripts/full-v6/q2_detect.py"
+    },
+    "q2_distributed.py": {
+      "sha256": "ba684592909f5f7f67c9379d2ca1e7e21fb6bf18a63b25667f3e99df6309f209",
+      "bytes": 18864,
+      "s3_key": "scripts/full-v6/q2_distributed.py"
+    },
+    "q2_bundle_shards.py": {
+      "sha256": "a25bf4651214d9d4727aab26185869fbc4a1717f6e37698bd69047cf20d6990d",
+      "bytes": 5001,
+      "s3_key": "scripts/full-v6/q2_bundle_shards.py"
+    },
+    "q2_snapshots.py": {
+      "sha256": "cf2f4e4b0382e0e96eadb840d7b79690c40ac2268a05325fbed34e0bda22245b",
+      "bytes": 9306,
+      "s3_key": "scripts/full-v6/q2_snapshots.py"
+    },
+    "evaluate_q2.py": {
+      "sha256": "0416846ba0c00b93b77c122c4d663051d8480131de89b0f6cd2cc2b35639a9ec",
+      "bytes": 36563,
+      "s3_key": "scripts/full-v6/evaluate_q2.py"
+    },
+    "evaluate_distributed.py": {
+      "sha256": "16ace608e508d9a3a3abce0615da3cf15854152e9fa467a403ab0fea175709a9",
+      "bytes": 31000,
+      "s3_key": "scripts/full-v6/evaluate_distributed.py"
+    },
+    "control.py": {
+      "sha256": "43879aa7975cf09cbadf64a3f7d9a7d0f31a639464883d8c28f1d21ef42ada55",
+      "bytes": 5717,
+      "s3_key": "scripts/full-v6/control.py"
+    },
+    "prepare.py": {
+      "sha256": "881acd5d9bb0064d090e333d9c2939a57c530863711ab783613aee0f6e24406b",
+      "bytes": 16265,
+      "s3_key": "scripts/full-v6/prepare.py"
+    },
+    "make_q2_input_manifest.py": {
+      "sha256": "3ffc71a7475e286a0ca1fa7f09ea17f4f5c605918b0912a8005192b4fbc3737b",
+      "bytes": 1678,
+      "s3_key": "scripts/full-v6/make_q2_input_manifest.py"
+    },
+    "jobs.zip": {
+      "sha256": "13389c225e7757ca605f3a673e27f42201965991cc7af0f7c9e924db24445486",
+      "bytes": 52786,
+      "s3_key": "scripts/full-v6/jobs.zip"
+    },
+    "dashboard.zip": {
+      "sha256": "10d31093dc872aa1fcd3f0d862222f49244f3c99fcf2a0a0cbe6d73cd78382ef",
+      "bytes": 27354,
+      "s3_key": "scripts/full-v6/dashboard.zip"
+    }
+  },
+  "source_tree_sha256": "67f51b5f582b0991dfe88daef1a6da2a4e96b9056ff4f94a460f66720d49927b",
+  "immutable": true
+}
