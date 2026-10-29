@@ -1,30 +1,36 @@
 # TRACE layout for the connected dashboard
 
 - **Owner:** Kelvinpcw, assisted by Codex.
-- **Branch:** `feature/trace-connected-dashboard`.
-- **Status:** IN_PROGRESS — source and synthetic checks complete; bounded connected preview next.
-- **Date:** 29 October 2026, Asia/Singapore.
-- **Evidence kind:** source inspection and local synthetic tests; no fresh AWS observations yet.
+- **Branch / PR:** `feature/trace-connected-dashboard`; [PR #10](https://github.com/Kelvinpcw/is459-aml-project/pull/10).
+- **Status:** COMPLETED — source published for teammate review; not merged.
+- **Updated at:** 2026-10-29T19:07:54.022487+08:00.
+- **Evidence kind:** local synthetic tests and fresh bounded AWS dashboard reads.
 
 ## Authorised scope and coordination
 
-The user requested adapting the TRACE visual structure to the existing connected Streamlit dashboard, retaining published results, rolling reporting dates, daily trends and complete evidence downloads. This follows merged PRs #8 and #9; no other open PRs were found at task start. Based on main `0c039240ac0fa0002d64d387c2e8977ede428822`.
+The user requested adapting TRACE's visual structure to the connected Streamlit dashboard, retaining published results, rolling reporting dates, daily trends and complete evidence downloads. This follows merged PRs #8 and #9. No other open PRs were found at task start. Based on main `0c039240ac0fa0002d64d387c2e8977ede428822`; initial layout source `2fd1e6c54fdf56fc1358e9f34f9d8e16be9921d9` was pushed before connected preview, followed by browser-driven responsive corrections. The final source commit is identified by the PR head and task report.
 
-Only local dashboard source, synthetic tests and documentation will change. Planned preview uses the operator's existing private published release through the unchanged verified-profile launcher and bounded read-only dashboard queries (512 MB/query, 30-second cancellation). No shared cloud jobs, output prefixes, roles or publication pointers will be modified. Existing US$30 total ceiling remains; material new costs require discussion. No paid processing, deployment or recurring schedule is planned.
+The planned record was pushed and a draft PR opened before cloud reads. Only the operator's local server and separate read-only query requests were used. No shared cloud job, output prefix, IAM role or publication pointer was modified. Existing US$30 total ceiling remains; no new processing, deployment or recurring schedule was authorised by this task.
 
-## Plan
+## Changes and checks
 
-1. Use TRACE-inspired navigation, summary cards, monitoring insight and case queue.
-2. Keep denominators, support, exact money, label separation, snapshot bounds and pinned-release validation intact. Keep the offline prototype's invented fixtures separate.
-3. Run synthetic UI/data/graph/release tests before browser verification. Reuse saved evidence where possible; do not rerun processing.
-4. Record actual preview observations, query cost basis and cleanup without publishing raw results, screenshots or resource locators. Push the final source and ask for teammate review.
+- TRACE-inspired sidebar (compact menu on narrow screens), cards, full-baseline monitoring explanation, visible supported ranking, segment inspection, case queue and separate provenance page.
+- Daily trends and rolling dates remain. Zero-label supported groups appear in volume/rate comparisons; low-support groups are unranked. Counts and shares use the same supplied population, not capped preview totals. Exact monetary strings remain intact.
+- Case explanations use actual published participant/evidence counts and exclusive windows. Graph bounds and complete evidence downloads remain intact. Existing evaluation metrics/denominators and baseline comparisons are preserved.
+- Offline `Visulization/` fixtures remain separate and are not imported by the connected app. Detector/evaluator rules, analytical SQL, immutable published data and frozen releases are unchanged. Future bundle creation includes the new stylesheet; the packaging test writes only to a temporary directory.
+- **25 local tests passed** in 2.272 seconds: trends, navigation, explanation support/shares/escaping, graph safety, complete source evidence, release retention and bundle assets. Final CSS corrections were verified in the browser. Markdown local file links: 22 checked, zero missing. `git diff --check` passed. No Spark/backend processing suite or new full-data replay was run.
+- Browser verified monitoring, the case queue/graph/window explanation, evaluation and provenance. Wide 1440px and narrow 618px layouts checked; viewport override reset. Screenshots and raw query records remain private with the operator.
 
-## Current state
+## AWS observations, cost and cleanup
 
-AWS: none so far. Account/region, active cloud compute and current billing were not inspected. Local port 8501 had no listener at task start. Private operational records remain with the operator. GitHub sync: planned record published on the task branch; verify the remote head before preview.
+- Explicit project profile passed the account/region launcher guard for expected project account / `us-east-1`. The app independently checked its SDK identity. A separate short-timeout SDK diagnostic timed out; the connected app subsequently loaded the published outputs successfully. No credentials or profile files were published.
+- Reused the existing immutable published release. Dashboard interactions made read-only S3 requests and bounded Athena queries; no Glue processing, EC2, IAM, orchestration or publication changes occurred.
+- Query metadata observation: **14 queries, all SUCCEEDED**, total scanned bytes **623,367,146**, zero unprocessed IDs. The requests were bounded to the existing dashboard workgroup's 512 MB/query limit and app's 30-second cancellation policy. Related preview retries/restarts are included. No observed preview query remained running at this check.
+- Cost basis: measured scan volume only; actual billed AWS dollars and account-wide remaining budget were not queried. Small Athena/S3 read charges apply. No hourly cloud compute was started by this task. This is not an account-wide cleanup/cost audit; pre-existing cloud resource state was not rechecked.
+- Earlier local preview processes were stopped. The final localhost-only dashboard remains running intentionally for the user's review at port 8501. It is laptop compute; further interaction can make bounded AWS reads. No automatic polling/schedule was added.
 
-## Local implementation progress
+## Handoff
 
-TRACE-inspired layout is implemented on this branch, with no SQL, detector, evaluator or frozen-release changes. Twenty-three focused trend/navigation/presentation/release checks passed; a further complete-source-evidence app check passed. The new explanation is tested against full supplied baseline counts and refuses low-support, zero-baseline or non-finite rankings. Supported zero-label segments stay visible in volume/rate comparisons. Provenance navigation makes no additional data reads. Browser verification is next; current cloud state and costs remain not verified.
+Review/merge PR #10 through a teammate. The operator can reuse the current local preview or restart it with `start_local_dashboard.sh` from this feature checkout and their verified profile. The launcher uses that checkout's source; an older checkout can display an older UI. No frozen dashboard ZIP was replaced or uploaded. Private operator checkpoint and raw evidence remain local; prior full-pipeline/cloud-cleanup history was not retroactively verified or published.
 
-PR: https://github.com/Kelvinpcw/is459-aml-project/pull/10 (draft). The exact pushed source commit is recorded in the PR history and final report, not self-referentially in this file.
+GitHub sync: source and this sanitised record are committed/pushed on the task branch; final report verifies the remote head. Do not treat this completed preview as approval to start processing or deploy another service.

@@ -5,12 +5,12 @@ sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 import pandas as pd
 import streamlit as st
 from dashboard.data import q1_query,q1_trend_query,case_query,run_query,get_case,evidence_csv,wilson,dimension_query,full_evidence_archive
-from dashboard.presentation import CSS,PATTERNS,esc,kpis,period,exposure_chart,graph_html,monitoring_lead,priority_card,rule_card
+from dashboard.presentation import PATTERNS,esc,kpis,period,exposure_chart,graph_html,monitoring_lead,priority_card,rule_card
 from dashboard.trends import range_options,date_window,daily_population,population_total,coverage_counts,LOW_DAILY_VOLUME,endpoint_comparison,trend_chart
 from pipeline.release import ACCOUNT,REGION,load_current,verify_ref
 
 st.set_page_config(page_title='TRACE | AML intelligence',page_icon='◈',layout='wide',initial_sidebar_state='expanded')
-st.markdown(CSS,unsafe_allow_html=True)
+st.markdown('<style>'+Path(__file__).with_name('styles.css').read_text()+'</style>',unsafe_allow_html=True)
 
 @st.cache_resource
 def clients(profile,instance):
@@ -28,9 +28,10 @@ def case_cached(release_data,row):return get_case(s3,release_data,row)
 
 profile=os.environ.get('AML_AWS_PROFILE','');instance=os.environ.get('AML_USE_INSTANCE_ROLE')=='1'
 try:
-    s3,athena=clients(profile,instance)
-    if 'release' not in st.session_state:st.session_state.release=load_current(s3)
-    release=st.session_state.release
+    with st.spinner('Connecting to the verified published release…'):
+        s3,athena=clients(profile,instance)
+        if 'release' not in st.session_state:st.session_state.release=load_current(s3)
+        release=st.session_state.release
 except Exception as error:
     st.title('Connect your published analysis')
     st.info('Start this workspace with your verified project profile.')

@@ -53,6 +53,7 @@ class DashboardPresentationTests(unittest.TestCase):
         self.assertIn('No supported',priority_card(None))
         unsafe={**row,'group':'<script>alert(1)</script>'}
         self.assertNotIn('<script>',priority_card(monitoring_lead([unsafe])))
+        self.assertIn('5 distinct receiving accounts',rule_card({'pattern_type':'fan_out','participant_count':6,'evidence_transaction_count':7,'interpretation':'lead','rule_version':'fixture'}))
         self.assertNotIn('<script>',rule_card({'interpretation':'<script>x</script>','rule_version':'<script>y</script>'}))
 
     def test_volume_chart_includes_zero_label_supported_groups_and_selected_baseline(self):
@@ -63,6 +64,22 @@ class DashboardPresentationTests(unittest.TestCase):
         self.assertEqual(list(fig.data[0].text),['ACH','Wire'])
         self.assertAlmostEqual(fig.layout.shapes[0].y0,.005)
         self.assertEqual(list(exposure_chart(rows).data[0].y),['ACH'])
+
+    def test_new_dashboard_package_contains_styles_without_touching_frozen_releases(self):
+        import tempfile,zipfile
+        from unittest.mock import patch
+        from deployment import build_bundle
+        source=Path(__file__).resolve().parents[2]
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory);(root/'Implementation/releases').mkdir(parents=True)
+            for name in ('dashboard','pipeline','jobs','scripts'):
+                (root/'Implementation'/name).symlink_to(source/'Implementation'/name,target_is_directory=True)
+            (root/'.streamlit').symlink_to(source/'.streamlit',target_is_directory=True)
+            (root/'Implementation/releases/preparation-v2').symlink_to(source/'Implementation/releases/preparation-v2',target_is_directory=True)
+            with patch.object(build_bundle,'ROOT',root):build_bundle.build('full-v999')
+            with zipfile.ZipFile(root/'Implementation/releases/full-v999/dashboard.zip') as bundle:
+                self.assertEqual(bundle.read('Implementation/dashboard/styles.css'),(source/'Implementation/dashboard/styles.css').read_bytes())
+                self.assertIn(b'persist_state',bundle.read('Implementation/dashboard/app.py'))
 
 
 if __name__=='__main__':unittest.main()
