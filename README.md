@@ -52,4 +52,4 @@ Start with the [plain-language walkthrough](PIPELINE_WALKTHROUGH.md), then pract
 
 Original datasets, generated data, credentials and detailed operational records are deliberately absent from a fresh clone. The [offline concept](Visulization/README.md) works without AWS; the connected dashboard requires each member's own authorised login and can make chargeable reads. Merging code does not deploy it to AWS or restart a teammate's dashboard.
 
-AI assistants must read [AGENTS.md](AGENTS.md). Work on a task branch, stage explicit paths, push and open a PR; contributors may self-merge after checks and checking for overlapping work. Never use another member's credentials or silently resume a historical cloud run.
+AI assistants must read [AGENTS.md](AGENTS.md). Work on a task branch, stage explicit paths, push and open a PR; contributors may self-merge after checks and checking for overlapping work. A purely read-only AWS check needs no handoff or PR. Never use another member's credentials or silently resume a historical cloud run.

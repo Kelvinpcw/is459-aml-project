@@ -32,7 +32,7 @@ Replace the branch name. Use `agent/tool-task` if preferred. If the working tree
 - Work on editable source, not frozen release packages or generated data. See [README's folder map](README.md#where-files-belong).
 - Run checks appropriate to the change using [SETUP.md](Implementation/SETUP.md). Docs require link/command checks; don't start AWS to validate Markdown. Test processing code locally with synthetic fixtures first.
 - Update affected usage instructions. Update [STATUS.md](Implementation/STATUS.md) when implementation/completion state changes, identifying the evidence and scope. Historical findings are not overwritten to fit newer code.
-- Add one short [task handoff](Implementation/team-handoffs/README.md) for meaningful progress, blockers and completion. Local task: `AWS: none`. AWS task: follow [AWS_HANDOFF.md](Implementation/AWS_HANDOFF.md), including failed/read-only sessions.
+- Add one short [task handoff](Implementation/team-handoffs/README.md) for meaningful progress, blockers and completion. Local task: `AWS: none`. AWS task that changes resources or starts paid work: follow [AWS_HANDOFF.md](Implementation/AWS_HANDOFF.md). **A purely read-only AWS check does not need a handoff or PR** unless the user asks for a shared record.
 - Keep credentials, raw data, detailed AWS records/measurements/costs, local config and new screenshots private. Public notes describe changed behavior, checks, activity scope, cleanup/unknowns and next owner. Review every proposed attachment.
 
 ## Commit, push and open a PR

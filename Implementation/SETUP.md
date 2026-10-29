@@ -66,7 +66,7 @@ bash Implementation/scripts/check_aws_profile.sh YOUR_PROJECT_PROFILE
 
 The guard requires exactly one explicit profile, refuses a missing/wrong configured region, and queries identity with the explicit workload region. It doesn't silently use a default. Identity/region verification is read-only; it doesn't grant permissions, approve spending or establish completed jobs. Recheck before authorised cloud work and pass explicit `--profile` / `--region` on subsequent CLI calls. Local SDKs need the explicitly selected verified session too.
 
-Use [VERIFY_PROGRESS.md](VERIFY_PROGRESS.md) for read-only completion checks. Missing access/evidence is a blocker to report, not a reason to add IAM permissions or repeat a run. Use [AWS_HANDOFF.md](AWS_HANDOFF.md) for coordination, private detailed records and a pushed public-safe summary.
+Use [VERIFY_PROGRESS.md](VERIFY_PROGRESS.md) for read-only completion checks. Missing access/evidence is a blocker to report, not a reason to add IAM permissions or repeat a run. Use [AWS_HANDOFF.md](AWS_HANDOFF.md) for state-changing AWS work: coordination, private detailed records and a pushed public-safe summary. A purely read-only check needs no handoff or PR.
 
 ## 5. Hand over your work
 
