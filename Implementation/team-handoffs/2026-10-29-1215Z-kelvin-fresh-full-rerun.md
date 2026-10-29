@@ -1,9 +1,9 @@
 # Fresh isolated full-pipeline rerun
 
 - **Owner:** Kelvinpcw, assisted by Codex.
-- **Branch:** `feature/full-rerun-20261029`; PR link follows publication.
+- **Branch:** `feature/full-rerun-20261029`; [PR #13](https://github.com/Kelvinpcw/is459-aml-project/pull/13).
 - **Updated at:** 2026-10-29T12:15:35.599745+00:00.
-- **Status:** PLANNED — definitions/package validated; no paid processing started.
+- **Status:** IN_PROGRESS — definitions/package validated and published; immutable upload/idle deployment next. No paid processing started.
 - **Evidence kind:** local tests and private read-only preflight; detailed operational records stay private.
 
 ## Scope and coordination
