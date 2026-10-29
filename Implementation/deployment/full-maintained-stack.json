@@ -1,0 +1,1089 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "IS459 isolated full-data batch definitions. No jobs run and no EC2 is launched by stack creation.",
+  "Parameters": {
+    "CodeVersion": {
+      "Type": "String",
+      "Default": "full-v1",
+      "AllowedPattern": "full-v[1-9][0-9]*"
+    },
+    "RunId": {
+      "Type": "String",
+      "Default": "full-20261028-v1",
+      "AllowedPattern": "[a-z][a-z0-9-]{1,60}"
+    },
+    "ReleaseId": {
+      "Type": "String",
+      "Default": "full-20261028-v1",
+      "AllowedPattern": "[a-z][a-z0-9-]{1,60}"
+    }
+  },
+  "Resources": {
+    "PrepareRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "RoleName": "is459-aml-full-prepare",
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "glue.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyName": "project-data-only",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": "s3:GetBucketLocation",
+                  "Resource": "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1"
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": "s3:ListBucket",
+                  "Resource": "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1",
+                  "Condition": {
+                    "StringLike": {
+                      "s3:prefix": [
+                        "raw/full-v1*",
+                        {
+                          "Fn::Sub": "curated/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}*"
+                        },
+                        {
+                          "Fn::Sub": "references/labels/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}*"
+                        },
+                        {
+                          "Fn::Sub": "quality/preparation/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}*"
+                        },
+                        {
+                          "Fn::Sub": "quarantine/preparation/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}*"
+                        },
+                        {
+                          "Fn::Sub": "scripts/${CodeVersion}*"
+                        },
+                        "temporary/full/prepare*"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": "s3:GetObject",
+                  "Resource": [
+                    "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/raw/full-v1",
+                    "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/raw/full-v1/*",
+                    {
+                      "Fn::Sub": "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/scripts/${CodeVersion}"
+                    },
+                    {
+                      "Fn::Sub": "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/scripts/${CodeVersion}/*"
+                    }
+                  ]
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "s3:GetObject",
+                    "s3:PutObject",
+                    "s3:DeleteObject",
+                    "s3:AbortMultipartUpload"
+                  ],
+                  "Resource": [
+                    {
+                      "Fn::Sub": "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/curated/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/*"
+                    },
+                    {
+                      "Fn::Sub": "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/references/labels/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/*"
+                    },
+                    {
+                      "Fn::Sub": "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/quality/preparation/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/*"
+                    },
+                    {
+                      "Fn::Sub": "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/quarantine/preparation/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/*"
+                    },
+                    "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/temporary/full/prepare/*"
+                  ]
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "logs:CreateLogGroup",
+                    "logs:CreateLogStream",
+                    "logs:PutLogEvents"
+                  ],
+                  "Resource": "arn:aws:logs:us-east-1:160885259244:log-group:/is459/aml/full/prepare/*"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "RiskRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "RoleName": "is459-aml-full-risk",
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "glue.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyName": "project-data-only",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": "s3:GetBucketLocation",
+                  "Resource": "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1"
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": "s3:ListBucket",
+                  "Resource": "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1",
+                  "Condition": {
+                    "StringLike": {
+                      "s3:prefix": [
+                        {
+                          "Fn::Sub": "curated/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/transactions*"
+                        },
+                        {
+                          "Fn::Sub": "references/labels/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/transactions*"
+                        },
+                        {
+                          "Fn::Sub": "quality/preparation/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/report.json*"
+                        },
+                        {
+                          "Fn::Sub": "gold/risk/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/analysis_id=q1-full-v1*"
+                        },
+                        {
+                          "Fn::Sub": "quality/q1/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/analysis_id=q1-full-v1*"
+                        },
+                        {
+                          "Fn::Sub": "scripts/${CodeVersion}*"
+                        },
+                        "temporary/full/risk*"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": "s3:GetObject",
+                  "Resource": [
+                    {
+                      "Fn::Sub": "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/curated/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/transactions"
+                    },
+                    {
+                      "Fn::Sub": "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/curated/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/transactions/*"
+                    },
+                    {
+                      "Fn::Sub": "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/references/labels/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/transactions"
+                    },
+                    {
+                      "Fn::Sub": "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/references/labels/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/transactions/*"
+                    },
+                    {
+                      "Fn::Sub": "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/quality/preparation/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/report.json"
+                    },
+                    {
+                      "Fn::Sub": "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/scripts/${CodeVersion}"
+                    },
+                    {
+                      "Fn::Sub": "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/scripts/${CodeVersion}/*"
+                    }
+                  ]
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "s3:GetObject",
+                    "s3:PutObject",
+                    "s3:DeleteObject",
+                    "s3:AbortMultipartUpload"
+                  ],
+                  "Resource": [
+                    {
+                      "Fn::Sub": "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/gold/risk/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/analysis_id=q1-full-v1/*"
+                    },
+                    {
+                      "Fn::Sub": "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/quality/q1/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/analysis_id=q1-full-v1/*"
+                    },
+                    "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/temporary/full/risk/*"
+                  ]
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "logs:CreateLogGroup",
+                    "logs:CreateLogStream",
+                    "logs:PutLogEvents"
+                  ],
+                  "Resource": "arn:aws:logs:us-east-1:160885259244:log-group:/is459/aml/full/risk/*"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "DetectRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "RoleName": "is459-aml-full-detect",
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "glue.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyName": "project-data-only",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": "s3:GetBucketLocation",
+                  "Resource": "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1"
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": "s3:ListBucket",
+                  "Resource": "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1",
+                  "Condition": {
+                    "StringLike": {
+                      "s3:prefix": [
+                        {
+                          "Fn::Sub": "curated/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/transactions*"
+                        },
+                        {
+                          "Fn::Sub": "manifests/detector-inputs/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/manifest.json*"
+                        },
+                        {
+                          "Fn::Sub": "gold/cases/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/analysis_id=q2-full-v2*"
+                        },
+                        {
+                          "Fn::Sub": "quality/q2/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/analysis_id=q2-full-v2*"
+                        },
+                        {
+                          "Fn::Sub": "scripts/${CodeVersion}*"
+                        },
+                        "temporary/full/detect*"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": "s3:GetObject",
+                  "Resource": [
+                    {
+                      "Fn::Sub": "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/curated/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/transactions"
+                    },
+                    {
+                      "Fn::Sub": "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/curated/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/transactions/*"
+                    },
+                    {
+                      "Fn::Sub": "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/manifests/detector-inputs/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/manifest.json"
+                    },
+                    {
+                      "Fn::Sub": "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/scripts/${CodeVersion}"
+                    },
+                    {
+                      "Fn::Sub": "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/scripts/${CodeVersion}/*"
+                    }
+                  ]
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "s3:GetObject",
+                    "s3:PutObject",
+                    "s3:DeleteObject",
+                    "s3:AbortMultipartUpload"
+                  ],
+                  "Resource": [
+                    {
+                      "Fn::Sub": "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/gold/cases/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/analysis_id=q2-full-v2/*"
+                    },
+                    {
+                      "Fn::Sub": "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/quality/q2/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/analysis_id=q2-full-v2/*"
+                    },
+                    "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/temporary/full/detect/*"
+                  ]
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "logs:CreateLogGroup",
+                    "logs:CreateLogStream",
+                    "logs:PutLogEvents"
+                  ],
+                  "Resource": "arn:aws:logs:us-east-1:160885259244:log-group:/is459/aml/full/detect/*"
+                },
+                {
+                  "Effect": "Deny",
+                  "Action": "s3:GetObject*",
+                  "Resource": [
+                    "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/raw/*",
+                    "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/references/*",
+                    "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/gold/risk/*",
+                    "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/evaluation/*",
+                    "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/quality/preparation/*",
+                    "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/quality/q1/*",
+                    "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/quality/evaluation/*"
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "EvaluateRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "RoleName": "is459-aml-full-evaluate",
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "glue.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyName": "project-data-only",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": "s3:GetBucketLocation",
+                  "Resource": "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1"
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": "s3:ListBucket",
+                  "Resource": "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1",
+                  "Condition": {
+                    "StringLike": {
+                      "s3:prefix": [
+                        {
+                          "Fn::Sub": "curated/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/transactions*"
+                        },
+                        {
+                          "Fn::Sub": "references/labels/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/transactions*"
+                        },
+                        {
+                          "Fn::Sub": "quality/preparation/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/report.json*"
+                        },
+                        {
+                          "Fn::Sub": "gold/cases/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/analysis_id=q2-full-v2*"
+                        },
+                        {
+                          "Fn::Sub": "quality/q2/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/analysis_id=q2-full-v2*"
+                        },
+                        "references/annotations/dataset_version=ibm-hi-medium-b1b99c68b765580f/HI-Medium_Patterns.txt*",
+                        {
+                          "Fn::Sub": "evaluation/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/analysis_id=q2-full-v2/evaluation_id=eval-full-v2*"
+                        },
+                        {
+                          "Fn::Sub": "quality/evaluation/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/analysis_id=q2-full-v2/evaluation_id=eval-full-v2*"
+                        },
+                        {
+                          "Fn::Sub": "scripts/${CodeVersion}*"
+                        },
+                        "temporary/full/evaluate*"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": "s3:GetObject",
+                  "Resource": [
+                    {
+                      "Fn::Sub": "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/curated/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/transactions"
+                    },
+                    {
+                      "Fn::Sub": "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/curated/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/transactions/*"
+                    },
+                    {
+                      "Fn::Sub": "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/references/labels/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/transactions"
+                    },
+                    {
+                      "Fn::Sub": "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/references/labels/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/transactions/*"
+                    },
+                    {
+                      "Fn::Sub": "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/quality/preparation/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/report.json"
+                    },
+                    {
+                      "Fn::Sub": "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/gold/cases/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/analysis_id=q2-full-v2"
+                    },
+                    {
+                      "Fn::Sub": "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/gold/cases/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/analysis_id=q2-full-v2/*"
+                    },
+                    {
+                      "Fn::Sub": "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/quality/q2/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/analysis_id=q2-full-v2"
+                    },
+                    {
+                      "Fn::Sub": "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/quality/q2/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/analysis_id=q2-full-v2/*"
+                    },
+                    "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/references/annotations/dataset_version=ibm-hi-medium-b1b99c68b765580f/HI-Medium_Patterns.txt",
+                    {
+                      "Fn::Sub": "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/scripts/${CodeVersion}"
+                    },
+                    {
+                      "Fn::Sub": "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/scripts/${CodeVersion}/*"
+                    }
+                  ]
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "s3:GetObject",
+                    "s3:PutObject",
+                    "s3:DeleteObject",
+                    "s3:AbortMultipartUpload"
+                  ],
+                  "Resource": [
+                    {
+                      "Fn::Sub": "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/evaluation/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/analysis_id=q2-full-v2/evaluation_id=eval-full-v2/*"
+                    },
+                    {
+                      "Fn::Sub": "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/quality/evaluation/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/analysis_id=q2-full-v2/evaluation_id=eval-full-v2/*"
+                    },
+                    "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/temporary/full/evaluate/*"
+                  ]
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "logs:CreateLogGroup",
+                    "logs:CreateLogStream",
+                    "logs:PutLogEvents"
+                  ],
+                  "Resource": "arn:aws:logs:us-east-1:160885259244:log-group:/is459/aml/full/evaluate/*"
+                },
+                {
+                  "Effect": "Deny",
+                  "Action": "s3:GetObject*",
+                  "Resource": [
+                    "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/raw/*",
+                    "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/gold/risk/*",
+                    "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/quality/q1/*"
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "ControlRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "RoleName": "is459-aml-full-control",
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "glue.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyName": "project-data-only",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": "s3:GetBucketLocation",
+                  "Resource": "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1"
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": "s3:ListBucket",
+                  "Resource": "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1",
+                  "Condition": {
+                    "StringLike": {
+                      "s3:prefix": [
+                        {
+                          "Fn::Sub": "quality/preparation/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/report.json*"
+                        },
+                        {
+                          "Fn::Sub": "quality/q1/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/analysis_id=q1-full-v1*"
+                        },
+                        {
+                          "Fn::Sub": "quality/q2/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/analysis_id=q2-full-v2*"
+                        },
+                        {
+                          "Fn::Sub": "gold/risk/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/analysis_id=q1-full-v1*"
+                        },
+                        {
+                          "Fn::Sub": "gold/cases/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/analysis_id=q2-full-v2*"
+                        },
+                        {
+                          "Fn::Sub": "evaluation/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/analysis_id=q2-full-v2/evaluation_id=eval-full-v2*"
+                        },
+                        {
+                          "Fn::Sub": "quality/evaluation/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/analysis_id=q2-full-v2/evaluation_id=eval-full-v2*"
+                        },
+                        {
+                          "Fn::Sub": "manifests/detector-inputs/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/manifest.json*"
+                        },
+                        {
+                          "Fn::Sub": "published/releases/${ReleaseId}*"
+                        },
+                        "published/current.json*",
+                        {
+                          "Fn::Sub": "scripts/${CodeVersion}*"
+                        },
+                        "temporary/full/control*"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": "s3:GetObject",
+                  "Resource": [
+                    {
+                      "Fn::Sub": "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/quality/preparation/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/report.json"
+                    },
+                    {
+                      "Fn::Sub": "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/quality/q1/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/analysis_id=q1-full-v1"
+                    },
+                    {
+                      "Fn::Sub": "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/quality/q1/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/analysis_id=q1-full-v1/*"
+                    },
+                    {
+                      "Fn::Sub": "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/quality/q2/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/analysis_id=q2-full-v2"
+                    },
+                    {
+                      "Fn::Sub": "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/quality/q2/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/analysis_id=q2-full-v2/*"
+                    },
+                    {
+                      "Fn::Sub": "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/gold/risk/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/analysis_id=q1-full-v1"
+                    },
+                    {
+                      "Fn::Sub": "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/gold/risk/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/analysis_id=q1-full-v1/*"
+                    },
+                    {
+                      "Fn::Sub": "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/gold/cases/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/analysis_id=q2-full-v2"
+                    },
+                    {
+                      "Fn::Sub": "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/gold/cases/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/analysis_id=q2-full-v2/*"
+                    },
+                    {
+                      "Fn::Sub": "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/evaluation/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/analysis_id=q2-full-v2/evaluation_id=eval-full-v2"
+                    },
+                    {
+                      "Fn::Sub": "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/evaluation/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/analysis_id=q2-full-v2/evaluation_id=eval-full-v2/*"
+                    },
+                    {
+                      "Fn::Sub": "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/quality/evaluation/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/analysis_id=q2-full-v2/evaluation_id=eval-full-v2"
+                    },
+                    {
+                      "Fn::Sub": "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/quality/evaluation/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/analysis_id=q2-full-v2/evaluation_id=eval-full-v2/*"
+                    },
+                    {
+                      "Fn::Sub": "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/scripts/${CodeVersion}"
+                    },
+                    {
+                      "Fn::Sub": "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/scripts/${CodeVersion}/*"
+                    }
+                  ]
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "s3:GetObject",
+                    "s3:PutObject",
+                    "s3:DeleteObject",
+                    "s3:AbortMultipartUpload"
+                  ],
+                  "Resource": [
+                    {
+                      "Fn::Sub": "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/manifests/detector-inputs/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/manifest.json"
+                    },
+                    {
+                      "Fn::Sub": "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/published/releases/${ReleaseId}/*"
+                    },
+                    "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/published/current.json",
+                    "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/temporary/full/control/*"
+                  ]
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "logs:CreateLogGroup",
+                    "logs:CreateLogStream",
+                    "logs:PutLogEvents"
+                  ],
+                  "Resource": "arn:aws:logs:us-east-1:160885259244:log-group:/is459/aml/full/control/*"
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "glue:CreateTable",
+                    "glue:GetTable",
+                    "glue:BatchCreatePartition",
+                    "glue:GetPartitions"
+                  ],
+                  "Resource": [
+                    "arn:aws:glue:us-east-1:160885259244:catalog",
+                    "arn:aws:glue:us-east-1:160885259244:database/is459_aml_full",
+                    "arn:aws:glue:us-east-1:160885259244:table/is459_aml_full/q*"
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "FullDatabase": {
+      "Type": "AWS::Glue::Database",
+      "Properties": {
+        "CatalogId": "160885259244",
+        "DatabaseInput": {
+          "Name": "is459_aml_full",
+          "Description": "Isolated full-data AML release tables"
+        }
+      }
+    },
+    "PrepareJob": {
+      "Type": "AWS::Glue::Job",
+      "Properties": {
+        "Name": "is459-aml-full-prepare",
+        "Role": {
+          "Fn::GetAtt": [
+            "PrepareRole",
+            "Arn"
+          ]
+        },
+        "Command": {
+          "Name": "glueetl",
+          "PythonVersion": "3",
+          "ScriptLocation": {
+            "Fn::Sub": "s3://is459-aml-g2team7-160885259244-us-east-1/scripts/${CodeVersion}/prepare.py"
+          }
+        },
+        "GlueVersion": "5.1",
+        "WorkerType": "G.1X",
+        "NumberOfWorkers": 5,
+        "Timeout": 45,
+        "MaxRetries": 0,
+        "ExecutionProperty": {
+          "MaxConcurrentRuns": 1
+        },
+        "JobRunQueuingEnabled": false,
+        "ExecutionClass": "STANDARD",
+        "DefaultArguments": {
+          "--job-language": "python",
+          "--job-bookmark-option": "job-bookmark-disable",
+          "--enable-metrics": "false",
+          "--enable-observability-metrics": "false",
+          "--enable-job-insights": "false",
+          "--enable-spark-ui": "false",
+          "--extra-py-files": {
+            "Fn::Sub": "s3://is459-aml-g2team7-160885259244-us-east-1/scripts/${CodeVersion}/jobs.zip"
+          },
+          "--custom-logGroup-prefix": "/is459/aml/full/prepare",
+          "--TempDir": "s3://is459-aml-g2team7-160885259244-us-east-1/temporary/full/prepare/",
+          "--input-root": "s3://is459-aml-g2team7-160885259244-us-east-1/raw/full-v1",
+          "--output-root": "s3://is459-aml-g2team7-160885259244-us-east-1",
+          "--run-id": {
+            "Fn::Sub": "${RunId}"
+          },
+          "--max-quarantine-rows": "0"
+        },
+        "Tags": {
+          "Project": "is459-aml",
+          "Phase": "full-data",
+          "BudgetUSD": "30"
+        }
+      }
+    },
+    "RiskJob": {
+      "Type": "AWS::Glue::Job",
+      "Properties": {
+        "Name": "is459-aml-full-risk",
+        "Role": {
+          "Fn::GetAtt": [
+            "RiskRole",
+            "Arn"
+          ]
+        },
+        "Command": {
+          "Name": "glueetl",
+          "PythonVersion": "3",
+          "ScriptLocation": {
+            "Fn::Sub": "s3://is459-aml-g2team7-160885259244-us-east-1/scripts/${CodeVersion}/recovery1/q1_risk.py"
+          }
+        },
+        "GlueVersion": "5.1",
+        "WorkerType": "G.1X",
+        "NumberOfWorkers": 5,
+        "Timeout": 45,
+        "MaxRetries": 0,
+        "ExecutionProperty": {
+          "MaxConcurrentRuns": 1
+        },
+        "JobRunQueuingEnabled": false,
+        "ExecutionClass": "STANDARD",
+        "DefaultArguments": {
+          "--job-language": "python",
+          "--job-bookmark-option": "job-bookmark-disable",
+          "--enable-metrics": "false",
+          "--enable-observability-metrics": "false",
+          "--enable-job-insights": "false",
+          "--enable-spark-ui": "false",
+          "--extra-py-files": {
+            "Fn::Sub": "s3://is459-aml-g2team7-160885259244-us-east-1/scripts/${CodeVersion}/recovery1/jobs.zip"
+          },
+          "--custom-logGroup-prefix": "/is459/aml/full/risk",
+          "--TempDir": "s3://is459-aml-g2team7-160885259244-us-east-1/temporary/full/risk/",
+          "--preparation-report": {
+            "Fn::Sub": "s3://is459-aml-g2team7-160885259244-us-east-1/quality/preparation/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/report.json"
+          },
+          "--output-root": "s3://is459-aml-g2team7-160885259244-us-east-1",
+          "--analysis-id": "q1-full-v1",
+          "--attempt-id": "recovery1"
+        },
+        "Tags": {
+          "Project": "is459-aml",
+          "Phase": "full-data",
+          "BudgetUSD": "30"
+        }
+      }
+    },
+    "DetectJob": {
+      "Type": "AWS::Glue::Job",
+      "Properties": {
+        "Name": "is459-aml-full-detect",
+        "Role": {
+          "Fn::GetAtt": [
+            "DetectRole",
+            "Arn"
+          ]
+        },
+        "Command": {
+          "Name": "glueetl",
+          "PythonVersion": "3",
+          "ScriptLocation": {
+            "Fn::Sub": "s3://is459-aml-g2team7-160885259244-us-east-1/scripts/${CodeVersion}/recovery1/q2_snapshots.py"
+          }
+        },
+        "GlueVersion": "5.1",
+        "WorkerType": "G.1X",
+        "NumberOfWorkers": 10,
+        "Timeout": 120,
+        "MaxRetries": 0,
+        "ExecutionProperty": {
+          "MaxConcurrentRuns": 1
+        },
+        "JobRunQueuingEnabled": false,
+        "ExecutionClass": "STANDARD",
+        "DefaultArguments": {
+          "--job-language": "python",
+          "--job-bookmark-option": "job-bookmark-disable",
+          "--enable-metrics": "false",
+          "--enable-observability-metrics": "false",
+          "--enable-job-insights": "false",
+          "--enable-spark-ui": "false",
+          "--extra-py-files": {
+            "Fn::Sub": "s3://is459-aml-g2team7-160885259244-us-east-1/scripts/${CodeVersion}/recovery1/jobs.zip"
+          },
+          "--custom-logGroup-prefix": "/is459/aml/full/detect",
+          "--TempDir": "s3://is459-aml-g2team7-160885259244-us-east-1/temporary/full/detect/",
+          "--input-manifest": {
+            "Fn::Sub": "s3://is459-aml-g2team7-160885259244-us-east-1/manifests/detector-inputs/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/manifest.json"
+          },
+          "--output-root": "s3://is459-aml-g2team7-160885259244-us-east-1",
+          "--analysis-id": "q2-full-v2",
+          "--first-snapshot-end": "2022-09-02T00:00:00",
+          "--last-snapshot-end": "2022-09-29T00:00:00",
+          "--max-cycle-degree": "64",
+          "--max-cycle-path-rows": "200000000",
+          "--max-output-cost-usd": "10",
+          "--attempt-id": "recovery1"
+        },
+        "Tags": {
+          "Project": "is459-aml",
+          "Phase": "full-data",
+          "BudgetUSD": "30"
+        }
+      }
+    },
+    "EvaluateJob": {
+      "Type": "AWS::Glue::Job",
+      "Properties": {
+        "Name": "is459-aml-full-evaluate",
+        "Role": {
+          "Fn::GetAtt": [
+            "EvaluateRole",
+            "Arn"
+          ]
+        },
+        "Command": {
+          "Name": "glueetl",
+          "PythonVersion": "3",
+          "ScriptLocation": {
+            "Fn::Sub": "s3://is459-aml-g2team7-160885259244-us-east-1/scripts/${CodeVersion}/evaluation-lineage1/evaluate_distributed.py"
+          }
+        },
+        "GlueVersion": "5.1",
+        "WorkerType": "G.1X",
+        "NumberOfWorkers": 10,
+        "Timeout": 45,
+        "MaxRetries": 0,
+        "ExecutionProperty": {
+          "MaxConcurrentRuns": 1
+        },
+        "JobRunQueuingEnabled": false,
+        "ExecutionClass": "STANDARD",
+        "DefaultArguments": {
+          "--job-language": "python",
+          "--job-bookmark-option": "job-bookmark-disable",
+          "--enable-metrics": "false",
+          "--enable-observability-metrics": "false",
+          "--enable-job-insights": "false",
+          "--enable-spark-ui": "false",
+          "--extra-py-files": {
+            "Fn::Sub": "s3://is459-aml-g2team7-160885259244-us-east-1/scripts/${CodeVersion}/evaluation-lineage1/jobs.zip"
+          },
+          "--custom-logGroup-prefix": "/is459/aml/full/evaluate",
+          "--TempDir": "s3://is459-aml-g2team7-160885259244-us-east-1/temporary/full/evaluate/",
+          "--preparation-report": {
+            "Fn::Sub": "s3://is459-aml-g2team7-160885259244-us-east-1/quality/preparation/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/report.json"
+          },
+          "--detector-report": {
+            "Fn::Sub": "s3://is459-aml-g2team7-160885259244-us-east-1/quality/q2/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/analysis_id=q2-full-v2/attempt=recovery1/report.json"
+          },
+          "--annotations": "s3://is459-aml-g2team7-160885259244-us-east-1/references/annotations/dataset_version=ibm-hi-medium-b1b99c68b765580f/HI-Medium_Patterns.txt",
+          "--annotations-sha256": "392d748d8d76efc1a96f6dc29ad8dd282c815de96537f0296bb0a7fa96ec4130",
+          "--output-root": "s3://is459-aml-g2team7-160885259244-us-east-1",
+          "--evaluation-id": "eval-full-v2",
+          "--attempt-id": "evaluation-lineage1"
+        },
+        "Tags": {
+          "Project": "is459-aml",
+          "Phase": "full-data",
+          "BudgetUSD": "30"
+        }
+      }
+    },
+    "ControlJob": {
+      "Type": "AWS::Glue::Job",
+      "Properties": {
+        "Name": "is459-aml-full-control",
+        "Role": {
+          "Fn::GetAtt": [
+            "ControlRole",
+            "Arn"
+          ]
+        },
+        "Command": {
+          "Name": "glueetl",
+          "PythonVersion": "3",
+          "ScriptLocation": {
+            "Fn::Sub": "s3://is459-aml-g2team7-160885259244-us-east-1/scripts/${CodeVersion}/evaluation-lineage1/control.py"
+          }
+        },
+        "GlueVersion": "5.1",
+        "WorkerType": "G.1X",
+        "NumberOfWorkers": 2,
+        "Timeout": 10,
+        "MaxRetries": 0,
+        "ExecutionProperty": {
+          "MaxConcurrentRuns": 1
+        },
+        "JobRunQueuingEnabled": false,
+        "ExecutionClass": "STANDARD",
+        "DefaultArguments": {
+          "--job-language": "python",
+          "--job-bookmark-option": "job-bookmark-disable",
+          "--enable-metrics": "false",
+          "--enable-observability-metrics": "false",
+          "--enable-job-insights": "false",
+          "--enable-spark-ui": "false",
+          "--extra-py-files": {
+            "Fn::Sub": "s3://is459-aml-g2team7-160885259244-us-east-1/scripts/${CodeVersion}/evaluation-lineage1/jobs.zip"
+          },
+          "--custom-logGroup-prefix": "/is459/aml/full/control",
+          "--TempDir": "s3://is459-aml-g2team7-160885259244-us-east-1/temporary/full/control/",
+          "--run-id": {
+            "Fn::Sub": "${RunId}"
+          },
+          "--release-id": {
+            "Fn::Sub": "${ReleaseId}"
+          },
+          "--q1-report": {
+            "Fn::Sub": "s3://is459-aml-g2team7-160885259244-us-east-1/quality/q1/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/analysis_id=q1-full-v1/attempt=recovery1/report.json"
+          },
+          "--q2-report": {
+            "Fn::Sub": "s3://is459-aml-g2team7-160885259244-us-east-1/quality/q2/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/analysis_id=q2-full-v2/attempt=recovery1/report.json"
+          },
+          "--evaluation-report": {
+            "Fn::Sub": "s3://is459-aml-g2team7-160885259244-us-east-1/quality/evaluation/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/analysis_id=q2-full-v2/evaluation_id=eval-full-v2/attempt=evaluation-lineage1/report.json"
+          }
+        },
+        "Tags": {
+          "Project": "is459-aml",
+          "Phase": "full-data",
+          "BudgetUSD": "30"
+        }
+      }
+    },
+    "WorkflowRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "RoleName": "is459-aml-full-workflow",
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "states.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyName": "only-full-jobs",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "glue:StartJobRun",
+                    "glue:GetJobRun",
+                    "glue:GetJobRuns",
+                    "glue:BatchStopJobRun"
+                  ],
+                  "Resource": [
+                    "arn:aws:glue:us-east-1:160885259244:job/is459-aml-full-prepare",
+                    "arn:aws:glue:us-east-1:160885259244:job/is459-aml-full-risk",
+                    "arn:aws:glue:us-east-1:160885259244:job/is459-aml-full-detect",
+                    "arn:aws:glue:us-east-1:160885259244:job/is459-aml-full-evaluate",
+                    "arn:aws:glue:us-east-1:160885259244:job/is459-aml-full-control"
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "Workflow": {
+      "Type": "AWS::StepFunctions::StateMachine",
+      "Properties": {
+        "StateMachineName": "is459-aml-full-pipeline",
+        "StateMachineType": "STANDARD",
+        "RoleArn": {
+          "Fn::GetAtt": [
+            "WorkflowRole",
+            "Arn"
+          ]
+        },
+        "DefinitionString": {
+          "Fn::Sub": [
+            "{\"Comment\": \"On-demand AML full-data workflow; no retries or recurring schedule. Published pointer changes only after all gates.\", \"StartAt\": \"Prepare\", \"TimeoutSeconds\": 16200, \"States\": {\"Prepare\": {\"Type\": \"Task\", \"Resource\": \"arn:aws:states:::glue:startJobRun.sync\", \"Parameters\": {\"JobName\": \"${PrepareJob}\"}, \"ResultPath\": null, \"Next\": \"MakeManifest\", \"Catch\": [{\"ErrorEquals\": [\"States.ALL\"], \"ResultPath\": \"$.failure\", \"Next\": \"Failed\"}]}, \"MakeManifest\": {\"Type\": \"Task\", \"Resource\": \"arn:aws:states:::glue:startJobRun.sync\", \"Parameters\": {\"JobName\": \"${ControlJob}\", \"Arguments\": {\"--phase\": \"manifests\"}}, \"ResultPath\": null, \"Next\": \"Branches\", \"Catch\": [{\"ErrorEquals\": [\"States.ALL\"], \"ResultPath\": \"$.failure\", \"Next\": \"Failed\"}]}, \"Branches\": {\"Type\": \"Parallel\", \"Branches\": [{\"StartAt\": \"Risk\", \"States\": {\"Risk\": {\"Type\": \"Task\", \"Resource\": \"arn:aws:states:::glue:startJobRun.sync\", \"Parameters\": {\"JobName\": \"${RiskJob}\"}, \"ResultPath\": null, \"End\": true}}}, {\"StartAt\": \"Detect\", \"States\": {\"Detect\": {\"Type\": \"Task\", \"Resource\": \"arn:aws:states:::glue:startJobRun.sync\", \"Parameters\": {\"JobName\": \"${DetectJob}\"}, \"ResultPath\": null, \"End\": true}}}], \"ResultPath\": null, \"Next\": \"Catalog\", \"Catch\": [{\"ErrorEquals\": [\"States.ALL\"], \"ResultPath\": \"$.failure\", \"Next\": \"Failed\"}]}, \"Catalog\": {\"Type\": \"Task\", \"Resource\": \"arn:aws:states:::glue:startJobRun.sync\", \"Parameters\": {\"JobName\": \"${ControlJob}\", \"Arguments\": {\"--phase\": \"catalog\"}}, \"ResultPath\": null, \"Next\": \"Evaluate\", \"Catch\": [{\"ErrorEquals\": [\"States.ALL\"], \"ResultPath\": \"$.failure\", \"Next\": \"Failed\"}]}, \"Evaluate\": {\"Type\": \"Task\", \"Resource\": \"arn:aws:states:::glue:startJobRun.sync\", \"Parameters\": {\"JobName\": \"${EvaluateJob}\"}, \"ResultPath\": null, \"Next\": \"Publish\", \"Catch\": [{\"ErrorEquals\": [\"States.ALL\"], \"ResultPath\": \"$.failure\", \"Next\": \"Failed\"}]}, \"Publish\": {\"Type\": \"Task\", \"Resource\": \"arn:aws:states:::glue:startJobRun.sync\", \"Parameters\": {\"JobName\": \"${ControlJob}\", \"Arguments\": {\"--phase\": \"publish\", \"--expected-pointer-etag.$\": \"$.expected_pointer_etag\"}}, \"ResultPath\": null, \"End\": true, \"Catch\": [{\"ErrorEquals\": [\"States.ALL\"], \"ResultPath\": \"$.failure\", \"Next\": \"Failed\"}]}, \"Failed\": {\"Type\": \"Fail\", \"Error\": \"PipelineFailed\", \"Cause\": \"A required stage failed. Prior published release is retained; choose a new attempt after diagnosis.\"}}}",
+            {
+              "PrepareJob": {
+                "Ref": "PrepareJob"
+              },
+              "RiskJob": {
+                "Ref": "RiskJob"
+              },
+              "DetectJob": {
+                "Ref": "DetectJob"
+              },
+              "EvaluateJob": {
+                "Ref": "EvaluateJob"
+              },
+              "ControlJob": {
+                "Ref": "ControlJob"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "DashboardWorkgroup": {
+      "Type": "AWS::Athena::WorkGroup",
+      "Properties": {
+        "Name": "is459-aml-dashboard",
+        "State": "ENABLED",
+        "WorkGroupConfiguration": {
+          "EnforceWorkGroupConfiguration": true,
+          "PublishCloudWatchMetricsEnabled": false,
+          "BytesScannedCutoffPerQuery": 536870912,
+          "EngineVersion": {
+            "SelectedEngineVersion": "Athena engine version 3"
+          },
+          "ResultConfiguration": {
+            "OutputLocation": "s3://is459-aml-g2team7-160885259244-us-east-1/query-results/dashboard/",
+            "ExpectedBucketOwner": "160885259244",
+            "EncryptionConfiguration": {
+              "EncryptionOption": "SSE_S3"
+            }
+          }
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "WorkflowArn": {
+      "Value": {
+        "Ref": "Workflow"
+      }
+    },
+    "ComputeMaximumEstimateUSD": {
+      "Value": "14.19 at US$0.44/DPU-hour if every job reaches its timeout; S3/requests/logging/dashboard separate. Not a hard billing cap."
+    }
+  }
+}
