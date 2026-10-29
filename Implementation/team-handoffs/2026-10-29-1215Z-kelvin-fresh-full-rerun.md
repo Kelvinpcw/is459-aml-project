@@ -2,8 +2,8 @@
 
 - **Owner:** Kelvinpcw, assisted by Codex.
 - **Branch:** `feature/full-rerun-20261029`; [PR #13](https://github.com/Kelvinpcw/is459-aml-project/pull/13).
-- **Updated at:** 2026-10-29T12:21:23.529589+00:00.
-- **Status:** IN_PROGRESS — immutable upload and isolated idle deployment complete; exact deployed configuration verification underway before the one full processing attempt.
+- **Updated at:** 2026-10-29T12:23:42.509622+00:00.
+- **Status:** IN_PROGRESS — exact deployment verification passed; the one authorised fresh full workflow is running preparation. Later stages and dashboard validation are pending.
 - **Evidence kind:** local tests and private read-only preflight; detailed operational records stay private.
 
 ## Scope and coordination
@@ -26,4 +26,4 @@ The user explicitly requested a new full-pipeline rerun and required service dep
 
 ## AWS boundary and next step
 
-The new immutable package is uploaded and verified, and isolated idle definitions are created. No paid processing has started at this update. Exact deployed grants/jobs/workflow verification is underway; the next step is the one explicitly requested full attempt after those checks pass. Retain old results; do not repeat legacy starts or alter unrelated shared resources. This record is coordination, not a reusable spending approval for another agent/member.
+The new immutable package is uploaded and verified. Exact deployed grants, jobs and workflow checks passed; the one explicitly requested full attempt is now running preparation. Monitor this attempt rather than repeating starts. Deploy the private dashboard only after successful publication, validate it, then remove its temporary compute and verify cleanup. Retain old results; do not repeat legacy starts or alter unrelated shared resources. This record is coordination, not a reusable spending approval for another agent/member.
