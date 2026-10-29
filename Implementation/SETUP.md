@@ -1,6 +1,8 @@
 # Team setup
 
-Updated 27 October 2026. Read [STATUS.md](STATUS.md) for implementation state and [../AGENTS.md](../AGENTS.md) before using an AI assistant. Historical deployment steps remain in [../PROJECT_CHECKPOINT.md](../PROJECT_CHECKPOINT.md) and `aws/reviews/`; do not repeat them as fresh setup.
+New to the project? Start with [TEAM_START_HERE.md](../TEAM_START_HERE.md) for clone/open-folder steps and an AI onboarding prompt. The sections below are task-specific technical references, not a requirement to install everything or access AWS.
+
+Updated 29 October 2026. Read [STATUS.md](STATUS.md), [AWS_HANDOFF.md](AWS_HANDOFF.md), the newest relevant [shared handoffs](team-handoffs/) and [../AGENTS.md](../AGENTS.md) before using an AI assistant. Historical deployment steps remain in [../PROJECT_CHECKPOINT.md](../PROJECT_CHECKPOINT.md) and `aws/reviews/`; do not repeat them as fresh setup.
 
 ## 1. Clone and create a feature branch
 
@@ -74,7 +76,10 @@ The guard checks both account and configured region. It aborts if either differs
 - Do not reuse Q1's label-reading role for Q2. Keep references/evaluation inaccessible to detection.
 - Paid runs, permissions and deletions must stay within the current user's explicit scope. The checkpoint's paused evaluator is not resumed by cloning or reading documentation. Existing exact attempt approval is historical and not blanket permission for new attempts.
 - Record actual cloud actions, parameters, evidence and estimated costs in the ledger/checkpoint. Stop authorised compute after use; retain approved S3 artifacts. See [TEARDOWN.md](TEARDOWN.md).
+- Publish a sanitised shared handoff for every AWS session, even read-only checks or failures. Before mutations/paid work, publish the plan on a draft PR and confirm shared-resource ownership. Keep detailed evidence/ledger/checkpoint local; see [AWS_HANDOFF.md](AWS_HANDOFF.md).
 
 ## 6. Handoff and pull request
 
-Before asking another person or AI to continue, record: your task/branch, changed files/contracts, commands/tests actually run, any cloud mutations or spend, exact output IDs/paths, and remaining blockers. Never paste credentials or signed URLs into the handoff. Update `STATUS.md` when completion state changes and the deployment checkpoint only when there is an actual deployment handoff to record.
+Before asking another person or AI to continue, record your task/branch, changed files/contracts, commands/tests actually run, public-safe run/output identities, observed AWS outcome/cost/cleanup and remaining blockers/next owner. Follow [AWS_HANDOFF.md](AWS_HANDOFF.md) and its template. Never paste credentials, signed URLs, raw logs/data or unreviewed private output paths into Git. Keep exact sensitive locators in the private operator record. Update `STATUS.md` when completion state changes.
+
+Commit/push explicit task files and open/update a PR; verify the remote commit matches your local head. Include the commit and PR URL in your final report. A local-only note is not shared context. If blocked, say **NOT SYNCED TO GITHUB** and why. Read relevant open PRs before work, since pushed handoffs may await review. Do not merge your own PR.

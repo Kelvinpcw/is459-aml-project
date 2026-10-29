@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TRACE — local browser checks</title>
+  <style>
+    body { max-width: 950px; margin: 40px auto; padding: 0 24px; font: 14px/1.7 system-ui, sans-serif; background: #f5f6f2; color: #202c29; }
+    h1 { letter-spacing: -1px; } a { color: #256653; }
+    li { padding: 5px 0; } .pass { color: #256653; } .fail { color: #a03d25; }
+    iframe { position: fixed; left: -10000px; top: 0; border: 0; width: 1440px; height: 1100px; }
+    #summary { background: white; border: 1px solid #dce4d3; padding: 16px; border-radius: 8px; }
+  </style>
+  <script defer src="browser-smoke.js"></script>
+</head>
+<body>
+  <p><a href="../index.html">← Back to dashboard</a></p>
+  <h1>Local browser checks</h1>
+  <p>Tests the invented UI fixtures only. No cloud connection or external dependency. Download tests intercept files in memory; nothing is published or saved.</p>
+  <p id="summary" role="status">Running…</p>
+  <ol id="results"></ol>
+</body>
+</html>
