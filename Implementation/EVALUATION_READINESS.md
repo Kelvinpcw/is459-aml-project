@@ -1,3 +1,5 @@
+> Historical pilot readiness/review. Statements below describe that earlier scope, not the current backlog or fresh run approval. Use [STATUS.md](STATUS.md) and [VERIFY_PROGRESS.md](VERIFY_PROGRESS.md) for current continuation.
+
 > **Current status — 28 October 2026: Cloud pilot SUCCEEDED; all four raw S3 files match frozen local predictions. The single approved run is consumed. All known project processing is terminal. See [cloud validation](results/EVALUATION_CLOUD_VALIDATION.md). Earlier proposed run/access details below document the reviewed contract.
 
 # Isolated Q2 evaluator — development pilot

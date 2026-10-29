@@ -1,24 +1,20 @@
-# Team setup
+# Task-specific local setup
 
-New to the project? Start with [TEAM_START_HERE.md](../TEAM_START_HERE.md) for clone/open-folder steps and an AI onboarding prompt. The sections below are task-specific technical references, not a requirement to install everything or access AWS.
+New teammate: start with [TEAM_START_HERE.md](../TEAM_START_HERE.md). Changes/push/review: [CONTRIBUTING.md](../CONTRIBUTING.md). Current work: [STATUS.md](STATUS.md), [handoffs](team-handoffs/README.md) and open PRs. **No AWS deployment is part of setup.**
 
-Updated 29 October 2026. Read [STATUS.md](STATUS.md), [AWS_HANDOFF.md](AWS_HANDOFF.md), the newest relevant [shared handoffs](team-handoffs/) and [../AGENTS.md](../AGENTS.md) before using an AI assistant. Historical deployment steps remain in [../PROJECT_CHECKPOINT.md](../PROJECT_CHECKPOINT.md) and `aws/reviews/`; do not repeat them as fresh setup.
+Commands below are Unix-shell examples run from the repository root. Windows users can run the Python tool check with `py -3`; have the agent adapt activation/interpreter paths and use an approved Bash environment for `.sh` helpers. Do not blindly paste Unix paths into PowerShell.
 
-## 1. Clone and create a feature branch
+## 1. Check tools and choose a branch
 
 ```bash
-git clone https://github.com/Kelvinpcw/is459-aml-project.git
-cd is459-aml-project
-git switch -c feature/your-task
+python3 Implementation/scripts/project_doctor.py --task docs
 ```
 
-If you already have the repository, use that copy; do not run `git init` again. Only invited collaborators can push even though the repository is public. Prefer pull requests reviewed by a teammate.
+Choose `docs`, `prototype`, `dashboard` or `pipeline`. This only checks local versions; it doesn't install, authenticate, read AWS config or verify cloud completion. Compare reported versions with the requirements below. Use the [contribution workflow](../CONTRIBUTING.md) to fetch/check current work and create a clean task branch before editing.
 
 ## 2. Local Python/Spark environment
 
-The recorded local test environment is Python 3.11, PySpark 3.5.6 and Java 21. Install Python/Java first and ensure `java -version` resolves to the intended JDK (`JAVA_HOME` may need setting). Python packages alone do not install Java.
-
-Run from the repository root:
+Recorded processing-test environment: **Python 3.11, PySpark 3.5.6, Java 21**. Install the chosen Python/JDK with the user's permission, and verify `python3.11 --version` / `java -version`. Set `JAVA_HOME` to the intended JDK if needed; Python dependencies do not install Java.
 
 ```bash
 python3.11 -m venv .venv
@@ -27,11 +23,11 @@ python -m pip install -r Implementation/requirements.txt
 python -m pytest Implementation/tests -q
 ```
 
-These tests use local fixtures and local Spark, not paid AWS jobs. A fresh clone does not require the 3 GB original dataset for the regression suite. Do not claim a test passed until you run it; report missing Python/Java/dependencies as setup blockers. This documentation update did not rerun the suite.
+Tests use synthetic fixtures and local Spark; they don't require original data or AWS credentials. Run the relevant subset for a focused change and report the actual command/result. Missing Java/dependencies or an unrun test is a setup limitation, not a passed check. This guide's cleanup did not run the full Spark suite.
 
 ## Visualization without restarting cloud compute
 
-If the pipeline already has a published release, run only the dashboard on your laptop. No Spark, raw dataset, EC2 instance or new processing run is needed. This still makes bounded Athena queries and S3 reads, which can incur small query/request charges.
+The **connected TRACE dashboard** is `Implementation/dashboard/app.py`. It reads an existing verified published release through Athena/S3. The separate `Visulization/` concept uses invented fixtures and works offline. Viewing connected results needs the user's own authorised AWS access and agreed bounded-read scope; it can incur query/request charges.
 
 ```bash
 python3.11 -m venv .venv-dashboard
@@ -39,47 +35,39 @@ python3.11 -m venv .venv-dashboard
 bash Implementation/scripts/start_local_dashboard.sh YOUR_PROJECT_PROFILE
 ```
 
-Use your actual authorized project profile. Open `http://127.0.0.1:8501/` after startup. The launcher verifies the account/region, selects the dashboard workgroup (512 MB per query instead of the smaller development limit), and binds only to localhost. Application queries have a 30-second cancellation limit. All reads remain pinned to the published release; the launcher does not upload, deploy, change IAM, or start Glue/Step Functions. Stop the local server with Ctrl+C. If you intentionally use another environment, set `AML_DASHBOARD_PYTHON` to its Python executable.
+Replace `YOUR_PROJECT_PROFILE`. No Java, Spark, original data or EC2 is needed for this path. Open `http://127.0.0.1:8501/` after startup. The launcher verifies account/configured region, binds only to localhost and uses the bounded dashboard workgroup. The app pins a published release, limits query runtime and provides complete evidence downloads beyond graph previews. Starting it doesn't upload, deploy or start processing.
+
+Ctrl+C stops the local server. Set `AML_DASHBOARD_PYTHON` to another intended environment's executable if needed; never point it at a teammate's laptop path. After pulling changed source, restart the server from that checkout: an already running server can still show an old version. Identify the owner of an occupied port before stopping anything. See [runbook](RUNBOOK.md).
+
+For a focused synthetic UI/data regression check using this environment:
+
+```bash
+PYTHONPATH=Implementation:Implementation/tests .venv-dashboard/bin/python -m unittest test_dashboard_trends test_dashboard_navigation test_dashboard_presentation test_dashboard_app test_release_dashboard -q
+```
 
 ## 3. Original data and generated artifacts
 
-The following are deliberately ignored and absent from a fresh clone:
+A fresh clone excludes `Ibm_dataset_medium/` and generated `Implementation/data/`, including private operator records. These are unnecessary for synthetic tests and offline design review.
 
-- `Ibm_dataset_medium/`: original `HI-Medium_Trans.csv`, `HI-Medium_accounts.csv`, `HI-Medium_Patterns.txt`.
-- `Implementation/data/`: generated date slices, source manifests, local replays and downloaded cloud bundles.
+Obtain approved originals from the [IBM dataset on Kaggle](https://www.kaggle.com/datasets/ealtman2019/ibm-transactions-for-anti-money-laundering-aml), following its access/licence terms; provenance is in [IBM/AML-Data](https://github.com/IBM/AML-Data). Ask the relevant owner for a required existing input/output manifest before generating or uploading more data. Never commit the dataset.
 
-Get originals from the [IBM dataset on Kaggle](https://www.kaggle.com/datasets/ealtman2019/ibm-transactions-for-anti-money-laundering-aml), following its access/licence terms; provenance/licence notes are in [IBM/AML-Data](https://github.com/IBM/AML-Data). Do not put the dataset into Git. Existing cloud objects/manifests are recorded in `aws/reviews/` and the checkpoint; ask the relevant owner for the exact required subset rather than uploading another copy.
-
-`scripts/build_development_input.py` creates stable-ID, date-selected copies without changing originals. Its defaults select **only 1 September 2022** (`--start 2022-09-01`, exclusive `--end 2022-09-02`). It scans the unsorted full source locally. Review the intended date scope and use a fresh output directory when building another slice; do not run a full replay automatically as part of onboarding.
+`build_development_input.py` is a local date-selection helper with deterministic original-file/record source IDs. Its default is only 1 September 2022. It is not a full-pipeline start command and should not run automatically during onboarding. Use a fresh local destination for an explicitly requested replay; preserve completed evidence and frozen releases.
 
 ## 4. AWS identity — verify before cloud work
 
-Shared project account: **`160885259244`**. Project Region: **`us-east-1`**.
+Follow the [onboarding login routes](../TEAM_START_HERE.md#4-aws-login--only-for-an-approved-activity). Project account **`160885259244`**, workload region **`us-east-1`**. Each member uses their own approved identity/profile; profile names are local, not shared AWS resources.
 
-Each member must configure their own authorised console login or CLI profile; cloning does not create AWS access. Profile names are local conveniences, not shared cloud resources. You do not need to use the same profile name as another teammate. Never share keys through GitHub or assume your default account is correct.
-
-For CLI work, replace `YOUR_PROJECT_PROFILE` below with your actual local profile name. These checks are read-only:
+After completing the appropriate interactive login:
 
 ```bash
 aws sts get-caller-identity --profile YOUR_PROJECT_PROFILE --region us-east-1
 bash Implementation/scripts/check_aws_profile.sh YOUR_PROJECT_PROFILE
 ```
 
-The guard checks both account and configured region. It aborts if either differs/missing; investigate rather than falling back to `default`. Its legacy default profile is `is459`, so always pass your chosen profile explicitly. Re-check identity at the time of any authorised cloud action. Explicitly pass `--profile`/`--region` on subsequent CLI commands and choose a verified profile/session for local SDK calls; do not assume a prior STS command changes the default account.
+The guard requires exactly one explicit profile, refuses a missing/wrong configured region, and queries identity with the explicit workload region. It doesn't silently use a default. Identity/region verification is read-only; it doesn't grant permissions, approve spending or establish completed jobs. Recheck before authorised cloud work and pass explicit `--profile` / `--region` on subsequent CLI calls. Local SDKs need the explicitly selected verified session too.
 
-**No AWS deployment/run is required to start local development.** Project bucket/configuration is described in `aws/environment.json`, but its legacy status field is not an up-to-date deployment summary. Use `STATUS.md` and the newest scoped run/review evidence instead.
+Use [VERIFY_PROGRESS.md](VERIFY_PROGRESS.md) for read-only completion checks. Missing access/evidence is a blocker to report, not a reason to add IAM permissions or repeat a run. Use [AWS_HANDOFF.md](AWS_HANDOFF.md) for coordination, private detailed records and a pushed public-safe summary.
 
-## 5. Shared AWS resources are not branch-isolated
+## 5. Hand over your work
 
-- Coordinate with the component owner before editing shared Glue jobs, IAM, Catalog tables or Step Functions.
-- For an authorised experiment, use distinct script paths, jobs where necessary, and fresh dataset/run/analysis output namespaces. Do not overwrite validated results or frozen releases.
-- Do not reuse Q1's label-reading role for Q2. Keep references/evaluation inaccessible to detection.
-- Paid runs, permissions and deletions must stay within the current user's explicit scope. The checkpoint's paused evaluator is not resumed by cloning or reading documentation. Existing exact attempt approval is historical and not blanket permission for new attempts.
-- Record actual cloud actions, parameters, evidence and estimated costs in the ledger/checkpoint. Stop authorised compute after use; retain approved S3 artifacts. See [TEARDOWN.md](TEARDOWN.md).
-- Publish a sanitised shared handoff for every AWS session, even read-only checks or failures. Before mutations/paid work, publish the plan on a draft PR and confirm shared-resource ownership. Keep detailed evidence/ledger/checkpoint local; see [AWS_HANDOFF.md](AWS_HANDOFF.md).
-
-## 6. Handoff and pull request
-
-Before asking another person or AI to continue, record your task/branch, changed files/contracts, commands/tests actually run, public-safe run/output identities, observed AWS outcome/cost/cleanup and remaining blockers/next owner. Follow [AWS_HANDOFF.md](AWS_HANDOFF.md) and its template. Never paste credentials, signed URLs, raw logs/data or unreviewed private output paths into Git. Keep exact sensitive locators in the private operator record. Update `STATUS.md` when completion state changes.
-
-Commit/push explicit task files and open/update a PR; verify the remote commit matches your local head. Include the commit and PR URL in your final report. A local-only note is not shared context. If blocked, say **NOT SYNCED TO GITHUB** and why. Read relevant open PRs before work, since pushed handoffs may await review. Do not merge your own PR.
+Follow [CONTRIBUTING.md](../CONTRIBUTING.md). Update affected docs/status, add a [task handoff](team-handoffs/README.md), review the exact diff, stage explicit paths and push a PR. Verify the remote head and report its commit/link. A merge doesn't deploy cloud code or refresh another laptop's app. If publication fails, say **NOT SYNCED TO GITHUB**; keep the local handoff and name the blocker.

@@ -1,111 +1,55 @@
-# IS459 AML data pipeline
+# IS459 AML project — team workspace
 
-Shared implementation and design context for a six-person team using the synthetic IBM HI-Medium anti-money-laundering dataset.
+**Start with [TEAM_START_HERE.md](TEAM_START_HERE.md).** It explains what to install, how to run the dashboard or tests, and what to paste into your AI assistant.
 
-**New teammate? Read [TEAM_START_HERE.md](TEAM_START_HERE.md).** Clone this repo, open the whole folder in your AI editor, and paste the onboarding prompt there. It guides local setup, task assignment, GitHub access, optional AWS login and the required push/handoff workflow. **No AWS deployment is needed to get started.**
+This repository is the team's shared source and handoff record. **GitHub updates when someone commits and pushes.** Local edits, AWS console changes and AI chat history are not automatically synchronised. Pull requests show work not yet merged; `main` contains merged work. Contributors can merge their own PRs after checks; a separate reviewer is optional.
 
-**The complete software path is implemented on `main`.** Detailed AWS validation records and the operational checkpoint remain local. **Public-safe AWS session summaries must be committed and pushed for team/AI handoff**; see [AWS handoff](Implementation/AWS_HANDOFF.md). Source/configuration is not proof of live cloud state.
+## What the project does
 
-## Start here — humans and AI assistants
+Using the synthetic IBM HI-Medium dataset, the pipeline answers two questions:
 
-| Read | Purpose |
-| --- | --- |
-| [TEAM_START_HERE.md](TEAM_START_HERE.md) | Beginner setup and a ready-to-paste AI onboarding prompt |
-| [AGENTS.md](AGENTS.md) | AI working rules: safety, data contracts, testing and collaboration |
-| [Implementation/STATUS.md](Implementation/STATUS.md) | Current implementation scope and remaining work |
-| [Implementation/AWS_HANDOFF.md](Implementation/AWS_HANDOFF.md) | Mandatory AWS session reporting, shared records and push/PR workflow |
-| [Implementation/SETUP.md](Implementation/SETUP.md) | Local setup, data access and AWS profile checks |
-| [Confirmed proposal](Proposal/Project_Proposal.md) | Business questions, requirements, analysis rules and evaluation protocol |
-| [Pipeline explanation](Proposal/Architecture/Pipeline_Explanation.md) | How the target components connect |
-| [Detailed architecture](Proposal/Architecture/Detailed/AWS_Architecture_Pack.pdf) | Technical diagrams; editable source is in the same folder |
-| [PROJECT_CHECKPOINT.md](PROJECT_CHECKPOINT.md) | Historical deployment handoff, exact resource IDs and evidence |
-
-To view an existing published release without restarting processing or EC2, follow [local visualization setup](Implementation/SETUP.md#visualization-without-restarting-cloud-compute).
-
-For the independent **TRACE visual prototype**, open [`Visulization/index.html`](Visulization/index.html) locally; see its [README](Visulization/README.md). It works offline with invented fixtures, not actual pipeline results.
-
-The newest scoped evidence wins over older status sentences. Read the checkpoint when resuming deployment, but **reading it is not an instruction to resume paid work**.
-
-## What are we building?
-
-- **Q1 — monitoring allocation:** Which payment formats and bank-pair segments have unusually high historical labelled laundering exposure relative to transaction volume?
-- **Q2 — connected investigation:** Which account groups exhibit fan-in, fan-out or bounded cycles worth investigating? Generate leads without reading labels or pattern annotations.
-
-Target workflow:
+- **Q1 — monitoring allocation:** Which payment formats and bank-pair segments have disproportionate historical labelled exposure after accounting for volume?
+- **Q2 — connected investigation:** Which groups show fan-in, fan-out or bounded cycles that warrant investigation, with retrievable transaction evidence?
 
 ```text
-S3 inputs → Glue preparation → label-free enriched facts
-                                 ├─ Q1 + separate labels → risk summaries
-                                 └─ Q2 without labels → cases + evidence
-                                                          ↓
-                         facts + cases + labels/annotations → evaluator
-
-Complete outputs + quality reports + evaluation → shared release gate
-    → one published-run manifest → dashboard using Athena + S3 case bundles
-
-Step Functions coordinates the target workflow; EC2 hosts the target dashboard.
+S3 inputs → preparation → Q1 summaries + label-free Q2 cases
+    → separate evaluation → validated published release → TRACE dashboard
 ```
 
-## Implementation and evidence
+The software path is implemented. Scheduled/incremental daily ingestion is not implemented. Code, local tests and actual cloud observations are different evidence; use the guides below before claiming that something ran or remains running.
 
-The branch adds conditional publication, a pinned read-only Streamlit dashboard, distributed fan/cycle detection, a separate chronological evaluator, on-demand orchestration and cleanup. The latest evaluator corrections passed 87 synthetic tests; the deployment templates pass cfn-lint. Frozen detection rules and evaluator settings are preserved while complete evidence is packed into bounded, checksum-verified schema3 ZIP shards.
+Start with the [plain-language walkthrough](PIPELINE_WALKTHROUGH.md), then practise using [Q&A](Q_AND_A.md). No assigned task or formal role is needed to explore the project.
 
-The full implementation uses distributed fan aggregation and bounded, degree-eligible 2–4-cycle joins over overlapping seven-day daily snapshots. The frozen first-minute driver detector is preserved separately; its pilot is not proof of full-data effectiveness. See [status](Implementation/STATUS.md) and [runbook](Implementation/RUNBOOK.md).
+## Find what you need
 
-Raw AWS reports, detailed cost records and operational checkpoints are intentionally local. Fresh clones contain neither these private records nor source/generated data. From 29 October 2026, agents must publish sanitised session summaries, including observations, cost basis, cleanup and next steps, in [`Implementation/team-handoffs/`](Implementation/team-handoffs/). Prior private runs have not been retroactively verified or published. Previously committed pilot records are historical; never infer current resource state or deployment authority from them.
-
-## Code map
-
-| Location | Contents |
+| Need | Read |
 | --- | --- |
-| `Implementation/jobs/` | Editable preparation, Q1, Q2 and evaluator source |
-| `Implementation/scripts/` | Input builders, manifest helpers, audits and verifiers |
-| `Implementation/sql/` | Athena schemas, validation and analytical queries |
-| `Implementation/tests/` | Local synthetic regression tests, including Spark tests |
-| `Implementation/releases/` | Frozen code used/reviewed for specific cloud attempts; preserve unchanged |
-| `Implementation/aws/` | Resource configuration, manifests, run records and review evidence |
-| `Implementation/results/` | Human-readable validation findings and limitations |
-| `Implementation/team-handoffs/` | Dated, public-safe collaboration/AWS session summaries; not raw operational evidence |
-| `Implementation/evidence/` | Retained console screenshots; historical, not a live inventory |
-| `Proposal/` | Confirmed requirements and target architecture, not old question-selection drafts |
-| `Visulization/` | Offline TRACE dashboard design, invented fixtures and local UI/model checks |
+| Join the team / use an AI agent | [Start here](TEAM_START_HERE.md) |
+| Pick up work, push changes and hand over | [Contribution workflow](CONTRIBUTING.md) |
+| Understand the full pipeline / prepare for questions | [Walkthrough](PIPELINE_WALKTHROUGH.md), [Q&A](Q_AND_A.md) |
+| Understand current implementation | [Status](Implementation/STATUS.md) |
+| Check what actually exists or ran | [Verify progress](Implementation/VERIFY_PROGRESS.md), [handoffs](Implementation/team-handoffs/README.md), [open PRs](https://github.com/Kelvinpcw/is459-aml-project/pulls) |
+| Install dependencies / run locally | [Setup](Implementation/SETUP.md) |
+| View published results / operate an approved task | [Runbook](Implementation/RUNBOOK.md) |
+| Requirements and architecture | [Business questions](Proposal/Project_Proposal.md), [pipeline explanation](Proposal/Architecture/Pipeline_Explanation.md) |
+| Authorised AWS work and cleanup | [AWS handoff](Implementation/AWS_HANDOFF.md), [teardown](Implementation/TEARDOWN.md) |
+| Detailed private operator evidence | [Checkpoint pointer](PROJECT_CHECKPOINT.md) |
 
-## Working together
+## Where files belong
 
-Use one feature branch per task and a pull request reviewed by a teammate. A Git branch **does not isolate AWS**: use distinct development jobs/script paths/output namespaces when cloud testing is authorised. Never overwrite another person's run.
+| Folder | Purpose |
+| --- | --- |
+| `Implementation/jobs/` | Editable processing/detection/evaluation code |
+| `Implementation/dashboard/` | Connected TRACE Streamlit dashboard; published results |
+| `Implementation/scripts/`, `sql/`, `tests/` | Local helpers, analytical queries and synthetic tests |
+| `Implementation/deployment/` | Explicit on-demand deployment tools; never run just to onboard |
+| `Implementation/team-handoffs/` | Short, public-safe changes, checks, blockers and next steps |
+| `Implementation/releases/` | Frozen packages; preserve unchanged |
+| `Implementation/results/`, `evidence/`, `aws/` | Scoped historical validation/configuration; not a live account inventory |
+| `Implementation/archive/` | Older plans and deployment/recovery instructions |
+| `Proposal/` | Requirements and architecture diagrams/source |
+| `Visulization/` | Independent offline TRACE concept with invented fixtures |
 
-Component ownership areas (assign actual owners; these are not claims that implementation is missing):
+Original datasets, generated data, credentials and detailed operational records are deliberately absent from a fresh clone. The [offline concept](Visulization/README.md) works without AWS; the connected dashboard requires each member's own authorised login and can make chargeable reads. Merging code does not deploy it to AWS or restart a teammate's dashboard.
 
-1. Ingestion/preparation and wider input scope.
-2. Q1 multi-day analytics and dashboard query contracts.
-3. Scalable Q2 fan-in/fan-out.
-4. Scalable bounded cycles and shared case/evidence contracts.
-5. Dashboard and graph explorer.
-6. Evaluation/orchestration/release integration, supported by component owners.
-
-```bash
-git pull --ff-only
-git switch -c feature/your-task
-# Edit and test locally, then stage only your task's files.
-git add path/to/your/files
-git commit -m "Describe your change"
-git push -u origin feature/your-task
-```
-
-Do not `git add .`: the tree may contain someone else's edits, gitignored AWS records or macOS `Name 2.md` duplicates. Stage explicit paths. `main` is shared — push your branch and open a PR rather than committing to `main`.
-
-Include changed contracts, tests actually run, and any AWS effects/costs in the pull request. Record the deployed Git commit and job arguments when deploying. Review schema changes with downstream owners before merging.
-
-**Required AI completion rule:** after each task, commit/push the scoped changes and open/update a PR. For AWS work, first read the [handoff procedure](Implementation/AWS_HANDOFF.md), coordinate shared-resource ownership, and publish a sanitised session record even if the attempt failed or was read-only. Before starting, check open PRs as well as `main`; unmerged handoffs still matter. If a push is blocked, explicitly report **NOT SYNCED TO GITHUB**. A pushed branch is visible but is not merged into `main` until a teammate reviews it. These are agent instructions, not an automated AWS/GitHub enforcement service.
-
-## Give your AI assistant this starting prompt
-
-> Read AGENTS.md, README.md, Implementation/STATUS.md and Implementation/AWS_HANDOFF.md, plus the newest shared handoffs and open PRs relevant to my task. My assigned task is: [describe it]. Distinguish implemented code, local tests and actual cloud observations. Start locally; do not run, deploy, change IAM, overwrite outputs or delete AWS resources without my explicit scoped approval. After authorised AWS work, publish a sanitised handoff with outcome, costs, cleanup, blockers and next steps. Commit/push scoped changes and open/update a PR; do not merge it yourself. Report the commit/PR and tests actually run, or explicitly say NOT SYNCED TO GITHUB and why.
-
-AI tools that do not automatically load `AGENTS.md` should be explicitly asked to read it.
-
-## Data and credentials
-
-The large source dataset and generated `Implementation/data/` artifacts are intentionally not in Git. Cloning does not download them. See [SETUP.md](Implementation/SETUP.md) before requesting data or attempting a replay. Never commit credentials, signed S3 URLs or environment secrets; this repository is public.
-
-The shared project account is **`160885259244`**, Region **`us-east-1`**. Each member must independently authenticate and verify their own AWS console login or CLI profile. Local profile names and credentials are not shared by GitHub; do not assume your default account is correct.
+AI assistants must read [AGENTS.md](AGENTS.md). Work on a task branch, stage explicit paths, push and open a PR; contributors may self-merge after checks and checking for overlapping work. Never use another member's credentials or silently resume a historical cloud run.

@@ -1,44 +1,28 @@
-# Session: <owner / task>
+# Task: <short outcome>
 
-<!-- Copy to a dated, uniquely owned file. Replace placeholders; do not claim unobserved results. -->
-
-- **Owner / GitHub handle:** <teammate accountable for this session>
-- **Branch / PR:** <task branch; add PR link once created>
-- **Updated at / observation interval:** <ISO 8601 with Z or explicit offset>
-- **Status:** <PLANNED | IN_PROGRESS | COMPLETED | FAILED | ABORTED | BLOCKED>
-- **Evidence kind:** <planned only | local tests | saved evidence | fresh AWS observations>
+- **Owner:** <human accountable; agent/tool if relevant>
+- **Branch / PR / issue:** <links or pending>
+- **Updated at:** <ISO 8601 with timezone>
+- **Status:** <PLANNED | IN_PROGRESS | BLOCKED | COMPLETED | FAILED | ABORTED>
+- **Evidence kind:** <plan | source inspection | local checks | dated cloud observation>
 
 ## Scope and coordination
 
-- Current user-authorised actions and budget bounds: <scope, not inherited approval>
-- Shared resource owner / coordination confirmation: <owner, confirmation or blocker>
-- AWS account / region verification: <observed account/region and time, or not verified>
-- Affected components, logical resources and owned output namespace: <public-safe names/aliases>
-- Code commit / immutable release: <exact identities or not applicable>
-- Dataset / run / analysis IDs and time window: <public-safe identities or not applicable>
+<Requested task, affected component/consumers and owner agreement. Identify relevant prior handoffs/PRs. For local-only work, state AWS: none. A branch or PR is not a shared-resource lock or cloud approval.>
 
-## Actions and observed outcome
+## Changes and checks
 
-- Actions/commands actually run: <no credentials, signed URLs, raw data or private logs>
-- Outcome / failures: <observed result and timestamp; distinguish local vs cloud>
-- Publication pointer / consumers affected: <changed, unchanged, unknown or not applicable>
-- Contracts/source/config changed: <what and why, or none>
-- Checks actually run: <commands/results; unrun checks and blockers>
-- Private evidence custodian: <teammate holding detailed checkpoint/ledger; no sensitive links>
+- Changed behavior/files/contracts: <what and why>
+- Source commit/release checked: <existing exact identity or PR head; don't embed this commit's own hash>
+- Checks actually run: <command and result; unrun checks/missing inputs>
+- Outcome/unknowns: <distinguish implemented, locally tested, saved evidence and fresh observations>
 
-## Cost and cleanup
+## AWS scope and cleanup
 
-- Cost / basis: <amount and scope; estimated vs measured, or unknown>
-- Active compute/jobs/queries: <observed state and time, or not verified>
-- Cleanup verification: <what was observed stopped/deleted/retained, or not verified>
-- Remaining chargeable resources / uncertainty: <storage/logs/idle resources etc.>
+<None, or short public-safe activity/outcome category. State whether compute was started/stopped, what cleanup was actually observed and what was not checked. Detailed resource locators, raw outputs/screenshots, query/run measurements, costs and credentials stay private with the operator. No account-wide claim from a scoped check.>
 
-## Handoff
+## Next teammate / agent
 
-- Next safe step and responsible owner: <specific step; approval required if applicable>
-- Blockers / do not repeat: <completed outputs to reuse, consumed approvals, unresolved ownership>
-- Supersedes/follows: <relevant prior handoff links and scope, or none>
-- GitHub sync: <pending push | pushed; if blocked say NOT SYNCED TO GITHUB and why>
-
-<!-- Final chat/PR must name the verified pushed commit and PR URL. Do not add a
-commit's own hash to itself; identify source/deployed commits above instead. -->
+- Next safe step and owner: <specific action; approval if needed; do not invent assignments>
+- Blockers / don't repeat: <missing access/evidence, consumed run approval or completed outputs to reuse>
+- GitHub sync: <pending push | pushed and PR linked | NOT SYNCED TO GITHUB — exact blocker>

@@ -1,3 +1,5 @@
+> Historical pilot readiness/review. Statements below describe that earlier scope, not the current backlog or fresh run approval. Use [STATUS.md](STATUS.md) and [VERIFY_PROGRESS.md](VERIFY_PROGRESS.md) for current continuation.
+
 # Q2 bounded development prototype — deployed and verified
 
 Updated27October2026. **The approved Q2 role and first cloud run are complete. All15 cloud cases and all15 Athena index rows match the frozen replay. No active project compute/query.** Read `results/Q2_VALIDATION.md` and `../PROJECT_CHECKPOINT.md` for current status; below are the reviewed contracts and historical first-run plan. Do not rerun or recreate resources.

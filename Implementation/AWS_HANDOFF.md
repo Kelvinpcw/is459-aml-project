@@ -1,54 +1,36 @@
-# Shared AWS handoff — required for humans and AI agents
+# AWS sessions: coordinate, verify, hand over
 
-Effective **29 October 2026**. GitHub is the team's shared context. Every AWS session needs a short, public-safe record, committed and pushed on a task branch with a PR. A chat response or ignored local checkpoint alone is not enough.
+GitHub carries a **sanitised activity summary** so teammates know what happened. Detailed AWS records, measurements/costs, raw logs/screenshots, credentials and the operator checkpoint remain private. Do not copy private run reports into a public PR. Use [CONTRIBUTING.md](../CONTRIBUTING.md) for the general code/task workflow.
 
-This adds sanitised collaboration summaries to the earlier source-only policy. **Raw reports, detailed checkpoints, new ledger entries, secrets and datasets remain private/local.** No past private run is automatically approved for publication. No AWS run or live-state check was performed to establish this policy.
+## Before an AWS session
 
-## Read before starting
+1. Read [STATUS.md](STATUS.md), [VERIFY_PROGRESS.md](VERIFY_PROGRESS.md), relevant [handoffs](team-handoffs/README.md) and open/draft PRs. Different components can have different owners and observation times.
+2. Establish the current user's requested scope: identity/status check, viewing published data, processing, deployment, IAM change or cleanup. These are different authorisations. Confirm the relevant resource owner before touching shared resources; a PR is not a lock and silence is not consent.
+3. For mutations or paid processing, publish a PLANNED handoff on your branch with a draft PR before acting. Explain the purpose, component/consumers, unique logical output ownership and approval boundary. Keep detailed cost/access/run reviews private. Make an IN_PROGRESS update when starting. Don't start if coordination/publication is unresolved.
+4. Use the member's own approved login, explicit profile and project region; verify with `check_aws_profile.sh YOUR_PROJECT_PROFILE`. Never silently use `default` or grant yourself access. Logins/identity checks do not authorise jobs, data queries, deployment or spending.
 
-1. Read [STATUS.md](STATUS.md), [AGENTS.md](../AGENTS.md), and the newest relevant dated records in [team-handoffs/](team-handoffs/). Each record describes its stated scope/time, not the entire AWS account. A newer session for a different component does not supersede every older record.
-2. Fetch GitHub and check open PRs, including draft PRs, for unmerged work/handoffs. For example, `gh pr list --state open` and `gh pr view NUMBER --comments`; inspect relevant changed handoff files too. Do not merge someone else's branch merely to read it. If GitHub is unavailable, state that coordination is blocked; do not silently assume `main` is current.
-3. Confirm the current user-authorised scope, budget, resource owner and unique job/output/run namespace. Branches and draft PRs are **not cloud locks**. Get the relevant owner's confirmation before touching shared resources. Old approvals, an unanswered PR, and another teammate's records are not permission.
-4. Verify your own explicit profile/account/region as described in [SETUP.md](SETUP.md#4-aws-identity--verify-before-cloud-work). Record the read-only observation; do not expose credentials/profile configuration. Where private operational evidence is needed, request it from the operator rather than reconstructing it by rerunning jobs.
+A read-only task can group its observations in one end-of-session record; it doesn't need a commit for every API call. Do not reconstruct missing evidence through a paid rerun. Reuse completed immutable results.
 
-## Record and publish
+## At the end — including failures and read-only sessions
 
-Copy [_TEMPLATE.md](team-handoffs/_TEMPLATE.md) to `Implementation/team-handoffs/YYYY-MM-DD-HHMMZ-owner-task.md` (UTC filename; use the actual observation timestamp/timezone in the content). Use one file per task/session to reduce conflicts. Do not overwrite another person's record. For corrections after completion, add a dated correction/follow-up preserving the original claim.
+Create/update a dated record from the [template](team-handoffs/_TEMPLATE.md). Share:
 
-**Before mutations or paid processing:** push a sanitised `PLANNED` record and open a draft PR describing the intended scope, ownership and approved bounds. Move it to `IN_PROGRESS` when starting and publish meaningful progress/changes of ownership. Do not run if the plan cannot be shared or shared-resource ownership is unresolved. Never delay necessary authorised stop/cleanup for a Git update.
+- owner, branch/PR, time, requested scope and affected component;
+- source/version and outcome category, with local versus cloud evidence distinguished;
+- what changed, failed or could not be verified; no fabricated success;
+- whether compute was started/stopped, what cleanup was actually observed and what remains unknown;
+- next safe step, responsible owner and blockers.
 
-**After every AWS session:** update the record even for read-only checks, failed/aborted runs, no-op deployments or cleanup. Related API calls can be grouped; a commit per API call is unnecessary. Required information:
+Keep the full observed resource/run/query identities, input/output namespaces, report hashes, result metrics, runtime, cost estimate/billing evidence and cleanup inventory in the private operator record. Public code/release identifiers and logical resource aliases can provide context without publishing that evidence. Don't retroactively publish another operator's private records. Ask the relevant owner privately when exact locators are required.
 
-- Owner, branch, UTC/offset timestamp, session status and observed account/region.
-- What the user authorised for this session (without private conversation dumps); no inherited approval.
-- Exact code commit/release and relevant dataset/run/analysis identities; date/window scope and non-sensitive output namespace or logical alias. Say `not applicable` where appropriate.
-- Commands/action types and observed outcome: distinguish a plan, local test, saved evidence and fresh AWS observation. Do not turn an estimate or old screenshot into a successful run.
-- Resource/job/publication changes; logical resource ownership and affected component/contracts. Give public-safe identifiers only; privately retain exact sensitive locators and name the teammate who holds them.
-- Cost with basis (`estimated`, `measured`, or `unknown`), bounded queries/compute still running, cleanup actually verified and what remains chargeable. Idle definitions do not establish that all compute/storage charges ended.
-- Tests/checks actually run, failures, blockers, next safe step and who must act. Use `unknown`/`not verified`, never invent missing results.
+Update [STATUS.md](STATUS.md) if implementation/completion state changed. Review the exact public diff, stage explicit files, commit/push and open/update a PR (self-merge is allowed under the contribution workflow). Verify local, remote branch and PR heads agree; report commit/link/checks and remaining blockers. A local checkpoint or chat summary alone is not a shared handoff.
 
-Update [STATUS.md](STATUS.md) if implementation/completion state changed; keep raw evidence and detailed ledger/checkpoint updates local. Review the exact diff before committing. Never attach tokens/keys, credentials, signed URLs, `.env`/AWS config, original transaction data, raw logs/screenshots or unreviewed operational JSON. Account IDs/ARNs are not credentials, but publish only identifiers needed for coordination and approved as public-safe. Use logical aliases when uncertain; coordinate exact locators privately.
+## Cost and cleanup
 
-Stage only your explicit files, commit, push your branch and create/update its PR. Verify the pushed head:
+Budgets and earlier single-run approvals are scoped historical records, not authority for another agent. Agree current scope and remaining budget before paid work; estimates/timeouts are not billing caps. Don't add recurring schedules or leave idle paid compute.
 
-```bash
-git diff --check
-git diff --cached  # inspect after staging explicit paths; check for private data
-git commit -m "Record scoped AWS session outcome and handoff"
-git push -u origin YOUR_TASK_BRANCH
-git rev-parse HEAD
-git ls-remote origin refs/heads/YOUR_TASK_BRANCH
-# The two commit hashes must match. If there is no PR yet:
-gh pr create --base main --head YOUR_TASK_BRANCH --title "Scoped task and handoff" --body-file YOUR_REVIEWED_PR_BODY
-```
+Necessary authorised stop/cleanup takes precedence over Git troubleshooting. Verify terminal/deleted state directly as appropriate; a stop request or elapsed shutdown timer is not proof. Retain approved S3 results and avoid unrelated resources. See [TEARDOWN.md](TEARDOWN.md).
 
-Replace placeholders; do not copy these as a cloud execution plan. Never force-push or commit to `main`. Ask a teammate to review/merge; agents must not merge their own PR. While it is unmerged, other agents must read its handoff on the PR branch. A merged historical record is still not proof of live state.
+If GitHub publication is blocked, preserve the private/public-safe handoff locally, say **NOT SYNCED TO GITHUB** with the exact blocker, and don't start more paid work until coordination is restored. Do not force-push shared history or disclose private evidence to get around a publication failure.
 
-End the user-facing task report with the commit, PR URL, tests actually run, AWS effects/costs, compute/cleanup state and remaining blockers. If a push/PR is blocked, clearly report **NOT SYNCED TO GITHUB**, the exact blocker and where the local handoff is saved. Make authorised compute safe, but do not start additional paid work while the previous handoff remains unpublished.
-
-## Current shared baseline
-
-- Software implementation and previously published pilot limits are in [STATUS.md](STATUS.md) and [AGENTS.md](../AGENTS.md).
-- Newer detailed operational records were historically local-only; see the [checkpoint pointer](../PROJECT_CHECKPOINT.md). **This policy does not verify their contents, current cloud state, cleanup or remaining budget.** Ask the relevant operator for a sanitised handoff before relying on private results or continuing their work.
-- The initial [collaboration/prototype handoff](team-handoffs/2026-10-29-collaboration-and-prototype.md) records a local-only publication task, not an AWS observation.
-- These instructions guide agents; they are not an automated synchronisation service, an account-wide inventory, a lock or spending authorisation.
+These procedures are instructions, not automatic AWS monitoring, GitHub synchronisation, a deployment pipeline or a cloud-resource lock.

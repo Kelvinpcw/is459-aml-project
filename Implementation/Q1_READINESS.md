@@ -1,3 +1,5 @@
+> Historical pilot readiness/review. Statements below describe that earlier scope, not the current backlog or fresh run approval. Use [STATUS.md](STATUS.md) and [VERIFY_PROGRESS.md](VERIFY_PROGRESS.md) for current continuation.
+
 # Current state — Q1 development validation completed
 
 The role/job were approved and executed, and the Catalog table/date partition and Athena checks subsequently completed. Read results/Q1_VALIDATION.md and ../PROJECT_CHECKPOINT.md for current results, support limitations and query IDs. The deployment review below is historical; do not recreate or rerun its resources.
