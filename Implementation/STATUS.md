@@ -28,6 +28,7 @@ The dashboard evaluation screen displays the exact holdout payment interval, pre
 
 ## Team handoff and offline visual concept — 29 October 2026
 
+- [TEAM_START_HERE.md](../TEAM_START_HERE.md) provides beginner onboarding and an AI prompt: local-first setup, explicit task assignment, GitHub authentication, optional administrator-provided AWS login and required shared handoff. Its [follow-up record](team-handoffs/2026-10-29-beginner-onboarding.md) identifies the documentation checks; no cloud setup was executed.
 - `AGENTS.md`, the setup/runbook and [AWS_HANDOFF.md](AWS_HANDOFF.md) now require shared AWS session summaries, ownership coordination, explicit branch pushes and PRs. Check open PRs for handoffs not yet merged into `main`. These are instructions, not automated AWS/GitHub enforcement.
 - [`Visulization/`](../Visulization/README.md) adds the independent TRACE offline visual concept: four views, invented aggregates/cases, exact-money formatting and complete local evidence downloads. It is separate from `Implementation/dashboard/`, has no backend/cloud integration and does not establish detector performance.
 - The [dated handoff](team-handoffs/2026-10-29-collaboration-and-prototype.md) records the local checks for this publication. **AWS: none; no new cloud state, results, cost or cleanup has been verified.** Existing private operational records and frozen releases are unchanged.

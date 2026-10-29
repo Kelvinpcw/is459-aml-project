@@ -2,12 +2,15 @@
 
 Shared implementation and design context for a six-person team using the synthetic IBM HI-Medium anti-money-laundering dataset.
 
+**New teammate? Read [TEAM_START_HERE.md](TEAM_START_HERE.md).** Clone this repo, open the whole folder in your AI editor, and paste the onboarding prompt there. It guides local setup, task assignment, GitHub access, optional AWS login and the required push/handoff workflow. **No AWS deployment is needed to get started.**
+
 **The complete software path is implemented on `main`.** Detailed AWS validation records and the operational checkpoint remain local. **Public-safe AWS session summaries must be committed and pushed for team/AI handoff**; see [AWS handoff](Implementation/AWS_HANDOFF.md). Source/configuration is not proof of live cloud state.
 
 ## Start here — humans and AI assistants
 
 | Read | Purpose |
 | --- | --- |
+| [TEAM_START_HERE.md](TEAM_START_HERE.md) | Beginner setup and a ready-to-paste AI onboarding prompt |
 | [AGENTS.md](AGENTS.md) | AI working rules: safety, data contracts, testing and collaboration |
 | [Implementation/STATUS.md](Implementation/STATUS.md) | Current implementation scope and remaining work |
 | [Implementation/AWS_HANDOFF.md](Implementation/AWS_HANDOFF.md) | Mandatory AWS session reporting, shared records and push/PR workflow |

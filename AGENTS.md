@@ -2,6 +2,8 @@
 
 ## Read before working
 
+For a new teammate or an onboarding request, start with `TEAM_START_HERE.md`. Establish their assigned task and OS, inspect installed tools, and ask before installations/configuration changes. Default to local onboarding only; do not infer AWS access, spending approval or an invitation to implement unassigned backlog work. Guide interactive logins without collecting secrets in chat.
+
 1. Read `README.md` and `Implementation/STATUS.md` for orientation/current scope.
    Read `Implementation/AWS_HANDOFF.md` and dated records in `Implementation/team-handoffs/` for shared AWS context. Check open GitHub PRs for newer, unmerged handoffs; `main` alone may lag another teammate's work.
 2. Read `Proposal/Project_Proposal.md` and `Proposal/Architecture/Pipeline_Explanation.md` for requirements/target design.

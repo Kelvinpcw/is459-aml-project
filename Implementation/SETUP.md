@@ -1,5 +1,7 @@
 # Team setup
 
+New to the project? Start with [TEAM_START_HERE.md](../TEAM_START_HERE.md) for clone/open-folder steps and an AI onboarding prompt. The sections below are task-specific technical references, not a requirement to install everything or access AWS.
+
 Updated 29 October 2026. Read [STATUS.md](STATUS.md), [AWS_HANDOFF.md](AWS_HANDOFF.md), the newest relevant [shared handoffs](team-handoffs/) and [../AGENTS.md](../AGENTS.md) before using an AI assistant. Historical deployment steps remain in [../PROJECT_CHECKPOINT.md](../PROJECT_CHECKPOINT.md) and `aws/reviews/`; do not repeat them as fresh setup.
 
 ## 1. Clone and create a feature branch
