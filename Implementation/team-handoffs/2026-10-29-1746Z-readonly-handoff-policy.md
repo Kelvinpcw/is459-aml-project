@@ -1,7 +1,7 @@
 # Session: read-only AWS handoff policy
 
 - **Owner / GitHub handle:** Kelvinpcw (session run with an OpenCode agent)
-- **Branch / PR:** `agent/opencode-readonly-policy`; PR link added after creation.
+- **Branch / PR:** `agent/opencode-readonly-policy`; [PR #17](https://github.com/Kelvinpcw/is459-aml-project/pull/17).
 - **Updated at:** 2026-10-29T17:46Z (2026-10-30 01:46 +08:00)
 - **Status:** COMPLETED
 - **Evidence kind:** local documentation change; **AWS: none**
