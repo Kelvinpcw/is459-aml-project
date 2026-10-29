@@ -2,8 +2,8 @@
 
 - **Owner:** Kelvinpcw, assisted by Codex.
 - **Branch:** `feature/full-rerun-20261029`; [PR #13](https://github.com/Kelvinpcw/is459-aml-project/pull/13).
-- **Updated at:** 2026-10-29T12:15:35.599745+00:00.
-- **Status:** IN_PROGRESS — definitions/package validated and published; immutable upload/idle deployment next. No paid processing started.
+- **Updated at:** 2026-10-29T12:21:23.529589+00:00.
+- **Status:** IN_PROGRESS — immutable upload and isolated idle deployment complete; exact deployed configuration verification underway before the one full processing attempt.
 - **Evidence kind:** local tests and private read-only preflight; detailed operational records stay private.
 
 ## Scope and coordination
@@ -26,4 +26,4 @@ The user explicitly requested a new full-pipeline rerun and required service dep
 
 ## AWS boundary and next step
 
-No cloud write, deployment or paid processing has occurred yet. The next step is uploading the new immutable package, creating the isolated idle definitions, verifying exact deployed grants/jobs/workflow, then starting the one approved full attempt. Publish an IN_PROGRESS update before starting. Retain old results; do not repeat legacy starts or alter unrelated shared resources. This record is coordination, not a reusable spending approval for another agent/member.
+The new immutable package is uploaded and verified, and isolated idle definitions are created. No paid processing has started at this update. Exact deployed grants/jobs/workflow verification is underway; the next step is the one explicitly requested full attempt after those checks pass. Retain old results; do not repeat legacy starts or alter unrelated shared resources. This record is coordination, not a reusable spending approval for another agent/member.
