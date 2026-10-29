@@ -18,7 +18,7 @@
 ## Actions and observed outcome
 
 - **Actions/commands actually run:** `sts get-caller-identity` via the profile guard; Step Functions `list-state-machines`, `describe-state-machine`, `list-executions`, `describe-execution`, `get-execution-history`; Glue `get-job-runs`; CloudFormation `describe-stack-resources`; S3 read of the small `published/current.json`.
-- **Created:** five `STANDARD` state machines exist as resources of the prior full-run stack. Their deployed definition matches the reviewed template: prepare data → write the detector input manifest → run Q1 and Q2 in parallel → register Catalog partitions → run the separate evaluator → conditionally publish. Failures end the execution without replacing the previous release. The workflow has a bounded timeout, no retries and no recurring schedule.
+- **Created:** five `STANDARD` state machines exist as resources of the prior full-run stack: one main full pipeline plus four versioned recovery/retry definitions (a Q1/Q2/Catalog recovery and three evaluator/publisher-only attempts). The main definition matches the reviewed full template; the recovery definitions deliberately contain only the stages that had not completed. Failures end the execution without replacing the previous release. The workflow has a bounded timeout, no retries and no recurring schedule.
 - **Executed:** yes, the workflows really ran. Outcome categories:
   - the original full-pipeline execution **failed** in the parallel detection stage (Spark join internal error) and cancelled the Q1 branch;
   - a targeted recovery completed Q1, Q2 and Catalog, then was **deliberately aborted** for a cost pause;
