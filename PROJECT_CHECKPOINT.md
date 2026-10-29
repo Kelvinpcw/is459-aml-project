@@ -1,9 +1,9 @@
 # Project checkpoint
 
-The user requested that new AWS operational records remain local while source is published to the project PR.
+Detailed AWS operational records remain local. **Policy update, 29 October 2026:** the user now also requires sanitised session summaries to be committed/pushed for team/AI context. Follow [AWS_HANDOFF.md](Implementation/AWS_HANDOFF.md) and read the newest relevant [shared handoffs](Implementation/team-handoffs/) and open PRs. This does not authorise publishing raw private records or imply that earlier private results have been verified here.
 
 **On the operator's machine, resume from `Implementation/data/aws-operations-20261028/PROJECT_CHECKPOINT.md`.** That ignored file contains the latest execution, costs, output identities, approval and cleanup state. Also read the ignored `Implementation/aws/reviews/full-monitor-latest.json` and local resource ledger beside the detailed checkpoint before any cloud action. Do not infer live state from this public source checkout or restart processing from a historical command.
 
-This branch implements publication, the dashboard, distributed detection/evaluation, on-demand workflow and diagnosed recovery. The recovery passed 68 synthetic tests; frozen full-v1 and full-v2 payloads are preserved. Source and setup: [README](README.md), [status](Implementation/STATUS.md), [runbook](Implementation/RUNBOOK.md). Actual new cloud results and the private handoff are deliberately excluded from Git by the user's instruction.
+The software implements publication, the dashboard, distributed detection/evaluation, on-demand workflow and diagnosed recovery. The earlier recovery passed 68 synthetic tests; frozen full-v1 and full-v2 payloads are preserved. Source and setup: [README](README.md), [status](Implementation/STATUS.md), [runbook](Implementation/RUNBOOK.md). Detailed cloud results and private handoffs remain excluded; future AWS sessions must additionally publish the public-safe summary described above.
 
 A fresh clone has no source data, credentials or private operational checkpoint. Each member must authenticate to the intended project account using their own explicitly chosen profile, agree an authorised scope/budget, and inspect actual cloud state before acting. Existing tracked AWS records are historical and do not establish current state or authorisation.

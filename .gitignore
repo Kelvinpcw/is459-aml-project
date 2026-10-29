@@ -42,8 +42,9 @@ Icon*
 * 2.*
 * 2
 
-# User request: keep new AWS operational records and detailed checkpoints local.
-# Previously committed review evidence remains historical; do not add new runs.
+# Keep raw AWS operational records and detailed checkpoints local.
+# Public-safe session summaries belong in Implementation/team-handoffs/ instead.
+# Previously committed review evidence remains historical; do not add raw new runs.
 /Implementation/aws/reviews/*
 
 # Lightweight local visualization environment

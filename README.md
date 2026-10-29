@@ -2,7 +2,7 @@
 
 Shared implementation and design context for a six-person team using the synthetic IBM HI-Medium anti-money-laundering dataset.
 
-**The complete software path is implemented on `main`.** Actual new AWS validation records and the detailed operational checkpoint remain local at the user's request. Read the [checkpoint pointer](PROJECT_CHECKPOINT.md) before resuming deployment; source/configuration is not proof of live cloud state.
+**The complete software path is implemented on `main`.** Detailed AWS validation records and the operational checkpoint remain local. **Public-safe AWS session summaries must be committed and pushed for team/AI handoff**; see [AWS handoff](Implementation/AWS_HANDOFF.md). Source/configuration is not proof of live cloud state.
 
 ## Start here — humans and AI assistants
 
@@ -10,6 +10,7 @@ Shared implementation and design context for a six-person team using the synthet
 | --- | --- |
 | [AGENTS.md](AGENTS.md) | AI working rules: safety, data contracts, testing and collaboration |
 | [Implementation/STATUS.md](Implementation/STATUS.md) | Current implementation scope and remaining work |
+| [Implementation/AWS_HANDOFF.md](Implementation/AWS_HANDOFF.md) | Mandatory AWS session reporting, shared records and push/PR workflow |
 | [Implementation/SETUP.md](Implementation/SETUP.md) | Local setup, data access and AWS profile checks |
 | [Confirmed proposal](Proposal/Project_Proposal.md) | Business questions, requirements, analysis rules and evaluation protocol |
 | [Pipeline explanation](Proposal/Architecture/Pipeline_Explanation.md) | How the target components connect |
@@ -17,6 +18,8 @@ Shared implementation and design context for a six-person team using the synthet
 | [PROJECT_CHECKPOINT.md](PROJECT_CHECKPOINT.md) | Historical deployment handoff, exact resource IDs and evidence |
 
 To view an existing published release without restarting processing or EC2, follow [local visualization setup](Implementation/SETUP.md#visualization-without-restarting-cloud-compute).
+
+For the independent **TRACE visual prototype**, open [`Visulization/index.html`](Visulization/index.html) locally; see its [README](Visulization/README.md). It works offline with invented fixtures, not actual pipeline results.
 
 The newest scoped evidence wins over older status sentences. Read the checkpoint when resuming deployment, but **reading it is not an instruction to resume paid work**.
 
@@ -46,7 +49,7 @@ The branch adds conditional publication, a pinned read-only Streamlit dashboard,
 
 The full implementation uses distributed fan aggregation and bounded, degree-eligible 2–4-cycle joins over overlapping seven-day daily snapshots. The frozen first-minute driver detector is preserved separately; its pilot is not proof of full-data effectiveness. See [status](Implementation/STATUS.md) and [runbook](Implementation/RUNBOOK.md).
 
-New AWS reports, measured results, costs and detailed checkpoints are intentionally local. Fresh clones contain neither these operational records nor source/generated data. Previously committed pilot records are historical; never infer current resource state or deployment authority from them.
+Raw AWS reports, detailed cost records and operational checkpoints are intentionally local. Fresh clones contain neither these private records nor source/generated data. From 29 October 2026, agents must publish sanitised session summaries, including observations, cost basis, cleanup and next steps, in [`Implementation/team-handoffs/`](Implementation/team-handoffs/). Prior private runs have not been retroactively verified or published. Previously committed pilot records are historical; never infer current resource state or deployment authority from them.
 
 ## Code map
 
@@ -59,14 +62,16 @@ New AWS reports, measured results, costs and detailed checkpoints are intentiona
 | `Implementation/releases/` | Frozen code used/reviewed for specific cloud attempts; preserve unchanged |
 | `Implementation/aws/` | Resource configuration, manifests, run records and review evidence |
 | `Implementation/results/` | Human-readable validation findings and limitations |
+| `Implementation/team-handoffs/` | Dated, public-safe collaboration/AWS session summaries; not raw operational evidence |
 | `Implementation/evidence/` | Retained console screenshots; historical, not a live inventory |
 | `Proposal/` | Confirmed requirements and target architecture, not old question-selection drafts |
+| `Visulization/` | Offline TRACE dashboard design, invented fixtures and local UI/model checks |
 
 ## Working together
 
 Use one feature branch per task and a pull request reviewed by a teammate. A Git branch **does not isolate AWS**: use distinct development jobs/script paths/output namespaces when cloud testing is authorised. Never overwrite another person's run.
 
-Suggested workstreams (assign actual owners as a team):
+Component ownership areas (assign actual owners; these are not claims that implementation is missing):
 
 1. Ingestion/preparation and wider input scope.
 2. Q1 multi-day analytics and dashboard query contracts.
@@ -88,9 +93,11 @@ Do not `git add .`: the tree may contain someone else's edits, gitignored AWS re
 
 Include changed contracts, tests actually run, and any AWS effects/costs in the pull request. Record the deployed Git commit and job arguments when deploying. Review schema changes with downstream owners before merging.
 
+**Required AI completion rule:** after each task, commit/push the scoped changes and open/update a PR. For AWS work, first read the [handoff procedure](Implementation/AWS_HANDOFF.md), coordinate shared-resource ownership, and publish a sanitised session record even if the attempt failed or was read-only. Before starting, check open PRs as well as `main`; unmerged handoffs still matter. If a push is blocked, explicitly report **NOT SYNCED TO GITHUB**. A pushed branch is visible but is not merged into `main` until a teammate reviews it. These are agent instructions, not an automated AWS/GitHub enforcement service.
+
 ## Give your AI assistant this starting prompt
 
-> Read AGENTS.md, README.md and Implementation/STATUS.md, then the files relevant to my task. My assigned task is: [describe it]. Distinguish the target architecture from the current prototype. Start with local work; do not run, deploy, change IAM, overwrite outputs or delete AWS resources unless I explicitly request that scoped action. Explain missing data or blockers instead of inventing results. Use a feature branch and report the tests you actually run.
+> Read AGENTS.md, README.md, Implementation/STATUS.md and Implementation/AWS_HANDOFF.md, plus the newest shared handoffs and open PRs relevant to my task. My assigned task is: [describe it]. Distinguish implemented code, local tests and actual cloud observations. Start locally; do not run, deploy, change IAM, overwrite outputs or delete AWS resources without my explicit scoped approval. After authorised AWS work, publish a sanitised handoff with outcome, costs, cleanup, blockers and next steps. Commit/push scoped changes and open/update a PR; do not merge it yourself. Report the commit/PR and tests actually run, or explicitly say NOT SYNCED TO GITHUB and why.
 
 AI tools that do not automatically load `AGENTS.md` should be explicitly asked to read it.
 

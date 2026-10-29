@@ -2,6 +2,8 @@
 
 Current implementation/results: [STATUS.md](STATUS.md). Cost/resource state: follow the [checkpoint pointer](../PROJECT_CHECKPOINT.md) to the ignored private operator checkpoint/ledger. The tracked ledger is historical. New full-data definitions are isolated from the validated pilot. A configuration file or local test is not evidence of cloud completion.
 
+**Required shared context:** follow [AWS_HANDOFF.md](AWS_HANDOFF.md) before AWS work. Read dated handoffs and open PRs, coordinate shared-resource ownership, and publish a plan before mutations/paid processing. After every session (including read-only checks, failures and cleanup), commit/push a sanitised result with cost basis, compute state, blockers and next steps; open/update a PR for teammate review. Raw reports and detailed checkpoints stay local. Do not treat any historical approval/command below as permission for a new attempt.
+
 ## Authentication and budgets
 
 Every teammate uses their own authorised profile. This machine's project profile is `IS-459-BDA`; its default profile belongs to a different account. Verify before any cloud action:
@@ -108,4 +110,4 @@ Observe the workflow and every known job/query to terminal. Use the driver's`sto
 python Implementation/deployment/deploy.py --profile IS-459-BDA --phase remove-dashboard
 ```
 
-Retain S3 data/code/results, published release, Catalog/workgroup metadata and idle job/workflow definitions for reproducibility. Do not delete unrelated shared-account resources. Update the checkpoint/ledger with actual IDs, observed counts/metrics, runtime, estimated charges, cleanup and remaining limitations.
+Retain S3 data/code/results, published release, Catalog/workgroup metadata and idle job/workflow definitions for reproducibility. Do not delete unrelated shared-account resources. Update the private checkpoint/ledger with actual IDs, observed counts/metrics, runtime, estimated charges, cleanup and remaining limitations. Also publish the sanitised [shared session handoff](AWS_HANDOFF.md); a private checkpoint update alone is insufficient. Report unknown cleanup/cost honestly and verify the branch push/PR before calling the handoff complete.
