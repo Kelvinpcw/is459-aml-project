@@ -1,9 +1,9 @@
 # Task: fresh ingestion-to-EC2 run and removal of old generated outputs
 
 - **Owner:** Kelvinpcw with Codex
-- **Branch / PR:** `agent/codex-full-run-20261030`; PR pending
+- **Branch / PR:** `agent/codex-full-run-20261030`; [PR #19](https://github.com/Kelvinpcw/is459-aml-project/pull/19)
 - **Updated at:** 2026-10-30 (+08:00)
-- **Status:** PLANNED
+- **Status:** IN_PROGRESS
 - **Evidence kind:** source checks, fresh inventory and explicit current run authorisation
 
 ## Scope and coordination
@@ -29,4 +29,4 @@ Read-only source and output inventory completed with the explicit verified proje
 - Publish plan and mark IN_PROGRESS; upload/verify fresh ingestion, upload/verify software, inspect/apply the maintained-stack change set, verify, start once and monitor.
 - After successful publication, launch/verify EC2 visualization; delete old generated S3 outputs and stale Catalog tables only when proven superseded, then verify and publish outcome. Keep operational identities and measurements private.
 - Document the actual end-to-end setup, repeatable commands, access and shutdown steps. Do not claim success until directly verified.
-- GitHub sync: pending draft PR and push. No other owner should start or update these shared jobs until this session is terminal.
+- GitHub sync: plan pushed; draft PR #19 opened. No other owner should start or update these shared jobs until this session is terminal.
