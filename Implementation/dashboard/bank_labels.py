@@ -41,6 +41,8 @@ def bank_label(bank_id, names):
 def segment_label(row, names):
     if 'sender_bank' not in row:
         return str(row['payment_format'])
+    if 'receiver_bank' not in row:
+        return bank_label(row['sender_bank'], names)
     route = f"{bank_label(row['sender_bank'], names)} → {bank_label(row['receiver_bank'], names)}"
     return route + (f" · {row['payment_format']}" if 'payment_format' in row else '')
 

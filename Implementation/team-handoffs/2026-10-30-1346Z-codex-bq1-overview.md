@@ -1,0 +1,14 @@
+# BQ1 dashboard simplification
+
+- Owner: Codex, requested by Kelvin; branch: `codex/bq1-dashboard-overview`.
+- PR: [#22](https://github.com/Kelvinpcw/is459-aml-project/pull/22).
+- Status: COMPLETED locally; source-only change, pending PR review/merge and any separately authorised deployment.
+- Scope: AWS-connected dashboard presentation and Q1 read queries; proposal currency/display contract updated. Built on current `origin/main`, preserving TRACE layout, daily coverage semantics and bank-name labels.
+- Behaviour: All currencies defaults to counts/rates; one Currency filter uses payment currency. All-currency monetary totals are omitted. Sending-bank overview comes first, followed by bank routes, route/format and payment formats. Each payment belongs once to its sender bank, including within-bank transfers. Optional sender-bank drill-down filters route counts and their baseline consistently; headline/daily totals remain overall and are labelled separately. Data-through and publication dates describe the pinned release. Removed the requested volume/exposure heading and explanatory sentence.
+- Contracts retained: original Q1 base grain, both currency fields, exact selected-currency amounts, summed N/L before rates, consistent baselines, support guard, immutable release pinning, label-free Q2 and frozen artifacts. Receiving-currency API support remains; only its UI selector is removed. No new ingestion scheduling.
+- Validation: 34 local synthetic checks passed across overview SQL populations, bank labels/routes, dashboard rendering/navigation, daily trends, presentation, release contracts and public-dashboard configuration. Tests simulate all-currency and currency-selected counts, rate weighting, self/within-bank transfers, source/run separation, route drill-down, exact amount strings and unchanged case/evaluation navigation. No real-data/Athena/browser/cloud validation was performed.
+- AWS: none. No deployment, service restart, paid query/job, IAM/resource change or compute start/stop. Existing hosting state was not checked or changed.
+- Local Git issue: original checkout has a malformed Git reference and unrelated uncommitted files. Used a clean temporary clone of current main to prepare this PR; original Git metadata and unrelated local edits were preserved.
+- Next safe step: review the source-only PR. A code merge does not update the running dashboard; coordinate a separately scoped presentation deployment with its operator.
+
+Subsequent user-authorised live update and final payment-first ordering are recorded in the [live-update handoff](2026-10-30-1357Z-codex-bq1-live-update.md); the source-only boundary above describes the initial implementation phase.

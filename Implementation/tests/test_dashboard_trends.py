@@ -21,6 +21,7 @@ class TrendTests(unittest.TestCase):
             # SQLite uses ISO date strings; Athena's DATE literal is the only
             # dialect difference for this aggregate fixture.
             return [dict(r) for r in db.execute(re.sub(r"DATE '([^']+)'",r"'\1'",sql))]
+        overall=query(None,'payment');self.assertEqual([(r['n'],r['l']) for r in overall],[(400,5),(510,6)])
         paid=query('USD','payment');self.assertEqual([(r['n'],r['l']) for r in paid],[(400,5),(10,5)])
         received=query('EUR','receiving');self.assertEqual([(r['n'],r['l']) for r in received],[(100,2),(510,6)])
         daily=daily_population(paid,'2022-09-01','2022-09-02',release['q1']['dates']);self.assertEqual(population_total(daily),(410,10,10/410));self.assertNotAlmostEqual(population_total(daily)[2],sum(r['rate'] for r in daily)/2)
@@ -64,7 +65,7 @@ class TrendTests(unittest.TestCase):
         observed=[]
         def query(client,sql):
             observed.append(sql)
-            if 'DISTINCT' in sql:return [{'currency':'US Dollar'}]
+            if ' AS currency' in sql:return [{'currency':'US Dollar'}]
             start,end=re.search(r"BETWEEN DATE '([^']+)' AND DATE '([^']+)'",sql).groups();scope=[d for d in days if start<=d<=end]
             rows=[{'event_date':d,'n':1000 if d<'2031-07-17' else 10,'l':2 if d<'2031-07-17' else 8} for d in scope]
             if 'GROUP BY event_date' in sql:return rows
@@ -97,7 +98,7 @@ class TrendTests(unittest.TestCase):
         observed=[]
         def query(client,sql):
             observed.append(sql)
-            if 'DISTINCT' in sql:return [{'currency':'US Dollar'}]
+            if ' AS currency' in sql:return [{'currency':'US Dollar'}]
             start,end=re.search(r"BETWEEN DATE '([^']+)' AND DATE '([^']+)'",sql).groups();scope=[d for d in days if start<=d<=end]
             if 'GROUP BY event_date' in sql:return [{'event_date':d,'n':10000,'l':5} for d in scope]
             n=10000*len(scope);l=5*len(scope)

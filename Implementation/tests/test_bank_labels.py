@@ -26,6 +26,7 @@ class BankLabelsTests(unittest.TestCase):
                          'Bank of Miami (11) → First Bank of Dallas (214) · ACH')
         self.assertEqual(row, {'sender_bank': '11', 'receiver_bank': '214'})
         self.assertEqual(segment_label({'payment_format': 'ACH'}, names), 'ACH')
+        self.assertEqual(segment_label({'sender_bank': '11'}, names), 'Bank of Miami (11)')
 
     def test_duplicate_accounts_and_shared_names_do_not_merge_ids(self):
         names = self.lookup([['001', 'Shared Bank', 'A'], ['1', 'Shared Bank', 'B'], ['2', 'Shared Bank', 'C']])

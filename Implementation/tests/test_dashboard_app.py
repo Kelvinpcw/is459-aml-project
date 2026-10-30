@@ -23,7 +23,7 @@ class ApplicationTests(unittest.TestCase):
   s3.get_object.side_effect=lambda **kw:{'Body':io.BytesIO(metrics if kw['Key']=='evaluation/metrics.json' else body)}
   session=Mock();session.client.side_effect=lambda service:Mock(get_caller_identity=lambda:{'Account':'160885259244'}) if service=='sts' else s3 if service=='s3' else Mock()
   def query(client,sql):
-   if 'DISTINCT' in sql:return [{'currency':'US Dollar'}]
+   if ' AS currency' in sql:return [{'currency':'US Dollar'}]
    if 'GROUP BY event_date' in sql:return [{'event_date':release['q1']['dates'][0],'n':'10','l':'2'}]
    if 'SELECT * FROM aml.cases_run' in sql:return [case_row]
    return [{'payment_format':'ACH','n':'10','l':'2','baseline_n':'10','baseline_l':'2','rate':'0.2','lift':'1.0','support':'low_support','selected_currency_amount':'0.47209301'}]

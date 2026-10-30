@@ -64,7 +64,7 @@ Managers filter dates, banks and formats, compare volume with exposure, and iden
 
 For a selected period, rates are recomputed from the summed counts — **not averaged across daily rates**. Transferred amounts are kept separate by currency rather than added into an unsupported cross-currency total.
 
-The currency selector defaults to **Payment Currency** and explicitly allows switching to **Receiving Currency**. The selected filter applies to the transaction count, laundering count, support threshold, and baseline before calculating the displayed rate/lift. Storing currency-specific amount totals without currency-specific counts would not be enough.
+The dashboard defaults to **All currencies** for counts and historical labelled rates. Its single **Currency** selector filters Payment Currency consistently across counts, support and the comparison baseline. Monetary totals are omitted until one currency is selected, then show exact paid amounts in that currency. Both currency dimensions remain in stored data. The overview starts with payment-type rate/lift and traffic/labelled-share comparisons, then sending banks and bank-to-bank views. The currency choices list All currencies first, followed by busiest currencies by published-release transaction count, with daily activity and data-through/publication dates. Refresh loads a complete published release; this UI does not schedule ingestion.
 
 **Q1's final result: a risk dashboard explaining where to concentrate monitoring.**
 
