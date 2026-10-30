@@ -1,6 +1,7 @@
 # BQ1 dashboard simplification
 
 - Owner: Codex, requested by Kelvin; branch: `codex/bq1-dashboard-overview`.
+- PR: [#22](https://github.com/Kelvinpcw/is459-aml-project/pull/22).
 - Status: COMPLETED locally; source-only change, pending PR review/merge and any separately authorised deployment.
 - Scope: AWS-connected dashboard presentation and Q1 read queries; proposal currency/display contract updated. Built on current `origin/main`, preserving TRACE layout, daily coverage semantics and bank-name labels.
 - Behaviour: All currencies defaults to counts/rates; one Currency filter uses payment currency. All-currency monetary totals are omitted. Sending-bank overview comes first, followed by bank routes, route/format and payment formats. Each payment belongs once to its sender bank, including within-bank transfers. Optional sender-bank drill-down filters route counts and their baseline consistently; headline/daily totals remain overall and are labelled separately. Data-through and publication dates describe the pinned release. Removed the requested volume/exposure heading and explanatory sentence.
