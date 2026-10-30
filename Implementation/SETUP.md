@@ -71,3 +71,15 @@ Use [VERIFY_PROGRESS.md](VERIFY_PROGRESS.md) for read-only completion checks. Mi
 ## 5. Hand over your work
 
 Follow [CONTRIBUTING.md](../CONTRIBUTING.md). Update affected docs/status, add a [task handoff](team-handoffs/README.md), review the exact diff, stage explicit paths and push a PR. Verify the remote head and report its commit/link. A merge doesn't deploy cloud code or refresh another laptop's app. If publication fails, say **NOT SYNCED TO GITHUB**; keep the local handoff and name the blocker.
+
+## Bank names in BQ1 route labels
+
+BQ1 displays `Bank of Miami (11) → First Bank of Dallas (214)` for the sending-to-receiving bank route. IDs remain the grouping keys; shared names do not merge banks.
+
+Local dashboards use `Ibm_dataset_medium/HI-Medium_accounts.csv`. For a deployed dashboard, generate a bank-only lookup from the same dataset:
+
+```bash
+python3 Implementation/dashboard/bank_labels.py /path/to/HI-Medium_accounts.csv /tmp/bank_names.csv
+```
+
+Include that generated CSV beside `Implementation/dashboard/app.py` in the deployment package, or set `AML_BANK_NAMES_CSV` to its installed path. Do not commit source/generated datasets. Only `Bank ID` and `Bank Name` are exported; account/entity data is omitted. Conflicting names for one normalised ID fail validation. Missing lookups retain explicit unknown-bank labels with IDs and a warning.

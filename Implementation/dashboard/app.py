@@ -4,6 +4,7 @@ from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 import pandas as pd
 import streamlit as st
+from dashboard.bank_labels import load_bank_names, segment_label
 from dashboard.data import q1_query,q1_trend_query,case_query,run_query,get_case,evidence_csv,wilson,dimension_query,full_evidence_archive
 from dashboard.presentation import PATTERNS,esc,kpis,period,exposure_chart,graph_html,monitoring_lead,priority_card,rule_card
 from dashboard.trends import range_options,date_window,daily_population,population_total,coverage_counts,LOW_DAILY_VOLUME,endpoint_comparison,trend_chart
@@ -25,6 +26,19 @@ def query_cached(release_id,sql):return run_query(athena,sql)
 
 @st.cache_data(ttl=300,max_entries=4)
 def case_cached(release_data,row):return get_case(s3,release_data,row)
+
+@st.cache_data(max_entries=4)
+def bank_names_cached(path, modified_ns):return load_bank_names(path)
+
+
+def bank_names_for_display():
+    packaged=Path(__file__).with_name('bank_names.csv')
+    default=packaged if packaged.exists() else Path(__file__).resolve().parents[2]/'Ibm_dataset_medium/HI-Medium_accounts.csv'
+    lookup=Path(os.environ.get('AML_BANK_NAMES_CSV',str(default)))
+    try:return bank_names_cached(str(lookup),lookup.stat().st_mtime_ns)
+    except (OSError,ValueError):
+        st.warning('Bank names are unavailable. Bank IDs remain visible.')
+        return {}
 
 profile=os.environ.get('AML_AWS_PROFILE','');instance=os.environ.get('AML_USE_INSTANCE_ROLE')=='1'
 try:
@@ -84,7 +98,7 @@ def monitoring():
         side=select_filter('Currency side',['payment','receiving'],format_func=lambda x:'Paid' if x=='payment' else 'Received',key='q1_side')
         currencies=[r['currency'] for r in query_cached(release['release_id'],dimension_query(release,side))]
         currency=select_filter('Currency',currencies,index=currencies.index('US Dollar') if 'US Dollar' in currencies else 0,key='q1_currency_'+side)
-        grain=select_filter('Compare',['format','bank_pair','segment'],format_func=lambda x:{'format':'Payment formats','bank_pair':'Bank pairs','segment':'Bank pair + format'}[x],key='q1_grain')
+        grain=select_filter('Compare',['format','bank_pair','segment'],format_func=lambda x:{'format':'Payment formats','bank_pair':'Bank-to-bank routes','segment':'Bank-to-bank route + payment format'}[x],key='q1_grain')
         fmt=select_filter('Payment format',['All','ACH','Cash','Cheque','Credit Card','Reinvestment','Wire','Bitcoin'],key='q1_format')
         support=1000
         st.caption('Ranked segments require at least 1,000 payments. Low-support rows remain available in the details.')
@@ -105,7 +119,10 @@ def monitoring():
     for col in ['rate','lift']:frame[col]=pd.to_numeric(frame[col],errors='coerce')
     baseline_n=int(frame.iloc[0].baseline_n);baseline_l=int(frame.iloc[0].baseline_l)
     baseline_rate=f'{baseline_l/baseline_n:.4%}' if baseline_n else 'Not measurable'
-    frame['group']=frame.apply(lambda r:' → '.join(str(r[k]) for k in ['sender_bank','receiver_bank','payment_format'] if k in r),axis=1)
+    names=bank_names_for_display() if grain!='format' else {}
+    if grain!='format':
+        st.caption('Sending bank → Receiving bank: payments from accounts at the first bank to accounts at the second. Each route can include many accounts. IDs distinguish banks that share a name.')
+    frame['group']=frame.apply(lambda r:segment_label(r,names),axis=1)
     records=frame.to_dict('records');lead=monitoring_lead(records)
     priorities=sum(r['support']=='supported' and pd.notna(r['lift']) and r['lift']>1 for r in records)
     cards([('Transactions in scope',count(n),'Selected currency population'),('Historically labelled',count(l),'Known labels, not new detections'),('Labelled rate',f'{rate:.4%}' if rate is not None else 'Not measurable','Σ labels ÷ Σ payments'),('Above-baseline groups',f'{priorities:,}','Supported groups in the ranking preview')])
@@ -135,6 +152,7 @@ def monitoring():
     selected_group=select_filter('Inspect a segment',range(len(frame)),format_func=lambda i:frame.iloc[i]['group'],key='q1_inspect_'+grain)
     inspected=frame.iloc[selected_group]
     with st.expander('Selected segment details',expanded=False):
+        st.write(str(inspected['group']))
         cards([('Segment payments',f'{int(inspected.n):,}','Denominator for this segment'),('Historical labels',f'{int(inspected.l):,}','Historical association'),('Support',str(inspected.support).replace('_',' ').title(),'Required minimum: 1,000 payments')])
         st.write('Selected-currency amount: '+str(inspected.selected_currency_amount)+' '+currency+' ('+('paid' if side=='payment' else 'received')+')')
         st.caption('Descriptive 95% interval: '+' – '.join(f'{x:.4%}' for x in wilson(int(inspected.l),int(inspected.n)))+'. Related payments may violate independence. Transferred value is not unique criminal proceeds.')
