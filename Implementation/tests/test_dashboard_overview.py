@@ -7,7 +7,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from dashboard.data import q1_query, q1_trend_query
+from dashboard.data import q1_query, q1_trend_query, dimension_query
 from pipeline.release import validate_candidate
 from test_release_dashboard import fixture
 
@@ -65,6 +65,12 @@ class OverviewTests(unittest.TestCase):
         sql = q1_query(self.release, '2022-09-01', '2022-09-02', 'USD')
         self.assertIn('SUM(amount_paid_total)', sql)
         self.assertNotIn('SUM(amount_received_total)', sql)
+
+    def test_currency_choices_rank_published_transaction_volume_not_alphabetically(self):
+        paid = [dict(row) for row in self.db.execute(dimension_query(self.release, 'payment'))]
+        received = [dict(row) for row in self.db.execute(dimension_query(self.release, 'receiving'))]
+        self.assertEqual([(r['currency'],r['transaction_count']) for r in paid], [('EUR',900),('USD',300)])
+        self.assertEqual([(r['currency'],r['transaction_count']) for r in received], [('USD',1100),('EUR',100)])
 
     def test_payment_types_compare_labelled_exposure_with_their_size(self):
         types = {r['payment_format']:r for r in self.query(currency=None, grain='format')}

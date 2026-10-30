@@ -15,7 +15,7 @@ class DashboardNavigationTests(unittest.TestCase):
         sqls=[]
         def query(client,sql):
             sqls.append(sql)
-            if 'DISTINCT' in sql:return [{'currency':'US Dollar'}]
+            if ' AS currency' in sql:return [{'currency':'US Dollar'}]
             if 'GROUP BY event_date' in sql:return [{'event_date':'2022-09-01','n':'2000','l':'3'}]
             if 'FROM fixture.q2' in sql:return [{'case_id':'a'*64,'pattern_type':'cycle_3','participant_count':'3','evidence_transaction_count':'3'}]
             if 'GROUP BY sender_bank)' in sql:return [{'sender_bank':'11','n':'2000','l':'3','baseline_n':'2000','baseline_l':'3','rate':'.0015','lift':'1','support':'supported','selected_currency_amount':'0.47209301'}]
@@ -30,6 +30,8 @@ class DashboardNavigationTests(unittest.TestCase):
             self.assertEqual(app.selectbox(key='q1_currency').value,'All currencies')
             self.assertEqual(app.selectbox(key='q1_grain').value,'bank')
             self.assertTrue(any(x.value=='Payment types relative to their size' for x in app.subheader))
+            headings=[x.value for x in app.subheader]
+            self.assertLess(headings.index('Payment types relative to their size'),headings.index('Banks overall'))
             type_table=next(x.value for x in app.dataframe if 'Payment type' in x.value.columns)
             self.assertEqual(type_table['Payment type'].iloc[0],'ACH')
             self.assertTrue({'Traffic share','Labelled share','Labelled rate','Relative risk'}.issubset(type_table.columns))

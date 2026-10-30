@@ -170,7 +170,7 @@ def wilson(l,n):
 
 def dimension_query(release,side):
     if side not in ('payment','receiving'):raise ValueError('Invalid currency side')
-    return f"SELECT DISTINCT {side}_currency AS currency FROM {table(release,'q1_table')} WHERE dataset_version={literal(release['dataset_version'])} AND run_id={literal(release['run_id'])} ORDER BY currency"
+    return f"SELECT {side}_currency AS currency,SUM(transaction_count) transaction_count FROM {table(release,'q1_table')} WHERE dataset_version={literal(release['dataset_version'])} AND run_id={literal(release['run_id'])} GROUP BY {side}_currency ORDER BY transaction_count DESC,currency"
 
 
 def full_evidence_archive(s3,case,max_bytes=50_000_000):

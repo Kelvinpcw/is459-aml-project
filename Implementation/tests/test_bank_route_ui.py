@@ -10,7 +10,7 @@ class BankRouteUiTests(unittest.TestCase):
         release={'timestamp_policy':'dataset-local','warnings':[],'release_id':'bank-ui','dataset_version':'fixture','run_id':'fixture',
                  'q2':{'window_start':'2022-09-01','window_end':'2022-09-02'},'q1':{'dates':['2022-09-01']},'catalog':{'database':'fixture','q1_table':'q1'}}
         def query(client,sql):
-            if 'DISTINCT' in sql:return [{'currency':'US Dollar'}]
+            if ' AS currency' in sql:return [{'currency':'US Dollar'}]
             if 'GROUP BY event_date' in sql:return [{'event_date':'2022-09-01','n':'2000','l':'3'}]
             return [{**({'payment_format':'ACH'} if 'GROUP BY payment_format)' in sql else {'sender_bank':'11','receiver_bank':'214',**({'payment_format':'ACH'} if 'GROUP BY sender_bank, receiver_bank, payment_format)' in sql else {})}),
                      'n':'2000','l':'3','baseline_n':'2000','baseline_l':'3','rate':'.0015',

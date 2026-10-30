@@ -65,7 +65,7 @@ class TrendTests(unittest.TestCase):
         observed=[]
         def query(client,sql):
             observed.append(sql)
-            if 'DISTINCT' in sql:return [{'currency':'US Dollar'}]
+            if ' AS currency' in sql:return [{'currency':'US Dollar'}]
             start,end=re.search(r"BETWEEN DATE '([^']+)' AND DATE '([^']+)'",sql).groups();scope=[d for d in days if start<=d<=end]
             rows=[{'event_date':d,'n':1000 if d<'2031-07-17' else 10,'l':2 if d<'2031-07-17' else 8} for d in scope]
             if 'GROUP BY event_date' in sql:return rows
@@ -98,7 +98,7 @@ class TrendTests(unittest.TestCase):
         observed=[]
         def query(client,sql):
             observed.append(sql)
-            if 'DISTINCT' in sql:return [{'currency':'US Dollar'}]
+            if ' AS currency' in sql:return [{'currency':'US Dollar'}]
             start,end=re.search(r"BETWEEN DATE '([^']+)' AND DATE '([^']+)'",sql).groups();scope=[d for d in days if start<=d<=end]
             if 'GROUP BY event_date' in sql:return [{'event_date':d,'n':10000,'l':5} for d in scope]
             n=10000*len(scope);l=5*len(scope)
