@@ -10,3 +10,5 @@
 - AWS: none. No deployment, service restart, paid query/job, IAM/resource change or compute start/stop. Existing hosting state was not checked or changed.
 - Local Git issue: original checkout has a malformed Git reference and unrelated uncommitted files. Used a clean temporary clone of current main to prepare this PR; original Git metadata and unrelated local edits were preserved.
 - Next safe step: review the source-only PR. A code merge does not update the running dashboard; coordinate a separately scoped presentation deployment with its operator.
+
+Subsequent user-authorised live update and final payment-first ordering are recorded in the [live-update handoff](2026-10-30-1357Z-codex-bq1-live-update.md); the source-only boundary above describes the initial implementation phase.

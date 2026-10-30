@@ -1,19 +1,23 @@
 # Live BQ1 overview update
 
 - Owner: Kelvin with Codex; branch `codex/bq1-dashboard-overview`, [PR #22](https://github.com/Kelvinpcw/is459-aml-project/pull/22).
-- Status: IN_PROGRESS. The user explicitly requested updating the live dashboard after the source-only implementation.
-- Scope: deploy the tested dashboard app, read-query helper and bank-label helper from source commit `72e10f4` onto the existing dashboard host. Preserve current bank-name lookup, styling, graph/evaluation code, service role, published release and manual-hosting preference. No processing rerun, IAM change, replacement instance, data publication or schedule is authorised or planned.
-- Coordination: current main includes the previous bank-name update. No overlapping open PR or active instance command was observed. The operator's explicit profile passed project account/region verification; existing host is running and management agent is online. These are preflight observations, not deployment success.
-- Plan: verify live file hashes against the prior reviewed version, retain a rollback backup, install a checksum-verified uniquely named private patch, compile and smoke-check, restart only the dashboard service, and verify health plus all-currency/bank-first UI and a currency/route interaction. Reuse existing immutable published results for bounded viewing reads.
-- Validation available: 34 local synthetic source tests passed before deployment. No new cloud UI success is claimed at this stage.
-- AWS scope/cost: existing host update and bounded dashboard verification reads only. Patch/request and existing hosting/query costs are recorded privately. No compute start/stop is planned; existing host remains running for user-controlled manual shutdown. No account-wide cost or cleanup audit is claimed.
-- Detailed resource IDs, commands, hashes, private patch location, measurements and screenshots remain in the ignored operator record.
-- Next step: publish this plan on the existing draft PR, then start the scoped update. On failure retain/restore the previous working dashboard and report the outcome before additional changes.
+- Status: COMPLETED — tested source deployed to the existing dashboard; source PR remains unmerged.
+- Authority: the user explicitly requested the live update, then clarified that payment types must come first and currency choices must be busiest-first.
 
-## User clarification during verification
+## Result
 
-The user explicitly highlighted BQ1's payment-type comparison. Added a visible Payment types relative to their size section alongside the bank overview rather than relying on the Compare dropdown. It includes supported relative-risk bars, transaction and historical-label counts, traffic share, labelled share, labelled rate, relative risk and support. This section uses the same date/currency/format population and remains overall when route drill-down selects one sending bank. Low-support types are visible and unranked. Thirty-five focused synthetic checks pass, including a smaller payment type accounting for a larger share of historical labels. Browser verification also caught a stale persisted inspection-index type when returning to banks; it is corrected with a regression check. These are presentation/read-query changes within the authorised existing-host update; live verification of the final revision is in progress.
+Payment-type rate/lift and traffic/labelled-share comparisons are visible first, followed by banks overall, with routes and route/format views available. All currencies is the default for counts/rates; the single Currency filter uses payment currency. Dropdown choices keep All currencies first, then currencies ordered by summed transaction count across the pinned published release, with names breaking count ties. The help explains that population. Monetary totals appear only for one selected currency. Sending-bank grouping counts each payment once, including within-bank transfers; route drill-down uses a matching sender-filtered baseline while headline/daily totals remain overall and are labelled separately.
 
-## Final ordering clarification
+Final deployed dashboard source is `ce122ef`. Both currency fields, receiving-currency API support, exact selected-currency amounts, N/L aggregation, support safeguards, bank names, TRACE styling, Q2/evaluation, frozen artifacts and release pinning are retained. No ingestion schedule was introduced.
 
-The user requested payment types at the top and confirmed the currency dropdown should list busiest currencies first. Payment-type chart/table now precede bank comparisons; All currencies remains first, followed by currencies ordered by summed transaction count across the pinned published release (name breaks count ties). The dropdown help states that population. This ordering uses counts only and never combines monetary units. Thirty-six focused synthetic checks pass, including payment-first heading order and paid/receiving currency-order reconciliation. Final scoped deployment/verification is in progress.
+## Verification and recovery
+
+Thirty-six focused synthetic checks passed for SQL populations, payment-type exposure relative to size, busiest-first currency ordering, payment-first layout, bank labels, app/navigation, trends, charts, release contracts and public-dashboard configuration. During live testing, returning from routes exposed an old inspection-index string/int mismatch; the final source resets stale selections and includes a regression check.
+
+The explicit project profile passed account/region verification. No overlapping open work or active host command was observed before deployment. Live files matched the reviewed baseline before installation. Each installed patch was checksum-verified with a retained backup and rollback guard. Final file hashes match the tested source; compilation, backend/public health and service/proxy checks passed. Browser verification confirmed the visible payment-type section, all-currency totals, busiest-first currency choices and error-free route-to-bank return. Earlier revision testing also verified USD filtering, bank-specific route baselines and exact amount strings. Final screenshot and detailed operational evidence stay private.
+
+## AWS scope and handoff
+
+Only the existing dashboard service was restarted; existing host remains running under the user's manual-hosting preference. No instance start/stop, processing rerun, IAM change, dataset publication, output deletion or schedule change occurred. Bounded dashboard viewing queries reused published results. Normal hosting/request/query/storage costs continue; exact resource/command IDs, hashes, measurements and cost assumptions are in the ignored private ledger/checkpoint. No account-wide cost or cleanup audit is claimed.
+
+Next safe step: use the updated live dashboard and review the source PR. No merge was requested. The existing operator remains responsible for manual hosting shutdown when finished.
