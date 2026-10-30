@@ -10,7 +10,7 @@ class PublicDashboardTests(unittest.TestCase):
         self.assertIn('--server.address=127.0.0.1',user)
         self.assertIn('proxy_set_header Upgrade $http_upgrade',user)
         self.assertIn('proxy_pass http://127.0.0.1:8501',user)
-        self.assertIn('shutdown -h +60',user);self.assertEqual(p['InstanceInitiatedShutdownBehavior'],'terminate')
+        self.assertNotIn('shutdown -h +60',user);self.assertEqual(p['InstanceInitiatedShutdownBehavior'],'stop')
         self.assertTrue(p['BlockDeviceMappings'][0]['Ebs']['DeleteOnTermination'])
         deny=next(x for x in r['Role']['Properties']['Policies'][0]['PolicyDocument']['Statement'] if x['Effect']=='Deny')
         for name in ['raw/','curated/','references/']:self.assertTrue(any(name in x for x in deny['Resource']))

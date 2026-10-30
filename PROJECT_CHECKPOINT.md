@@ -9,3 +9,12 @@ Before any fresh AWS action, establish current scope/owner/budget, use the membe
 ## Latest budget clarification — 29 October 2026
 
 The saved planning ceiling is **US$90**. The user explicitly said to put it in GitHub and **not run the full pipeline now**. Follow the [current handoff](Implementation/team-handoffs/2026-10-29-1215Z-kelvin-fresh-full-rerun.md); do not resume the interrupted attempt or deploy from historical approval. The operator's new private record is `Implementation/data/aws-operations-20261029/PROJECT_CHECKPOINT.md`. Earlier completed-release records remain in the prior private folder. Future paid work needs fresh scoped authorisation.
+
+## Public dashboard and manual shutdown — 30 October 2026
+
+The user explicitly requested public EC2 access, a US$200 project budget, and leaving
+the instance running until they manually stop it. This supersedes the one-hour
+termination guard only for the new public dashboard. Reuse the completed published
+release; no processing rerun or public bucket is authorised. Follow the
+[public-dashboard handoff](Implementation/team-handoffs/2026-10-30-kelvin-public-dashboard.md).
+The earlier US$90/revoked-run records remain historical.

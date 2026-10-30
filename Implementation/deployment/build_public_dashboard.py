@@ -44,14 +44,15 @@ systemctl enable --now nginx
 
 def build():
     t=copy.deepcopy(private_dashboard());r=t['Resources']
-    t['Description']='User-authorised temporary public read-only synthetic AML dashboard. HTTP proxy only; one-hour termination guard; source bucket remains private.'
+    t['Description']='User-authorised temporary public read-only synthetic AML dashboard. HTTP proxy only; manual shutdown; source bucket remains private.'
     r['Role']['Properties']['RoleName']=STACK_NAME
     r['Group']['Properties']['GroupDescription']='Public HTTP dashboard only; no SSH or direct Streamlit ingress'
     r['Group']['Properties']['SecurityGroupIngress']=[{'IpProtocol':'tcp','FromPort':80,'ToPort':80,'CidrIp':'0.0.0.0/0','Description':'User-authorised public read-only dashboard'}]
     instance=r['Instance']['Properties']
     for tag in instance['Tags']:
         if tag['Key']=='Name':tag['Value']=STACK_NAME
-    instance['UserData']['Fn::Base64']['Fn::Sub']+=PROXY
+    instance['UserData']['Fn::Base64']['Fn::Sub']=instance['UserData']['Fn::Base64']['Fn::Sub'].replace('shutdown -h +60\n','')+PROXY
+    instance['InstanceInitiatedShutdownBehavior']='stop'
     t['Outputs']['Access']['Value']='Open the instance public IPv4 address over HTTP. Synthetic published results are publicly visible for the bounded session; raw data and AWS credentials are never served.'
     t['Outputs']['PublicUrl']={'Value':{'Fn::Sub':'http://${Instance.PublicIp}/'}}
     return t
