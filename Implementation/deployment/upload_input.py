@@ -9,7 +9,8 @@ ROOT=Path(__file__).resolve().parents[2]
 
 def main():
  p=argparse.ArgumentParser();p.add_argument('--profile',required=True);p.add_argument('--region',default=REGION)
- p.add_argument('--input',type=Path,default=ROOT/'Implementation/data/full-20220901-29-v1');args=p.parse_args()
+ p.add_argument('--input',type=Path,default=ROOT/'Implementation/data/full-20220901-29-v1');p.add_argument('--prefix',default='raw/full-v1');p.add_argument('--record',type=Path,default=ROOT/'Implementation/aws/reviews/full-input-upload.json');args=p.parse_args()
+ if not __import__('re').fullmatch(r'raw/full-[a-z0-9-]+',args.prefix):raise ValueError('Require a scoped full-input prefix')
  subprocess.run(['bash','Implementation/scripts/check_aws_profile.sh',args.profile],cwd=ROOT,check=True)
  s=boto3.Session(profile_name=args.profile,region_name=args.region)
  if args.region!=REGION or s.client('sts').get_caller_identity()['Account']!=ACCOUNT:raise ValueError('Wrong project account/region')
@@ -23,7 +24,7 @@ def main():
  if not all(block.values()):raise ValueError('Project bucket must remain private')
  observed={}
  for name,info in manifest['artifacts'].items():
-  path=args.input/name;key='raw/full-v1/'+name
+  path=args.input/name;key=args.prefix+'/'+name
   try:head=s3.head_object(Bucket=BUCKET,Key=key,ExpectedBucketOwner=ACCOUNT)
   except ClientError as e:
    if e.response['Error']['Code'] not in ('404','NoSuchKey'):raise
@@ -51,12 +52,12 @@ def main():
   except Exception:
    s3.abort_multipart_upload(Bucket=BUCKET,Key=key,UploadId=upload_id,ExpectedBucketOwner=ACCOUNT);raise
   print('Verified full input '+name,flush=True)
- raw=(args.input/'manifest.json').read_bytes();key='raw/full-v1/manifest.json'
+ raw=(args.input/'manifest.json').read_bytes();key=args.prefix+'/manifest.json'
  try:s3.put_object(Bucket=BUCKET,Key=key,Body=raw,IfNoneMatch='*',ContentType='application/json',ServerSideEncryption='AES256',ExpectedBucketOwner=ACCOUNT)
  except ClientError as e:
   if e.response['Error']['Code'] not in ('PreconditionFailed','412'):raise
  if s3.get_object(Bucket=BUCKET,Key=key,ExpectedBucketOwner=ACCOUNT)['Body'].read()!=raw:raise ValueError('Input manifest differs')
- record={'dataset_version':manifest['dataset_version'],'counts':counts,'destination':'s3://'+BUCKET+'/raw/full-v1/','objects':observed,'manifest_sha256':hashlib.sha256(raw).hexdigest(),'originals_changed':False,'paid_processing_started':False}
- (ROOT/'Implementation/aws/reviews/full-input-upload.json').write_text(json.dumps(record,indent=2)+'\n');print(json.dumps(record,indent=2))
+ record={'dataset_version':manifest['dataset_version'],'counts':counts,'destination':'s3://'+BUCKET+'/'+args.prefix+'/','objects':observed,'manifest_sha256':hashlib.sha256(raw).hexdigest(),'originals_changed':False,'paid_processing_started':False}
+ args.record.write_text(json.dumps(record,indent=2)+'\n');print(json.dumps(record,indent=2))
 
 if __name__=='__main__':main()

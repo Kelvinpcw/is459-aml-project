@@ -4,17 +4,17 @@
   "Parameters": {
     "CodeVersion": {
       "Type": "String",
-      "Default": "full-v1",
+      "Default": "full-v6",
       "AllowedPattern": "full-v[1-9][0-9]*"
     },
     "RunId": {
       "Type": "String",
-      "Default": "full-20261028-v1",
+      "Default": "full-20261030-v1",
       "AllowedPattern": "[a-z][a-z0-9-]{1,60}"
     },
     "ReleaseId": {
       "Type": "String",
-      "Default": "full-20261028-v1",
+      "Default": "full-20261030-v1",
       "AllowedPattern": "[a-z][a-z0-9-]{1,60}"
     }
   },
@@ -53,7 +53,7 @@
                   "Condition": {
                     "StringLike": {
                       "s3:prefix": [
-                        "raw/full-v1*",
+                        "raw/full-20261030-v1*",
                         {
                           "Fn::Sub": "curated/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}*"
                         },
@@ -69,7 +69,7 @@
                         {
                           "Fn::Sub": "scripts/${CodeVersion}*"
                         },
-                        "temporary/full/prepare*"
+                        "temporary/run30/prepare*"
                       ]
                     }
                   }
@@ -78,8 +78,8 @@
                   "Effect": "Allow",
                   "Action": "s3:GetObject",
                   "Resource": [
-                    "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/raw/full-v1",
-                    "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/raw/full-v1/*",
+                    "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/raw/full-20261030-v1",
+                    "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/raw/full-20261030-v1/*",
                     {
                       "Fn::Sub": "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/scripts/${CodeVersion}"
                     },
@@ -109,7 +109,7 @@
                     {
                       "Fn::Sub": "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/quarantine/preparation/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/*"
                     },
-                    "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/temporary/full/prepare/*"
+                    "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/temporary/run30/prepare/*"
                   ]
                 },
                 {
@@ -179,7 +179,7 @@
                         {
                           "Fn::Sub": "scripts/${CodeVersion}*"
                         },
-                        "temporary/full/risk*"
+                        "temporary/run30/risk*"
                       ]
                     }
                   }
@@ -226,7 +226,7 @@
                     {
                       "Fn::Sub": "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/quality/q1/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/analysis_id=q1-full-v1/*"
                     },
-                    "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/temporary/full/risk/*"
+                    "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/temporary/run30/risk/*"
                   ]
                 },
                 {
@@ -293,7 +293,7 @@
                         {
                           "Fn::Sub": "scripts/${CodeVersion}*"
                         },
-                        "temporary/full/detect*"
+                        "temporary/run30/detect*"
                       ]
                     }
                   }
@@ -334,7 +334,7 @@
                     {
                       "Fn::Sub": "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/quality/q2/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/analysis_id=q2-full-v2/*"
                     },
-                    "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/temporary/full/detect/*"
+                    "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/temporary/run30/detect/*"
                   ]
                 },
                 {
@@ -424,7 +424,7 @@
                         {
                           "Fn::Sub": "scripts/${CodeVersion}*"
                         },
-                        "temporary/full/evaluate*"
+                        "temporary/run30/evaluate*"
                       ]
                     }
                   }
@@ -484,7 +484,7 @@
                     {
                       "Fn::Sub": "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/quality/evaluation/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/analysis_id=q2-full-v2/evaluation_id=eval-full-v2/*"
                     },
-                    "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/temporary/full/evaluate/*"
+                    "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/temporary/run30/evaluate/*"
                   ]
                 },
                 {
@@ -576,7 +576,7 @@
                         {
                           "Fn::Sub": "scripts/${CodeVersion}*"
                         },
-                        "temporary/full/control*"
+                        "temporary/run30/control*"
                       ]
                     }
                   }
@@ -648,7 +648,7 @@
                       "Fn::Sub": "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/published/releases/${ReleaseId}/*"
                     },
                     "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/published/current.json",
-                    "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/temporary/full/control/*"
+                    "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/temporary/run30/control/*"
                   ]
                 },
                 {
@@ -728,8 +728,8 @@
             "Fn::Sub": "s3://is459-aml-g2team7-160885259244-us-east-1/scripts/${CodeVersion}/jobs.zip"
           },
           "--custom-logGroup-prefix": "/is459/aml/full/prepare",
-          "--TempDir": "s3://is459-aml-g2team7-160885259244-us-east-1/temporary/full/prepare/",
-          "--input-root": "s3://is459-aml-g2team7-160885259244-us-east-1/raw/full-v1",
+          "--TempDir": "s3://is459-aml-g2team7-160885259244-us-east-1/temporary/run30/prepare/",
+          "--input-root": "s3://is459-aml-g2team7-160885259244-us-east-1/raw/full-20261030-v1",
           "--output-root": "s3://is459-aml-g2team7-160885259244-us-east-1",
           "--run-id": {
             "Fn::Sub": "${RunId}"
@@ -739,7 +739,7 @@
         "Tags": {
           "Project": "is459-aml",
           "Phase": "full-data",
-          "BudgetUSD": "30"
+          "BudgetUSD": "90"
         }
       }
     },
@@ -757,7 +757,7 @@
           "Name": "glueetl",
           "PythonVersion": "3",
           "ScriptLocation": {
-            "Fn::Sub": "s3://is459-aml-g2team7-160885259244-us-east-1/scripts/${CodeVersion}/recovery1/q1_risk.py"
+            "Fn::Sub": "s3://is459-aml-g2team7-160885259244-us-east-1/scripts/${CodeVersion}/q1_risk.py"
           }
         },
         "GlueVersion": "5.1",
@@ -778,21 +778,20 @@
           "--enable-job-insights": "false",
           "--enable-spark-ui": "false",
           "--extra-py-files": {
-            "Fn::Sub": "s3://is459-aml-g2team7-160885259244-us-east-1/scripts/${CodeVersion}/recovery1/jobs.zip"
+            "Fn::Sub": "s3://is459-aml-g2team7-160885259244-us-east-1/scripts/${CodeVersion}/jobs.zip"
           },
           "--custom-logGroup-prefix": "/is459/aml/full/risk",
-          "--TempDir": "s3://is459-aml-g2team7-160885259244-us-east-1/temporary/full/risk/",
+          "--TempDir": "s3://is459-aml-g2team7-160885259244-us-east-1/temporary/run30/risk/",
           "--preparation-report": {
             "Fn::Sub": "s3://is459-aml-g2team7-160885259244-us-east-1/quality/preparation/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/report.json"
           },
           "--output-root": "s3://is459-aml-g2team7-160885259244-us-east-1",
-          "--analysis-id": "q1-full-v1",
-          "--attempt-id": "recovery1"
+          "--analysis-id": "q1-full-v1"
         },
         "Tags": {
           "Project": "is459-aml",
           "Phase": "full-data",
-          "BudgetUSD": "30"
+          "BudgetUSD": "90"
         }
       }
     },
@@ -810,7 +809,7 @@
           "Name": "glueetl",
           "PythonVersion": "3",
           "ScriptLocation": {
-            "Fn::Sub": "s3://is459-aml-g2team7-160885259244-us-east-1/scripts/${CodeVersion}/recovery1/q2_snapshots.py"
+            "Fn::Sub": "s3://is459-aml-g2team7-160885259244-us-east-1/scripts/${CodeVersion}/q2_snapshots.py"
           }
         },
         "GlueVersion": "5.1",
@@ -831,10 +830,10 @@
           "--enable-job-insights": "false",
           "--enable-spark-ui": "false",
           "--extra-py-files": {
-            "Fn::Sub": "s3://is459-aml-g2team7-160885259244-us-east-1/scripts/${CodeVersion}/recovery1/jobs.zip"
+            "Fn::Sub": "s3://is459-aml-g2team7-160885259244-us-east-1/scripts/${CodeVersion}/jobs.zip"
           },
           "--custom-logGroup-prefix": "/is459/aml/full/detect",
-          "--TempDir": "s3://is459-aml-g2team7-160885259244-us-east-1/temporary/full/detect/",
+          "--TempDir": "s3://is459-aml-g2team7-160885259244-us-east-1/temporary/run30/detect/",
           "--input-manifest": {
             "Fn::Sub": "s3://is459-aml-g2team7-160885259244-us-east-1/manifests/detector-inputs/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/manifest.json"
           },
@@ -844,13 +843,12 @@
           "--last-snapshot-end": "2022-09-29T00:00:00",
           "--max-cycle-degree": "64",
           "--max-cycle-path-rows": "200000000",
-          "--max-output-cost-usd": "10",
-          "--attempt-id": "recovery1"
+          "--max-output-cost-usd": "10"
         },
         "Tags": {
           "Project": "is459-aml",
           "Phase": "full-data",
-          "BudgetUSD": "30"
+          "BudgetUSD": "90"
         }
       }
     },
@@ -868,7 +866,7 @@
           "Name": "glueetl",
           "PythonVersion": "3",
           "ScriptLocation": {
-            "Fn::Sub": "s3://is459-aml-g2team7-160885259244-us-east-1/scripts/${CodeVersion}/evaluation-lineage1/evaluate_distributed.py"
+            "Fn::Sub": "s3://is459-aml-g2team7-160885259244-us-east-1/scripts/${CodeVersion}/evaluate_distributed.py"
           }
         },
         "GlueVersion": "5.1",
@@ -889,26 +887,25 @@
           "--enable-job-insights": "false",
           "--enable-spark-ui": "false",
           "--extra-py-files": {
-            "Fn::Sub": "s3://is459-aml-g2team7-160885259244-us-east-1/scripts/${CodeVersion}/evaluation-lineage1/jobs.zip"
+            "Fn::Sub": "s3://is459-aml-g2team7-160885259244-us-east-1/scripts/${CodeVersion}/jobs.zip"
           },
           "--custom-logGroup-prefix": "/is459/aml/full/evaluate",
-          "--TempDir": "s3://is459-aml-g2team7-160885259244-us-east-1/temporary/full/evaluate/",
+          "--TempDir": "s3://is459-aml-g2team7-160885259244-us-east-1/temporary/run30/evaluate/",
           "--preparation-report": {
             "Fn::Sub": "s3://is459-aml-g2team7-160885259244-us-east-1/quality/preparation/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/report.json"
           },
           "--detector-report": {
-            "Fn::Sub": "s3://is459-aml-g2team7-160885259244-us-east-1/quality/q2/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/analysis_id=q2-full-v2/attempt=recovery1/report.json"
+            "Fn::Sub": "s3://is459-aml-g2team7-160885259244-us-east-1/quality/q2/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/analysis_id=q2-full-v2/report.json"
           },
           "--annotations": "s3://is459-aml-g2team7-160885259244-us-east-1/references/annotations/dataset_version=ibm-hi-medium-b1b99c68b765580f/HI-Medium_Patterns.txt",
           "--annotations-sha256": "392d748d8d76efc1a96f6dc29ad8dd282c815de96537f0296bb0a7fa96ec4130",
           "--output-root": "s3://is459-aml-g2team7-160885259244-us-east-1",
-          "--evaluation-id": "eval-full-v2",
-          "--attempt-id": "evaluation-lineage1"
+          "--evaluation-id": "eval-full-v2"
         },
         "Tags": {
           "Project": "is459-aml",
           "Phase": "full-data",
-          "BudgetUSD": "30"
+          "BudgetUSD": "90"
         }
       }
     },
@@ -926,7 +923,7 @@
           "Name": "glueetl",
           "PythonVersion": "3",
           "ScriptLocation": {
-            "Fn::Sub": "s3://is459-aml-g2team7-160885259244-us-east-1/scripts/${CodeVersion}/evaluation-lineage1/control.py"
+            "Fn::Sub": "s3://is459-aml-g2team7-160885259244-us-east-1/scripts/${CodeVersion}/control.py"
           }
         },
         "GlueVersion": "5.1",
@@ -947,30 +944,21 @@
           "--enable-job-insights": "false",
           "--enable-spark-ui": "false",
           "--extra-py-files": {
-            "Fn::Sub": "s3://is459-aml-g2team7-160885259244-us-east-1/scripts/${CodeVersion}/evaluation-lineage1/jobs.zip"
+            "Fn::Sub": "s3://is459-aml-g2team7-160885259244-us-east-1/scripts/${CodeVersion}/jobs.zip"
           },
           "--custom-logGroup-prefix": "/is459/aml/full/control",
-          "--TempDir": "s3://is459-aml-g2team7-160885259244-us-east-1/temporary/full/control/",
+          "--TempDir": "s3://is459-aml-g2team7-160885259244-us-east-1/temporary/run30/control/",
           "--run-id": {
             "Fn::Sub": "${RunId}"
           },
           "--release-id": {
             "Fn::Sub": "${ReleaseId}"
-          },
-          "--q1-report": {
-            "Fn::Sub": "s3://is459-aml-g2team7-160885259244-us-east-1/quality/q1/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/analysis_id=q1-full-v1/attempt=recovery1/report.json"
-          },
-          "--q2-report": {
-            "Fn::Sub": "s3://is459-aml-g2team7-160885259244-us-east-1/quality/q2/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/analysis_id=q2-full-v2/attempt=recovery1/report.json"
-          },
-          "--evaluation-report": {
-            "Fn::Sub": "s3://is459-aml-g2team7-160885259244-us-east-1/quality/evaluation/dataset_version=ibm-hi-medium-b1b99c68b765580f/run_id=${RunId}/analysis_id=q2-full-v2/evaluation_id=eval-full-v2/attempt=evaluation-lineage1/report.json"
           }
         },
         "Tags": {
           "Project": "is459-aml",
           "Phase": "full-data",
-          "BudgetUSD": "30"
+          "BudgetUSD": "90"
         }
       }
     },
@@ -1083,7 +1071,7 @@
       }
     },
     "ComputeMaximumEstimateUSD": {
-      "Value": "14.19 at US$0.44/DPU-hour if every job reaches its timeout; S3/requests/logging/dashboard separate. Not a hard billing cap."
+      "Value": "15.84 configured Glue compute estimate at reviewed pricing, excluding startup/storage/requests/dashboard; not a billing cap."
     }
   }
 }

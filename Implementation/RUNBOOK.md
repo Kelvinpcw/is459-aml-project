@@ -38,6 +38,13 @@ PYTHONPATH=Implementation:Implementation/tests .venv-dashboard/bin/python -m uni
 
 This command is a Unix-shell example. Windows users should have their agent adapt interpreter paths and environment-variable syntax. Synthetic checks do not require AWS credentials or the original dataset.
 
+## Full ingestion-to-EC2 operation
+
+The [end-to-end guide](END_TO_END_GUIDE.md) explains source ingestion, each Glue
+stage, Step Functions, publication, EC2/SSM access, exact phased commands and
+authorised cleanup. Check its linked session handoff for the actual run outcome.
+A fresh approval/run namespace is required; never reuse consumed start markers.
+
 ## Advanced deployment and recovery reference
 
 The [archived deployment runbook](archive/2026-10-28-deployment-runbook.md) preserves the earlier full-run/recovery/package commands and their historical context. It is **not** the current task list, a live account inventory or fresh run approval. Preserve frozen packages, inspect completed outputs first and agree exact new code/output identities before any authorised change. Do not run its old start/retry/delete commands as onboarding.
