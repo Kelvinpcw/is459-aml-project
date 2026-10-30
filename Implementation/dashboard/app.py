@@ -95,23 +95,34 @@ def monitoring():
             a,b=st.columns(2)
             custom_start=a.selectbox('From date',dates,persist_state='session',index=0,key='q1_start')
             custom_end=b.selectbox('Through date',dates,persist_state='session',index=len(dates)-1,key='q1_end')
-        side=select_filter('Currency side',['payment','receiving'],format_func=lambda x:'Paid' if x=='payment' else 'Received',key='q1_side')
+        side='payment'
         currencies=[r['currency'] for r in query_cached(release['release_id'],dimension_query(release,side))]
-        currency=select_filter('Currency',currencies,index=currencies.index('US Dollar') if 'US Dollar' in currencies else 0,key='q1_currency_'+side)
-        grain=select_filter('Compare',['format','bank_pair','segment'],format_func=lambda x:{'format':'Payment formats','bank_pair':'Bank-to-bank routes','segment':'Bank-to-bank route + payment format'}[x],key='q1_grain')
+        choice=select_filter('Currency',['All currencies']+currencies,key='q1_currency',help='Filters payment currency. All currencies combines counts and rates, with no combined monetary total.')
+        currency=None if choice=='All currencies' else choice
+        grain=select_filter('Compare',['bank','bank_pair','segment','format'],format_func=lambda x:{'bank':'Banks overall','format':'Payment formats','bank_pair':'Bank-to-bank routes','segment':'Bank-to-bank route + payment format'}[x],key='q1_grain')
         fmt=select_filter('Payment format',['All','ACH','Cash','Cheque','Credit Card','Reinvestment','Wire','Bitcoin'],key='q1_format')
         support=1000
         st.caption('Ranked segments require at least 1,000 payments. Low-support rows remain available in the details.')
     try:start,end=date_window(dates,preset,custom_start,custom_end)
     except ValueError as error:st.warning(str(error));return
-    caption(period(start,end)+' · '+('Paid' if side=='payment' else 'Received')+' in '+currency+' · '+('All formats' if fmt=='All' else fmt)+' · Minimum '+f'{support:,}'+' payments')
+    caption(period(start,end)+' · '+('All currencies' if currency is None else 'Payment currency: '+currency)+' · '+('All formats' if fmt=='All' else fmt)+' · Minimum '+f'{support:,}'+' payments')
     caption('Latest published date: '+period(dates[-1],dates[-1]).split(' – ')[0]+' · Rolling windows end on that date, not today.')
+    caption('Published: '+release.get('created_at_utc','Unavailable')+' · Historical exposure uses available labels; newly ingested payments may await labels.')
     with st.spinner('Loading daily published counts…'):
         trend_rows=query_cached(release['release_id'],q1_trend_query(release,start,end,currency,side,None if fmt=='All' else fmt))
     daily=daily_population(trend_rows,start,end,dates,release['q1'].get('day_coverage'));n,l,rate=population_total(daily)
     count=lambda value:f'{value:,}' if value is not None else 'Not available'
+    sender_bank=None
+    if grain in ('bank_pair','segment'):
+        bank_rows=query_cached(release['release_id'],q1_query(release,start,end,currency,side,'bank',None if fmt=='All' else fmt,support))
+        names=bank_names_for_display()
+        options=[str(row['sender_bank']) for row in bank_rows]
+        sender_key='q1_sender_'+str(currency)+'_'+fmt
+        if st.session_state.get(sender_key) not in [None]+options:st.session_state.pop(sender_key,None)
+        sender_bank=select_filter('Sending bank',[None]+options,format_func=lambda x:'All sending banks' if x is None else segment_label({'sender_bank':x},names),key=sender_key)
+        st.caption('Bank choices cover up to 500 banks in this selection. Daily totals remain overall; route comparisons use the selected sending bank.')
     with st.spinner('Loading published segment comparisons…'):
-        rows=query_cached(release['release_id'],q1_query(release,start,end,currency,side,grain,None if fmt=='All' else fmt,support))
+        rows=query_cached(release['release_id'],q1_query(release,start,end,currency,side,grain,None if fmt=='All' else fmt,support,sender_bank=sender_bank))
     if not rows:
         st.info('No transactions match the selected reporting window.');return
     frame=pd.DataFrame(rows)
@@ -120,16 +131,17 @@ def monitoring():
     baseline_n=int(frame.iloc[0].baseline_n);baseline_l=int(frame.iloc[0].baseline_l)
     baseline_rate=f'{baseline_l/baseline_n:.4%}' if baseline_n else 'Not measurable'
     names=bank_names_for_display() if grain!='format' else {}
-    if grain!='format':
+    if grain=='bank':
+        st.caption('Banks overall: each payment counts once under its sending bank, including within-bank transfers.')
+    elif grain!='format':
         st.caption('Sending bank → Receiving bank: payments from accounts at the first bank to accounts at the second. Each route can include many accounts. IDs distinguish banks that share a name.')
     frame['group']=frame.apply(lambda r:segment_label(r,names),axis=1)
     records=frame.to_dict('records');lead=monitoring_lead(records)
     priorities=sum(r['support']=='supported' and pd.notna(r['lift']) and r['lift']>1 for r in records)
-    cards([('Transactions in scope',count(n),'Selected currency population'),('Historically labelled',count(l),'Known labels, not new detections'),('Labelled rate',f'{rate:.4%}' if rate is not None else 'Not measurable','Σ labels ÷ Σ payments'),('Above-baseline groups',f'{priorities:,}','Supported groups in the ranking preview')])
+    cards([('Transactions in scope',count(n),'All currencies' if currency is None else 'Selected payment currency'),('Historically labelled',count(l),'Known labels, not new detections'),('Labelled rate',f'{rate:.4%}' if rate is not None else 'Not measurable','Σ labels ÷ Σ payments'),('Above-baseline groups',f'{priorities:,}','Supported groups in the ranking preview')])
     chart_col,insight_col=st.columns([2,1],gap='large')
     with chart_col:
-        st.subheader('Volume isn’t the whole story.')
-        st.caption('Compare scale with supported historical labelled exposure.')
+        st.subheader({'bank':'Banks overall','bank_pair':'Bank-to-bank routes','segment':'Routes by payment format','format':'Payment formats'}[grain])
         mode=st.segmented_control('Chart view',['Volume vs rate','Risk lift'],default='Volume vs rate',required=True,label_visibility='collapsed',key='q1_chart',persist_state='session')
         chart=exposure_chart(records,mode)
         if chart is None:st.info('No supported groups have positive labelled exposure in this selection.')
@@ -138,7 +150,7 @@ def monitoring():
             st.caption('Up to 10 supported groups by lift · Hover for exact counts · Log volume axis in volume/rate view · 1× lift matches the selected baseline.')
     with insight_col:
         st.markdown(priority_card(lead),unsafe_allow_html=True)
-    st.subheader('Where to focus your attention')
+    st.subheader('Monitoring priorities')
     caption('Selected-window ranking · '+period(start,end)+f' · Baseline: {baseline_n:,} payments / {baseline_l:,} labels / '+baseline_rate)
     summary=frame.head(10).copy()
     summary['Rate']=summary.rate.map(lambda x:f'{x:.4%}')
@@ -154,14 +166,15 @@ def monitoring():
     with st.expander('Selected segment details',expanded=False):
         st.write(str(inspected['group']))
         cards([('Segment payments',f'{int(inspected.n):,}','Denominator for this segment'),('Historical labels',f'{int(inspected.l):,}','Historical association'),('Support',str(inspected.support).replace('_',' ').title(),'Required minimum: 1,000 payments')])
-        st.write('Selected-currency amount: '+str(inspected.selected_currency_amount)+' '+currency+' ('+('paid' if side=='payment' else 'received')+')')
+        if currency is not None:st.write('Transferred amount: '+str(inspected.selected_currency_amount)+' '+currency+' (payment currency)')
+        else:st.caption('Select a currency to see transferred amounts.')
         st.caption('Descriptive 95% interval: '+' – '.join(f'{x:.4%}' for x in wilson(int(inspected.l),int(inspected.n)))+'. Related payments may violate independence. Transferred value is not unique criminal proceeds.')
     with st.expander('Explore exact counts, amounts and uncertainty',expanded=False):
         display=frame.copy();display['Rate']=display.rate.map(lambda x:f'{x:.4%}');display['Lift']=display.apply(lambda r:f'{r.lift:.2f}×' if r.support=='supported' and pd.notna(r.lift) else 'Not ranked',axis=1);display['Descriptive 95% interval']=display.apply(lambda r:' – '.join(f'{x:.4%}' for x in wilson(int(r.l),int(r.n))),axis=1)
-        display=display.rename(columns={'group':'Segment','n':'Transactions','l':'Labels','support':'Support','selected_currency_amount':currency+' amount ('+('paid' if side=='payment' else 'received')+')'})
-        amount=currency+' amount ('+('paid' if side=='payment' else 'received')+')'
-        st.dataframe(display[['Segment','Transactions','Labels','Rate','Lift','Support',amount,'Descriptive 95% interval']],hide_index=True,width='stretch')
-        st.caption('Up to 500 groups. Low-support groups are unranked. Amount strings retain exact precision in the selected currency. Intervals are descriptive; related payments may violate independence. Transferred value is not unique criminal proceeds.')
+        display=display.rename(columns={'group':'Segment','n':'Transactions','l':'Labels','support':'Support','selected_currency_amount':str(currency)+' amount (paid)'})
+        amount_columns=[currency+' amount (paid)'] if currency is not None else []
+        st.dataframe(display[['Segment','Transactions','Labels','Rate','Lift','Support']+amount_columns+['Descriptive 95% interval']],hide_index=True,width='stretch')
+        st.caption('Up to 500 groups. Low-support groups are unranked. Select a currency to see exact transferred amounts. Intervals are descriptive; related payments may violate independence. Transferred value is not unique criminal proceeds.')
 
     st.divider()
     st.subheader('How exposure changed')
@@ -170,7 +183,7 @@ def monitoring():
     if coverage['partial']:st.warning(f"{coverage['partial']} dates have explicitly reported partial coverage. Counts are retained; comparisons are provisional.")
     if coverage['low_volume']:st.info(f"{coverage['low_volume']} low-volume days: fewer than {LOW_DAILY_VOLUME:,} payments in this filtered population. Rates can be unstable. Low volume alone does not establish incomplete or bad data.")
     st.plotly_chart(trend_chart(daily),width='stretch',config={'displayModeBar':False})
-    st.caption('Daily counts, rate and total traffic use the same currency side and format filter. Hover for exact values. Rates are calculated from counts; a day with no payments has no measurable rate.')
+    st.caption('Daily counts, rate and total traffic use the same payment-currency and format filter. Hover for exact values. Rates are calculated from counts; a day with no payments has no measurable rate.')
     comparison=endpoint_comparison(daily)
     if comparison:st.caption(comparison)
     with st.expander('Daily counts behind the trend'):

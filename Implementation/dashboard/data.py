@@ -18,25 +18,27 @@ def table(release,key):
     return '.'.join(values)
 
 
-def q1_query(release,start,end,currency,side='payment',grain='format',payment_format=None,min_support=1000):
-    if side not in ('payment','receiving') or grain not in ('format','bank_pair','segment'):
+def q1_query(release,start,end,currency,side='payment',grain='format',payment_format=None,min_support=1000,sender_bank=None):
+    if side not in ('payment','receiving') or grain not in ('bank','format','bank_pair','segment'):
         raise ValueError('Invalid view')
     start,end=date.fromisoformat(start),date.fromisoformat(end)
     dates=[date.fromisoformat(x) for x in release['q1']['dates']]
     if not min(dates)<=start<=end<=max(dates):raise ValueError('Date filter outside published scope')
     if not isinstance(min_support,int) or not 1<=min_support<=1000000:raise ValueError('Invalid support')
-    group={'format':['payment_format'],'bank_pair':['sender_bank','receiver_bank'],
+    group={'bank':['sender_bank'],'format':['payment_format'],'bank_pair':['sender_bank','receiver_bank'],
            'segment':['sender_bank','receiver_bank','payment_format']}[grain]
     cols=', '.join(group)
     filters=[f'dataset_version={literal(release["dataset_version"])}',f'run_id={literal(release["run_id"])}',
-             f"event_date BETWEEN DATE '{start}' AND DATE '{end}'",f'{side}_currency={literal(currency)}']
+             f"event_date BETWEEN DATE '{start}' AND DATE '{end}'"]
+    if currency is not None:filters.append(f'{side}_currency={literal(currency)}')
+    if sender_bank is not None:filters.append('sender_bank='+literal(sender_bank))
     if payment_format:filters.append('payment_format='+literal(payment_format))
     # Only sum the monetary side whose currency is fixed; the other side may mix units.
     amount='amount_paid_total' if side=='payment' else 'amount_received_total'
+    amount_select=f',SUM({amount}) selected_currency_amount' if currency is not None else ''
     return f'''WITH selected AS (SELECT * FROM {table(release,'q1_table')} WHERE {' AND '.join(filters)}),
     baseline AS (SELECT SUM(transaction_count) baseline_n,SUM(laundering_count) baseline_l FROM selected),
-    grouped_segments AS (SELECT {cols},SUM(transaction_count) n,SUM(laundering_count) l,
-    SUM({amount}) selected_currency_amount FROM selected GROUP BY {cols})
+    grouped_segments AS (SELECT {cols},SUM(transaction_count) n,SUM(laundering_count) l{amount_select} FROM selected GROUP BY {cols})
     SELECT g.*,b.baseline_n,b.baseline_l,CAST(g.l AS DOUBLE)/NULLIF(g.n,0) rate,
     (CAST(g.l AS DOUBLE)/NULLIF(g.n,0))/NULLIF(CAST(b.baseline_l AS DOUBLE)/NULLIF(b.baseline_n,0),0) lift,
     CASE WHEN g.n>={min_support} THEN 'supported' ELSE 'low_support' END support
@@ -51,7 +53,8 @@ def q1_trend_query(release,start,end,currency,side='payment',payment_format=None
     if not min(dates)<=start<=end<=max(dates):raise ValueError('Date filter outside published scope')
     if (end-start).days>=500:raise ValueError('Trend exceeds the bounded display window')
     filters=[f'dataset_version={literal(release["dataset_version"])}',f'run_id={literal(release["run_id"])}',
-             f"event_date BETWEEN DATE '{start}' AND DATE '{end}'",f'{side}_currency={literal(currency)}']
+             f"event_date BETWEEN DATE '{start}' AND DATE '{end}'"]
+    if currency is not None:filters.append(f'{side}_currency={literal(currency)}')
     if payment_format:filters.append('payment_format='+literal(payment_format))
     return f"SELECT event_date,SUM(transaction_count) n,SUM(laundering_count) l FROM {table(release,'q1_table')} WHERE {' AND '.join(filters)} GROUP BY event_date ORDER BY event_date"
 
