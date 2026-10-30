@@ -108,3 +108,16 @@ remain. The EC2 viewing session is temporarily live under its verified terminati
 guard; final instance/disk/stack teardown is still pending. Follow the
 [session handoff](team-handoffs/2026-10-30-kelvin-full-pipeline.md) and
 [end-to-end guide](END_TO_END_GUIDE.md).
+
+## Public visualization with manual shutdown — 30 October 2026
+
+A subsequent explicit user request made the completed release available through a
+public HTTP dashboard and removed automatic shutdown, with a US$200 project budget.
+The old private instance/disk/stack are absent. The new public EC2 dashboard passed
+service/proxy/no-timer and actual browser verification for Monitoring, Cases and
+Evaluation. Its instance remains RUNNING by user choice; manual stopping or
+termination is the user's responsibility. The cleanup heartbeat was deleted.
+Only HTTP80 is open; SSH/direct Streamlit ports and public S3 access remain closed.
+No processing, output deletion or publication was repeated. See the
+[public-dashboard handoff](team-handoffs/2026-10-30-kelvin-public-dashboard.md) and
+[end-to-end guide](END_TO_END_GUIDE.md).

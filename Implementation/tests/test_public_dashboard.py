@@ -9,6 +9,7 @@ class PublicDashboardTests(unittest.TestCase):
         user=p['UserData']['Fn::Base64']['Fn::Sub']
         self.assertIn('--server.address=127.0.0.1',user)
         self.assertIn('proxy_set_header Upgrade $http_upgrade',user)
+        self.assertIn('proxy_read_timeout 86400s',user)
         self.assertIn('proxy_pass http://127.0.0.1:8501',user)
         self.assertNotIn('shutdown -h +60',user);self.assertEqual(p['InstanceInitiatedShutdownBehavior'],'stop')
         self.assertTrue(p['BlockDeviceMappings'][0]['Ebs']['DeleteOnTermination'])
