@@ -55,6 +55,10 @@ class DashboardNavigationTests(unittest.TestCase):
             self.assertEqual(len(app.exception),0);self.assertEqual(len(app.error),0)
             app.selectbox(key='q1_currency').set_value('All currencies').run(timeout=20)
             self.assertEqual(len(app.exception),0);self.assertEqual(len(app.error),0)
+            # Browser-persisted selectors may restore an old index as a string.
+            app.session_state['q1_inspect_bank']='0'
+            app.selectbox(key='q1_grain').set_value('bank').run(timeout=20)
+            self.assertEqual(len(app.exception),0);self.assertEqual(len(app.error),0)
             self.assertEqual(len(app.error),0)
 
 

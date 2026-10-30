@@ -160,7 +160,8 @@ def monitoring():
     st.dataframe(summary[['Segment','Transactions','Labels','Rate','Lift','Traffic share','Support']],hide_index=True,width='stretch')
     st.caption(f'Showing {len(summary):,} of {len(frame):,} returned groups (query cap: 500). Support ≥ 1,000 payments. Low-support rows are inspectable counts, never ranked priorities.')
     inspect_key='q1_inspect_'+grain
-    if st.session_state.get(inspect_key,0)>=len(frame):st.session_state.pop(inspect_key,None)
+    stored_group=st.session_state.get(inspect_key,0)
+    if not isinstance(stored_group,int) or not 0<=stored_group<len(frame):st.session_state.pop(inspect_key,None)
     selected_group=select_filter('Inspect a segment',range(len(frame)),format_func=lambda i:frame.iloc[i]['group'],key='q1_inspect_'+grain)
     inspected=frame.iloc[selected_group]
     with st.expander('Selected segment details',expanded=False):
