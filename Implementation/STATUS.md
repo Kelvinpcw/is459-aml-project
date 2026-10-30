@@ -121,3 +121,5 @@ Only HTTP80 is open; SSH/direct Streamlit ports and public S3 access remain clos
 No processing, output deletion or publication was repeated. See the
 [public-dashboard handoff](team-handoffs/2026-10-30-kelvin-public-dashboard.md) and
 [end-to-end guide](END_TO_END_GUIDE.md).
+
+BQ1 bank routes now display bank names plus IDs throughout ranking tables, chart labels, priority cards, the segment selector and selected details. A direction caption explains that each route groups payments between accounts at two banks. Labels use the raw accounts lookup; ID grouping, counts, currencies and published results are unchanged. The existing EC2 dashboard received the presentation update and bank-only lookup; checksum, lookup and service-health checks passed. Twenty-nine focused synthetic label/UI/dashboard/release tests pass. No processing rerun or IAM change occurred; existing user-controlled dashboard hosting remains running. Detailed deployment evidence stays private.
