@@ -30,7 +30,7 @@ class OverviewTests(unittest.TestCase):
         self.db.executemany('INSERT INTO aml.risk_run VALUES (?,?,?,?,?,?,?,?,?,?,?,?)', [
             ('fixture','run','2022-09-01','A','A','ACH','USD','EUR',100,10,'100.00000001','90.00000001'),
             ('fixture','run','2022-09-02','A','B','ACH','EUR','USD',900,0,'900','1000'),
-            ('fixture','run','2022-09-01','B','A','ACH','USD','USD',200,20,'200','200'),
+            ('fixture','run','2022-09-01','B','A','Wire','USD','USD',200,20,'200','200'),
             ('fixture','other','2022-09-01','A','B','ACH','USD','USD',5000,5000,'5000','5000'),
         ])
 
@@ -65,6 +65,16 @@ class OverviewTests(unittest.TestCase):
         sql = q1_query(self.release, '2022-09-01', '2022-09-02', 'USD')
         self.assertIn('SUM(amount_paid_total)', sql)
         self.assertNotIn('SUM(amount_received_total)', sql)
+
+    def test_payment_types_compare_labelled_exposure_with_their_size(self):
+        types = {r['payment_format']:r for r in self.query(currency=None, grain='format')}
+        self.assertEqual((types['ACH']['n'],types['ACH']['l']), (1000,10))
+        self.assertEqual((types['Wire']['n'],types['Wire']['l']), (200,20))
+        self.assertAlmostEqual(types['Wire']['rate'], .1)
+        self.assertAlmostEqual(types['Wire']['lift'], 4)
+        self.assertAlmostEqual(types['Wire']['n']/types['Wire']['baseline_n'], 1/6)
+        self.assertAlmostEqual(types['Wire']['l']/types['Wire']['baseline_l'], 2/3)
+        self.assertEqual(types['Wire']['support'], 'low_support')
 
     def test_daily_and_route_drilldown_use_same_population_and_identity(self):
         days = self.query(currency=None, grain='daily')

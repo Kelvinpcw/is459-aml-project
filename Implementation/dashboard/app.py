@@ -159,6 +159,23 @@ def monitoring():
     summary=summary.rename(columns={'group':'Segment','n':'Transactions','l':'Labels','support':'Support'})
     st.dataframe(summary[['Segment','Transactions','Labels','Rate','Lift','Traffic share','Support']],hide_index=True,width='stretch')
     st.caption(f'Showing {len(summary):,} of {len(frame):,} returned groups (query cap: 500). Support ≥ 1,000 payments. Low-support rows are inspectable counts, never ranked priorities.')
+    st.subheader('Payment types relative to their size')
+    st.caption('Compare each payment type’s share of all payments with its share of historical labelled laundering. Relative risk above 1× means a higher labelled rate than the same filtered population.')
+    type_rows=rows if grain=='format' and sender_bank is None else query_cached(release['release_id'],q1_query(release,start,end,currency,side,'format',None if fmt=='All' else fmt,support))
+    if type_rows:
+        types=pd.DataFrame(type_rows)
+        for col in ['n','l','baseline_n','baseline_l','rate','lift']:types[col]=pd.to_numeric(types[col],errors='coerce')
+        types['group']=types['payment_format']
+        type_chart=exposure_chart(types.to_dict('records'),'Risk lift')
+        if type_chart is not None:st.plotly_chart(type_chart,width='stretch',config={'displayModeBar':False})
+        else:st.info('No supported payment types have positive historical labelled exposure in this selection.')
+        types['Traffic share']=types.apply(lambda r:f'{r.n/r.baseline_n:.2%}' if r.baseline_n else 'Not measurable',axis=1)
+        types['Labelled share']=types.apply(lambda r:f'{r.l/r.baseline_l:.2%}' if r.baseline_l else 'Not measurable',axis=1)
+        types['Labelled rate']=types.rate.map(lambda value:f'{value:.4%}')
+        types['Relative risk']=types.apply(lambda r:f'{r.lift:.2f}×' if r.support=='supported' and pd.notna(r.lift) else 'Not ranked',axis=1)
+        types=types.rename(columns={'payment_format':'Payment type','n':'Transactions','l':'Historical labels','support':'Support'})
+        st.dataframe(types[['Payment type','Transactions','Historical labels','Traffic share','Labelled share','Labelled rate','Relative risk','Support']],hide_index=True,width='stretch')
+        st.caption('Payment types use the overall date, payment-currency and format filters, independently of a selected sending bank. Low-support types remain visible and unranked. Historical labels describe exposure, not new detections.')
     inspect_key='q1_inspect_'+grain
     stored_group=st.session_state.get(inspect_key,0)
     if not isinstance(stored_group,int) or not 0<=stored_group<len(frame):st.session_state.pop(inspect_key,None)
