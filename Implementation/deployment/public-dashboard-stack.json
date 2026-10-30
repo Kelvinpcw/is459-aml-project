@@ -1,0 +1,262 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "User-authorised temporary public read-only synthetic AML dashboard. HTTP proxy only; one-hour termination guard; source bucket remains private.",
+  "Parameters": {
+    "CodeVersion": {
+      "Type": "String",
+      "Default": "full-v6",
+      "AllowedPattern": "full-v[1-9][0-9]*"
+    },
+    "VpcId": {
+      "Type": "AWS::EC2::VPC::Id"
+    },
+    "SubnetId": {
+      "Type": "AWS::EC2::Subnet::Id"
+    },
+    "AmiId": {
+      "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
+      "Default": "/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64"
+    }
+  },
+  "Resources": {
+    "Role": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "RoleName": "is459-aml-public30-dashboard",
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "ec2.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "ManagedPolicyArns": [
+          "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+        ],
+        "Policies": [
+          {
+            "PolicyName": "read-published-analysis-only",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": "s3:GetBucketLocation",
+                  "Resource": "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1"
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": "s3:ListBucket",
+                  "Resource": "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1",
+                  "Condition": {
+                    "StringLike": {
+                      "s3:prefix": [
+                        "published/*",
+                        "gold/risk/*",
+                        "gold/cases/*",
+                        "evaluation/*",
+                        "query-results/dashboard/*",
+                        {
+                          "Fn::Sub": "scripts/${CodeVersion}/dashboard.zip"
+                        }
+                      ]
+                    }
+                  }
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": "s3:GetObject",
+                  "Resource": [
+                    "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/published/*",
+                    "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/gold/risk/*",
+                    "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/gold/cases/*",
+                    "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/evaluation/*/metrics.json",
+                    "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/query-results/dashboard/*",
+                    {
+                      "Fn::Sub": "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/scripts/${CodeVersion}/dashboard.zip"
+                    }
+                  ]
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "s3:PutObject",
+                    "s3:AbortMultipartUpload"
+                  ],
+                  "Resource": "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/query-results/dashboard/*"
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "athena:StartQueryExecution",
+                    "athena:GetQueryExecution",
+                    "athena:GetQueryResults",
+                    "athena:StopQueryExecution"
+                  ],
+                  "Resource": "arn:aws:athena:us-east-1:160885259244:workgroup/is459-aml-dashboard"
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "glue:GetDatabase",
+                    "glue:GetTable",
+                    "glue:GetPartitions",
+                    "glue:BatchGetPartition"
+                  ],
+                  "Resource": [
+                    "arn:aws:glue:us-east-1:160885259244:catalog",
+                    "arn:aws:glue:us-east-1:160885259244:database/is459_aml_dev",
+                    "arn:aws:glue:us-east-1:160885259244:database/is459_aml_full",
+                    "arn:aws:glue:us-east-1:160885259244:table/is459_aml_dev/q1_*",
+                    "arn:aws:glue:us-east-1:160885259244:table/is459_aml_dev/q2_*",
+                    "arn:aws:glue:us-east-1:160885259244:table/is459_aml_full/q1_*",
+                    "arn:aws:glue:us-east-1:160885259244:table/is459_aml_full/q2_*"
+                  ]
+                },
+                {
+                  "Effect": "Deny",
+                  "Action": "s3:GetObject*",
+                  "Resource": [
+                    "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/raw/*",
+                    "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/curated/*",
+                    "arn:aws:s3:::is459-aml-g2team7-160885259244-us-east-1/references/*"
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "Profile": {
+      "Type": "AWS::IAM::InstanceProfile",
+      "Properties": {
+        "Roles": [
+          {
+            "Ref": "Role"
+          }
+        ]
+      }
+    },
+    "Group": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Public HTTP dashboard only; no SSH or direct Streamlit ingress",
+        "VpcId": {
+          "Ref": "VpcId"
+        },
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 80,
+            "ToPort": 80,
+            "CidrIp": "0.0.0.0/0",
+            "Description": "User-authorised public read-only dashboard"
+          }
+        ],
+        "SecurityGroupEgress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 443,
+            "ToPort": 443,
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Package registry and AWS HTTPS"
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 80,
+            "ToPort": 80,
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Official package repository redirects"
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Project",
+            "Value": "is459-aml"
+          }
+        ]
+      }
+    },
+    "Instance": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "ImageId": {
+          "Ref": "AmiId"
+        },
+        "InstanceType": "t3.small",
+        "IamInstanceProfile": {
+          "Ref": "Profile"
+        },
+        "MetadataOptions": {
+          "HttpTokens": "required",
+          "HttpPutResponseHopLimit": 1
+        },
+        "NetworkInterfaces": [
+          {
+            "DeviceIndex": "0",
+            "AssociatePublicIpAddress": true,
+            "SubnetId": {
+              "Ref": "SubnetId"
+            },
+            "GroupSet": [
+              {
+                "Ref": "Group"
+              }
+            ]
+          }
+        ],
+        "BlockDeviceMappings": [
+          {
+            "DeviceName": "/dev/xvda",
+            "Ebs": {
+              "VolumeSize": 8,
+              "VolumeType": "gp3",
+              "Encrypted": true,
+              "DeleteOnTermination": true
+            }
+          }
+        ],
+        "CreditSpecification": {
+          "CPUCredits": "standard"
+        },
+        "UserData": {
+          "Fn::Base64": {
+            "Fn::Sub": "#!/bin/bash\nset -euo pipefail\nshutdown -h +60\ndnf install -y python3.11 python3.11-pip\nmkdir -p /opt/is459-aml /root/.aws\nprintf '[profile project-instance]\nregion=us-east-1\n' > /root/.aws/config\naws s3 cp s3://is459-aml-g2team7-160885259244-us-east-1/scripts/${CodeVersion}/dashboard.zip /opt/is459-dashboard.zip --profile project-instance --region us-east-1\npython3.11 -m zipfile -e /opt/is459-dashboard.zip /opt/is459-aml\npython3.11 -m venv /opt/is459-aml/venv\n/opt/is459-aml/venv/bin/pip install --no-cache-dir -r /opt/is459-aml/requirements-dashboard.txt\nchown -R ec2-user:ec2-user /opt/is459-aml\ncat > /etc/systemd/system/is459-dashboard.service <<'SERVICE'\n[Unit]\nDescription=IS459 read-only AML dashboard\nAfter=network-online.target\n[Service]\nUser=ec2-user\nWorkingDirectory=/opt/is459-aml\nEnvironment=AML_USE_INSTANCE_ROLE=1\nEnvironment=AML_ATHENA_WORKGROUP=is459-aml-dashboard\nEnvironment=AWS_DEFAULT_REGION=us-east-1\nExecStart=/opt/is459-aml/venv/bin/python -m streamlit run Implementation/dashboard/app.py --server.address=127.0.0.1 --server.port=8501\nRestart=on-failure\nRestartSec=10\nNoNewPrivileges=true\nPrivateTmp=true\n[Install]\nWantedBy=multi-user.target\nSERVICE\nsystemctl daemon-reload\nsystemctl enable --now is459-dashboard\n\ndnf install -y nginx\ncat > /etc/nginx/nginx.conf <<'NGINX'\nuser nginx;\nworker_processes auto;\npid /run/nginx.pid;\nerror_log /var/log/nginx/error.log;\nevents { worker_connections 1024; }\nhttp {\n  include /etc/nginx/mime.types;\n  default_type application/octet-stream;\n  map $http_upgrade $connection_upgrade { default upgrade; '' close; }\n  limit_conn_zone $binary_remote_addr zone=per_ip:10m;\n  limit_req_zone $binary_remote_addr zone=page_requests:10m rate=10r/s;\n  server {\n    listen 80 default_server;\n    server_name _;\n    server_tokens off;\n    limit_conn per_ip 10;\n    location / {\n      limit_req zone=page_requests burst=80 nodelay;\n      proxy_pass http://127.0.0.1:8501;\n      proxy_http_version 1.1;\n      proxy_set_header Host $host;\n      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;\n      proxy_set_header X-Forwarded-Proto $scheme;\n      proxy_set_header Upgrade $http_upgrade;\n      proxy_set_header Connection $connection_upgrade;\n      proxy_read_timeout 180s;\n      proxy_buffering off;\n    }\n  }\n}\nNGINX\nnginx -t\nsystemctl enable --now nginx\n"
+          }
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "is459-aml-public30-dashboard"
+          },
+          {
+            "Key": "Project",
+            "Value": "is459-aml"
+          }
+        ],
+        "InstanceInitiatedShutdownBehavior": "terminate"
+      }
+    }
+  },
+  "Outputs": {
+    "InstanceId": {
+      "Value": {
+        "Ref": "Instance"
+      }
+    },
+    "Access": {
+      "Value": "Open the instance public IPv4 address over HTTP. Synthetic published results are publicly visible for the bounded session; raw data and AWS credentials are never served."
+    },
+    "PublicUrl": {
+      "Value": {
+        "Fn::Sub": "http://${Instance.PublicIp}/"
+      }
+    }
+  }
+}
