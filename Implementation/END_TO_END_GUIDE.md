@@ -306,3 +306,40 @@ and verified absent; new data/raw inputs/annotations/software remain. The tempor
 EC2 viewing window remains live under its verified shutdown guard; final teardown
 is tracked separately in the session handoff. The command examples above describe a consumed run identity, not
 authorisation to start it again.
+
+## Public dashboard with manual shutdown — 30 October 2026
+
+A later explicit user request permits public HTTP access and leaves shutdown to
+the user, with a US$200 project planning budget. This supersedes the earlier
+one-hour guard for the new public dashboard only; completed processing remains
+consumed and no new Glue run is authorised. The old private instance/root disk
+were verified absent and its leftover stack was separately removed/requested for
+removal. Consult the
+[public-dashboard handoff](team-handoffs/2026-10-30-kelvin-public-dashboard.md)
+for observed deployment/cleanup state.
+
+`deployment/build_public_dashboard.py` generates
+`deployment/public-dashboard-stack.json` from the reviewed dashboard template.
+It retains the immutable full-v6 package, read-only instance role, private source
+bucket, encrypted root volume, IMDSv2 and standard CPU credits. Only inbound
+HTTP80 is open. nginx proxies to Streamlit on localhost8501, including WebSocket
+upgrade headers and request/connection limits; SSH and direct8501 are closed.
+The public web page exposes synthetic published results and evidence during use,
+with no application login. It is an HTTP public-IP endpoint; no domain or HTTPS
+certificate is created by this template.
+
+The public template intentionally has no scheduled shutdown. OS-initiated
+shutdown stops the instance; AWS console Stop instance also works. The instance
+will remain billable while running until the user stops or terminates it. Stopping
+keeps its root disk (storage charges continue); terminating deletes the configured
+root disk. A stopped/restarted instance may receive a new public IP. Do not
+reinstall a shutdown timer or recreate the removed cleanup automation without a
+new user request.
+
+For manual control, select the exact public dashboard instance in EC2 Console
+(us-east-1), then Instance state → Stop instance, or use explicit profile/region
+with `aws ec2 stop-instances --instance-ids YOUR_PUBLIC_DASHBOARD_INSTANCE --profile YOUR_PROJECT_PROFILE --region us-east-1`.
+For permanent teardown, delete only the dedicated public dashboard CloudFormation
+stack and verify its instance/disk/group/profile/role are gone. Retain the shared
+processing stack, bucket and published outputs. Detailed instance/IP identifiers
+are provided privately to the operator rather than embedded in this public guide.
