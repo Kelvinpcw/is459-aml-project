@@ -1,7 +1,7 @@
 # Live BQ1 overview update
 
 - Owner: Kelvin with Codex; branch `codex/bq1-dashboard-overview`, [PR #22](https://github.com/Kelvinpcw/is459-aml-project/pull/22).
-- Status: PLANNED. The user explicitly requested updating the live dashboard after the source-only implementation.
+- Status: IN_PROGRESS. The user explicitly requested updating the live dashboard after the source-only implementation.
 - Scope: deploy the tested dashboard app, read-query helper and bank-label helper from source commit `72e10f4` onto the existing dashboard host. Preserve current bank-name lookup, styling, graph/evaluation code, service role, published release and manual-hosting preference. No processing rerun, IAM change, replacement instance, data publication or schedule is authorised or planned.
 - Coordination: current main includes the previous bank-name update. No overlapping open PR or active instance command was observed. The operator's explicit profile passed project account/region verification; existing host is running and management agent is online. These are preflight observations, not deployment success.
 - Plan: verify live file hashes against the prior reviewed version, retain a rollback backup, install a checksum-verified uniquely named private patch, compile and smoke-check, restart only the dashboard service, and verify health plus all-currency/bank-first UI and a currency/route interaction. Reuse existing immutable published results for bounded viewing reads.
