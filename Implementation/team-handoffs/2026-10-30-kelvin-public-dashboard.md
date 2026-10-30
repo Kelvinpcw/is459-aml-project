@@ -1,9 +1,9 @@
 # Task: public browser access to the completed AML dashboard
 
 - **Owner:** Kelvinpcw with Codex
-- **Branch / PR:** `agent/codex-public-dashboard`; PR pending
+- **Branch / PR:** `agent/codex-public-dashboard`; [PR #20](https://github.com/Kelvinpcw/is459-aml-project/pull/20)
 - **Updated at:** 2026-10-30 (+08:00)
-- **Status:** PLANNED — awaiting refreshed project login
+- **Status:** BLOCKED — member sign-in required before planned deployment
 - **Evidence kind:** current human authorisation, local configuration/checks, failed identity preflight
 
 ## Scope and coordination
@@ -23,4 +23,4 @@ The earlier instance's scheduled deadline is past. Its current state and final o
 
 No AWS mutation or processing occurred in this session so far. Identity preflight failed due to expired login. After the operator signs in: verify project identity, inspect and clean the exact obsolete private dashboard stack/instance/disk, validate current publication and available budget reserve, then deploy one fresh temporary public dashboard if the old instance has ended. Never restart the pipeline or repeat S3/Catalog cleanup. Record private exact identities/deadline/evidence; publish the sanitised observed outcome and configure final scoped cleanup.
 
-GitHub sync: pending branch push and draft PR. Public access is not yet deployed.
+GitHub sync: branch pushed and draft PR #20 opened. Public access is not yet deployed.
