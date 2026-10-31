@@ -90,3 +90,14 @@ If a branch is checked out in another worktree, use that checkout or ask the age
 | Sanitised session scope, outcome category, blockers and cleanup uncertainty | Raw cloud reports/logs/screenshots, detailed measurements/costs and operator checkpoint |
 
 No hooks or background auto-push are installed. Publishing is a deliberate checked step, and instructions are not an automated cloud lock or monitoring service.
+
+## If fetching fails with `bad object refs/Icon?` on macOS
+
+Finder's `Icon` filename ends with a carriage return. A zero-byte Finder file inside `.git/refs/` can be mistaken for a Git reference and block fetching; `.gitignore` does not protect Git's internal metadata.
+
+1. Preserve uncommitted tracked/untracked files and private records before any repair. Inspect the exact malformed path; do not delete real branch references or reset the working tree.
+2. Move only confirmed Finder metadata out of `.git` into a local safety backup. Check again after fetching: creating a reference directory can expose another Finder file. Do not publish `.git`, safety stashes or private backups.
+3. Run `git fetch origin` and `git fsck --connectivity-only --no-dangling`. Compare local changes with `origin/main` before deciding whether work needs a PR or is already published.
+4. Once local work is safely reconciled, switch to `main` and use `git pull --ff-only origin main`. Never use a force push or destructive reset merely to catch up.
+
+If Finder/cloud-sync metadata keeps returning, consider a checkout outside the synced Desktop after agreeing how to preserve local data and worktrees. Moving a repository, changing Finder settings and relocating private data are separate actions, not automatic repair steps.
