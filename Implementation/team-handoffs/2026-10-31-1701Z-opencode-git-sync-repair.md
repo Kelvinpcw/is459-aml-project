@@ -1,9 +1,9 @@
 # Task: repair local Git fetching and reconcile with shared source
 
 - **Owner:** Kelvin with OpenCode
-- **Branch / PR:** `agent/opencode-git-sync-repair`; PR pending
+- **Branch / PR:** `agent/opencode-git-sync-repair`; [PR #23](https://github.com/Kelvinpcw/is459-aml-project/pull/23)
 - **Updated at:** 2026-10-31T17:01:56Z
-- **Status:** COMPLETED — local repair verified; documentation PR publication pending
+- **Status:** COMPLETED — local repair verified; documentation pushed in PR #23
 - **Evidence kind:** local Git inspection/repair and GitHub source comparison
 
 ## Scope and coordination
@@ -26,4 +26,4 @@ AWS: none. No AWS API calls, deployments, processing, queries, resource cleanup 
 
 - Use the latest shared source and normal feature-branch/PR workflow. Do not reapply the old safety stash wholesale: it contains obsolete source views and private ledger content.
 - If Finder metadata recurs, inspect and preserve it narrowly; do not delete real Git refs or change another worktree. Relocating the checkout requires separate agreement.
-- GitHub sync: local checks passed; push and PR pending. No merge requested.
+- GitHub sync: local checks passed; branch pushed and PR #23 opened. Pushed-head verification is reported with the final response. No merge requested.
