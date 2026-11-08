@@ -49,6 +49,10 @@ class CaseCatalog:
         import pyarrow.parquet as parquet
 
         with closing(sqlite3.connect(path)) as db, ThreadPoolExecutor(max_workers=8) as pool:
+            # This file is private staging until all checks pass and it is renamed.
+            # A rollback journal is unnecessary and can double the disk work.
+            db.execute('PRAGMA journal_mode=OFF')
+            db.execute('PRAGMA cache_size=-65536')
             db.execute("""CREATE TABLE cases (
                 case_id TEXT NOT NULL, snapshot TEXT NOT NULL, pattern_type TEXT NOT NULL,
                 participant_count INTEGER NOT NULL, evidence_transaction_count INTEGER NOT NULL,
@@ -76,14 +80,15 @@ class CaseCatalog:
                                        row.get('bundle_member'), row.get('bundle_sha256')))
                     return result
 
-                count = payments = 0
-                for rows in pool.map(read, files):
-                    db.executemany('INSERT INTO cases VALUES (?,?,?,?,?,?,?,?)', rows)
-                    count += len(rows)
-                    payments += sum(row[4] for row in rows)
+                # The primary key is ordered by case ID. Insert each snapshot in
+                # that order to avoid random writes across the entire index.
+                rows = sorted(row for batch in pool.map(read, files) for row in batch)
+                count = len(rows)
+                payments = sum(row[4] for row in rows)
                 expected_payments = snapshot.get('case_evidence_rows_including_case_overlap')
                 if count != snapshot['case_count'] or (expected_payments is not None and payments != expected_payments):
                     raise ValueError(f'Published case index does not match the snapshot ending {end}')
+                db.executemany('INSERT INTO cases VALUES (?,?,?,?,?,?,?,?)', rows)
                 total += count
                 db.commit()
             if total != self.total:
