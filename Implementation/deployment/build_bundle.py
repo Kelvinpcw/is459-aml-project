@@ -25,7 +25,9 @@ def build(version='full-v1'):
     dashboard={'.streamlit/config.toml':(ROOT/'.streamlit/config.toml').read_bytes(),'requirements-dashboard.txt':(ROOT/'Implementation/dashboard/requirements.txt').read_bytes()}
     for folder in ['dashboard','pipeline']:
         for path in (ROOT/'Implementation'/folder).glob('*.py'):dashboard['Implementation/'+folder+'/'+path.name]=path.read_bytes()
-    dashboard['Implementation/dashboard/styles.css']=(ROOT/'Implementation/dashboard/styles.css').read_bytes()
+    for pattern in ('*.css','*.js'):
+        for path in (ROOT/'Implementation/dashboard').glob(pattern):
+            dashboard['Implementation/dashboard/'+path.name]=path.read_bytes()
     payload['dashboard.zip']=archive(dashboard)
     target=ROOT/'Implementation/releases'/version
     target.mkdir(exist_ok=False)

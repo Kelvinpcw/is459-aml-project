@@ -65,7 +65,7 @@ class DashboardPresentationTests(unittest.TestCase):
         self.assertAlmostEqual(fig.layout.shapes[0].y0,.005)
         self.assertEqual(list(exposure_chart(rows).data[0].y),['ACH'])
 
-    def test_new_dashboard_package_contains_styles_without_touching_frozen_releases(self):
+    def test_new_dashboard_package_contains_case_assets_without_touching_frozen_releases(self):
         import tempfile,zipfile
         from unittest.mock import patch
         from deployment import build_bundle
@@ -78,7 +78,9 @@ class DashboardPresentationTests(unittest.TestCase):
             (root/'Implementation/releases/preparation-v2').symlink_to(source/'Implementation/releases/preparation-v2',target_is_directory=True)
             with patch.object(build_bundle,'ROOT',root):build_bundle.build('full-v999')
             with zipfile.ZipFile(root/'Implementation/releases/full-v999/dashboard.zip') as bundle:
-                self.assertEqual(bundle.read('Implementation/dashboard/styles.css'),(source/'Implementation/dashboard/styles.css').read_bytes())
+                for asset in ('styles.css','case_queue.css','case_queue.js','connections.css','connections.js'):
+                    path='Implementation/dashboard/'+asset
+                    self.assertEqual(bundle.read(path),(source/path).read_bytes())
                 self.assertIn(b'persist_state',bundle.read('Implementation/dashboard/app.py'))
 
 

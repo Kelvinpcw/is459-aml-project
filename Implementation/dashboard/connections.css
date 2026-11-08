@@ -1,0 +1,20 @@
+.graph-frame{position:relative;overflow:hidden;border:1px solid #dce3de;border-radius:12px;background:#fff}
+.graph-canvas{height:clamp(310px,43vh,440px);background:radial-gradient(#e4eae6 0.8px,transparent 0.8px) 0 0/15px 15px}
+.graph-canvas svg{width:100%;height:100%;display:block}
+.graph-tools{position:absolute;z-index:1;top:9px;right:9px;display:flex;gap:4px}
+.graph-tools button{cursor:pointer;border:1px solid #dce3de;background:#fff;color:#334b42;border-radius:5px;font:inherit;font-size:12px;line-height:1.3;padding:4px 7px}
+.graph-tools button:focus-visible{outline:2px solid #127458}
+.graph-note{margin:0;padding:8px 11px;font-size:11px;color:#52675d;background:#fbfcfb;border-top:1px solid #e7ebe8}
+.edge{cursor:pointer;outline:none}
+.edge-hit{fill:none;stroke:transparent;stroke-width:21;pointer-events:stroke}
+.edge-line{fill:none;stroke:#728881;stroke-width:2.15;pointer-events:none}
+.edge-label{font:600 15px system-ui,sans-serif;fill:#4c645b;stroke:#fff;stroke-width:8px;paint-order:stroke;pointer-events:none}
+.edge:hover .edge-line,.edge:focus .edge-line,.edge.active .edge-line{stroke:#127458;stroke-width:4.2}
+.edge:hover .edge-label,.edge:focus .edge-label,.edge.active .edge-label{fill:#0a634a}
+.node circle{stroke:#758f81;stroke-width:1.5}
+.node circle.active-node{stroke:#127458;stroke-width:3}
+.node text{fill:#2c4c40;font:600 15px system-ui,sans-serif;stroke:#fff;stroke-width:3px;paint-order:stroke}
+
+.node{cursor:pointer;outline:none}
+.node:focus circle,.node:hover circle{stroke:#127458;stroke-width:3}
+.node text{pointer-events:none}

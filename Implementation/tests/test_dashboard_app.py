@@ -17,6 +17,9 @@ class ApplicationTests(unittest.TestCase):
   case.update(dataset_version='fixture',run_id='run',analysis_id='detect')
   body=encode_case(case)
   case_row={'case_id':case['case_id'],'bundle_uri':release['q2']['bundles']+case['case_id']+'.json','pattern_type':'fan_out','participant_count':'6','evidence_transaction_count':'5'}
+  case_row['snapshot']=release['q2']['window_end']
+  catalog=Mock()
+  catalog.queue.side_effect=lambda snapshot,pattern,page=None:1 if page is None else [case_row]
   metrics=encoded({'detector_transaction_metrics':{'population':10,'positive_labels':0,'precision':None,'recall':None,'unique_alerted_transactions':5},'annotation_metrics':{'eligible_attempts':0}})
   release['evaluation']['metrics']['sha256']=sha(metrics)
   s3=Mock()
@@ -27,7 +30,7 @@ class ApplicationTests(unittest.TestCase):
    if 'GROUP BY event_date' in sql:return [{'event_date':release['q1']['dates'][0],'n':'10','l':'2'}]
    if 'SELECT * FROM aml.cases_run' in sql:return [case_row]
    return [{'payment_format':'ACH','n':'10','l':'2','baseline_n':'10','baseline_l':'2','rate':'0.2','lift':'1.0','support':'low_support','selected_currency_amount':'0.47209301'}]
-  with patch.dict(os.environ,{'AML_AWS_PROFILE':'synthetic-profile'}),patch('boto3.Session',return_value=session),patch('dashboard.data.run_query',side_effect=query):
+  with patch.dict(os.environ,{'AML_AWS_PROFILE':'synthetic-profile'}),patch('boto3.Session',return_value=session),patch('dashboard.data.run_query',side_effect=query),patch('dashboard.case_catalog.CaseCatalog',return_value=catalog):
    app=AppTest.from_file(str(Path(__file__).resolve().parents[1]/'dashboard/app.py'),default_timeout=30)
    app.session_state['release']=release;app.run()
    self.assertFalse(app.exception,list(app.exception))
@@ -40,6 +43,14 @@ class ApplicationTests(unittest.TestCase):
    evidence=next(df.value for df in app.dataframe if 'Source ID' in df.value.columns)
    self.assertEqual(list(evidence['Source ID']),[tx['source_id'] for tx in case['transactions']])
    self.assertTrue(any('Download complete case JSON'==element.label for element in app.get('download_button')))
+   app.selectbox(key='q2_snapshot_mode').set_value('All snapshots').run()
+   self.assertFalse(app.error,list(app.error))
+   self.assertTrue(any(call.args[:2]==(None,None) for call in catalog.queue.call_args_list))
+   links=app.selectbox(key='evidence_link_'+case['case_id'])
+   links.set_value((case['edges'][0]['source'],case['edges'][0]['target'])).run()
+   self.assertFalse(app.error,list(app.error))
+   evidence=next(df.value for df in app.dataframe if 'Source ID' in df.value.columns)
+   self.assertEqual(len(evidence),1)
    app.radio(key='workspace_page').set_value('Evaluation').run()
    self.assertFalse(app.exception,list(app.exception));self.assertFalse(app.error,list(app.error))
 
