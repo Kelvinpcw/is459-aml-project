@@ -17,16 +17,20 @@ class DashboardNavigationTests(unittest.TestCase):
             sqls.append(sql)
             if ' AS currency' in sql:return [{'currency':'US Dollar'}]
             if 'GROUP BY event_date' in sql:return [{'event_date':'2022-09-01','n':'2000','l':'3'}]
-            if 'FROM fixture.q2' in sql:return [{'case_id':'a'*64,'pattern_type':'cycle_3','participant_count':'3','evidence_transaction_count':'3'}]
             if 'GROUP BY sender_bank)' in sql:return [{'sender_bank':'11','n':'2000','l':'3','baseline_n':'2000','baseline_l':'3','rate':'.0015','lift':'1','support':'supported','selected_currency_amount':'0.47209301'}]
             if 'GROUP BY sender_bank, receiver_bank)' in sql:return [{'sender_bank':'11','receiver_bank':'214','n':'2000','l':'3','baseline_n':'2000','baseline_l':'3','rate':'.0015','lift':'1','support':'supported','selected_currency_amount':'0.47209301'}]
             return [{'payment_format':'ACH','n':'2000','l':'3','baseline_n':'2000','baseline_l':'3','rate':'.0015','lift':'1','support':'supported','selected_currency_amount':'0.47209301'}]
         tx={'population':2000,'positive_labels':3,'unique_alerted_transactions':1,'precision':None,'recall':None}
         metrics={'detector_transaction_metrics':tx,'annotation_metrics':{'eligible_attempts':0,'attempt_recovery':None},'limitations':['Fixture only']}
         session=Mock();session.client.return_value.get_caller_identity.return_value={'Account':'160885259244'}
-        with patch.dict(os.environ,{'AML_AWS_PROFILE':'synthetic-test','AML_USE_INSTANCE_ROLE':''}),patch('boto3.Session',return_value=session),patch('pipeline.release.load_current',return_value=release),patch('pipeline.release.verify_ref',return_value=metrics) as metric_read,patch('dashboard.data.run_query',side_effect=query),patch('dashboard.data.get_case',return_value=(case,b'{}')) as case_read:
+        catalog=Mock()
+        catalog.queue.side_effect=lambda snapshot,pattern,page=None:1 if page is None else [
+            {'case_id':case['case_id'],'pattern_type':'cycle_3','participant_count':3,
+             'evidence_transaction_count':3,'snapshot':window['window_end']}]
+        with patch.dict(os.environ,{'AML_AWS_PROFILE':'synthetic-test','AML_USE_INSTANCE_ROLE':''}),patch('boto3.Session',return_value=session),patch('pipeline.release.load_current',return_value=release),patch('pipeline.release.verify_ref',return_value=metrics) as metric_read,patch('dashboard.data.run_query',side_effect=query),patch('dashboard.data.get_case',return_value=(case,b'{}')) as case_read,patch('dashboard.case_catalog.CaseCatalog',return_value=catalog) as index_read:
             app=AppTest.from_file(str(Path(__file__).resolve().parents[1]/'dashboard/app.py')).run(timeout=20)
             self.assertEqual(len(app.exception),0);self.assertEqual(len(app.error),0);self.assertFalse(case_read.called);self.assertFalse(metric_read.called)
+            self.assertFalse(index_read.called)
             self.assertEqual(app.selectbox(key='q1_currency').value,'All currencies')
             self.assertEqual(app.selectbox(key='q1_grain').value,'bank')
             self.assertTrue(any(x.value=='Payment types relative to their size' for x in app.subheader))
@@ -47,6 +51,7 @@ class DashboardNavigationTests(unittest.TestCase):
             self.assertEqual(len(app.error),0);self.assertTrue(any("sender_bank='11'" in x for x in sqls));self.assertFalse(case_read.called)
             app.radio(key='workspace_page').set_value('Case explorer').run(timeout=20)
             self.assertEqual(len(app.exception),0);self.assertEqual(len(app.error),0);self.assertTrue(case_read.called);self.assertFalse(metric_read.called)
+            self.assertTrue(index_read.called)
             app.radio(key='workspace_page').set_value('Evaluation').run(timeout=20)
             self.assertEqual(len(app.exception),0);self.assertEqual(len(app.error),0);self.assertTrue(metric_read.called)
             self.assertTrue(any('Not measurable' in x.value for x in app.markdown))

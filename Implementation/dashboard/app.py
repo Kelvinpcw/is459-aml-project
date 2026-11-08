@@ -5,8 +5,11 @@ sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 import pandas as pd
 import streamlit as st
 from dashboard.bank_labels import load_bank_names, segment_label
-from dashboard.data import q1_query,q1_trend_query,case_query,run_query,get_case,evidence_csv,wilson,dimension_query,full_evidence_archive
-from dashboard.presentation import PATTERNS,esc,kpis,period,exposure_chart,graph_html,monitoring_lead,priority_card,rule_card
+from dashboard.data import q1_query,q1_trend_query,run_query,get_case,evidence_csv,wilson,dimension_query,full_evidence_archive
+from dashboard.presentation import PATTERNS,esc,kpis,period,exposure_chart,monitoring_lead,priority_card,rule_card
+from dashboard.case_catalog import CaseCatalog
+from dashboard.case_connections import link_payments, render_graph, transfer_links
+from dashboard.case_queue import render_case_queue
 from dashboard.trends import range_options,date_window,daily_population,population_total,coverage_counts,LOW_DAILY_VOLUME,endpoint_comparison,trend_chart
 from pipeline.release import ACCOUNT,REGION,load_current,verify_ref
 
@@ -26,6 +29,12 @@ def query_cached(release_id,sql):return run_query(athena,sql)
 
 @st.cache_data(ttl=300,max_entries=4)
 def case_cached(release_data,row):return get_case(s3,release_data,row)
+
+@st.cache_resource(max_entries=2, show_spinner=False)
+def case_catalog(release_data):return CaseCatalog(s3,release_data)
+
+@st.cache_data(max_entries=256, show_spinner=False)
+def queued_cases(release_data,snapshot,pattern,page=None):return case_catalog(release_data).queue(snapshot,pattern,page)
 
 @st.cache_data(max_entries=4)
 def bank_names_cached(path, modified_ns):return load_bank_names(path)
@@ -214,40 +223,46 @@ def explorer():
     st.markdown('<div class="eyebrow">02 / CONNECTED-ACCOUNT INVESTIGATION</div>',unsafe_allow_html=True)
     st.title('Follow the connections.')
     caption('Explainable structures. Traceable evidence. A starting point for investigation.')
-    case_release={**release,'q2':dict(release['q2'])};snapshots=release['q2'].get('snapshots')
-    with st.popover('Case filters',icon=':material/tune:'):
-        if snapshots:
-            ends=sorted(x['window_end'] for x in snapshots)
-            snapshot_mode=select_filter('Snapshot view',['Latest published','Custom snapshot'],key='q2_snapshot_mode')
-            if snapshot_mode=='Latest published':choice=ends[-1]
-            else:
-                if 'q2_snapshot' in st.session_state and st.session_state.q2_snapshot not in ends:del st.session_state['q2_snapshot']
-                choice=select_filter('Daily snapshot cutoff',ends,index=len(ends)-1,format_func=lambda x:period(x,x).split(' – ')[0],key='q2_snapshot')
-            snapshot=next(x for x in snapshots if x['window_end']==choice)
-            case_release['q2'].update({k:snapshot[k] for k in ('window_start','window_end','snapshot_cutoff','case_count')})
-        else:snapshot={}
+    q2=release['q2']
+    snapshots={item['window_end']:item for item in q2.get('snapshots') or [q2]}
+    ends=sorted(snapshots)
+    snapshot_col,pattern_col=st.columns(2,gap='small')
+    choice=ends[-1]
+    with snapshot_col:
+        snapshot_mode=select_filter('Snapshot view',['Latest published','All snapshots','Custom snapshot'],key='q2_snapshot_mode')
+        if snapshot_mode=='All snapshots':
+            choice=None
+        elif snapshot_mode=='Custom snapshot':
+            if 'q2_snapshot' in st.session_state and st.session_state.q2_snapshot not in ends:del st.session_state['q2_snapshot']
+            choice=select_filter('Daily snapshot cutoff',ends,index=len(ends)-1,format_func=lambda x:period(x,x).split(' – ')[0],key='q2_snapshot')
+    with pattern_col:
         pattern=select_filter('Pattern',['All',*PATTERNS],format_func=lambda x:PATTERNS.get(x,'All patterns'),key='q2_pattern')
-    caption(period(case_release['q2']['window_start'],case_release['q2']['window_end'])+' · End exclusive · Dataset-local time · '+PATTERNS.get(pattern,'All patterns'))
-    if not snapshot.get('history_complete',True):st.warning('Earlier history is incomplete for this snapshot.')
-    with st.spinner('Finding published cases…'):rows=query_cached(release['release_id'],case_query(case_release,None if pattern=='All' else pattern))
-    if not rows:st.info('No cases match this pattern.');return
-    st.caption(f"{len(rows):,} cases available in this preview · {case_release['q2']['case_count']:,} across all patterns in this snapshot")
-    queue,case_view=st.columns([1,2.7],gap='large')
+    pattern_label=PATTERNS.get(pattern,'All patterns')
+    if choice is None:
+        caption(f'{len(snapshots)} published snapshots · Overlapping windows · {pattern_label}')
+    else:
+        snapshot=snapshots[choice]
+        caption(period(snapshot['window_start'],snapshot['window_end'])+' · End exclusive · Dataset-local time · '+pattern_label)
+        if not snapshot.get('history_complete',True):st.warning('Earlier history is incomplete for this snapshot.')
+    selected_pattern=None if pattern=='All' else pattern
+    scope=(release['release_id'],choice,selected_pattern)
+    with st.spinner('Finding published cases…'):total=queued_cases(release,choice,selected_pattern)
+    if not total:st.info('No cases match this pattern.');return
+    queue,case_view=st.columns([1,2.25],gap='medium')
     with queue:
-        st.markdown('<div class="eyebrow">INVESTIGATION LEADS</div>',unsafe_allow_html=True)
-        st.caption('Preview ordered by case identity. No severity score or label-derived ranking.')
-        with st.container(height=430,border=True):
-            selected=st.radio('Investigation case',range(len(rows)),format_func=lambda i:f"{PATTERNS.get(rows[i]['pattern_type'],rows[i]['pattern_type'])} · {int(rows[i]['participant_count']):,} accounts · {int(rows[i]['evidence_transaction_count']):,} payments · {rows[i]['case_id'][:10]}",label_visibility='collapsed',persist_state='session',key='selected_case_'+release['release_id']+'_'+case_release['q2']['window_end']+'_'+pattern)
+        selected=render_case_queue(scope,total,lambda _release,snapshot,pattern,page:queued_cases(release,snapshot,pattern,page))
+    snapshot=snapshots[selected['snapshot']]
     with case_view:
-        with st.spinner('Opening case evidence…'):case,raw=case_cached(release,rows[selected])
+        if choice is None:
+            caption('Case window: '+period(snapshot['window_start'],snapshot['window_end'])+' · End exclusive · Dataset-local time')
+            if not snapshot.get('history_complete',True):st.warning('Earlier history is incomplete for this snapshot.')
+        with st.spinner('Opening case evidence…'):case,raw=case_cached(release,selected)
         cards([('Pattern',PATTERNS.get(case['pattern_type'],case['pattern_type']),'Structural lead, not proof'),('Accounts',f"{case['participant_count']:,}",'Distinct participating bank/accounts'),('Evidence payments',f"{case['evidence_transaction_count']:,}",'Complete evidence is downloadable')])
         caption('Case '+case['case_id'][:16]+'… · '+PATTERNS.get(case['pattern_type'],case['pattern_type'])+' · '+str(case['rule_version']))
         st.markdown(rule_card(case),unsafe_allow_html=True)
         labels=st.toggle('Show account labels',value=len(case['nodes'])<=20,key='labels_'+case['case_id'],persist_state='session',help='Hover or click an account for the full identifier. Large graphs start without labels to avoid overlap.')
-        markup,data=graph_html(case,labels)
-        st.iframe(markup,height=485,alt='Interactive directed account graph. Click an account for full identifiers; use Fit graph or zoom controls.')
-        st.caption('Arrows show payment direction · Edge numbers show payment counts · Colors group entities; the palette repeats · Drag to explore, scroll to zoom')
-        if case.get('display_capped') or len(case['nodes'])>100 or len(case['edges'])>500:st.warning(f"Graph preview: {data['visible_accounts']} accounts / {data['visible_edges']} links. Complete stored evidence is retained beyond this preview.")
+        link_key='evidence_link_'+case['case_id']
+        arrow_rows=render_graph(case,labels,s3,release['release_id'],link_key)
         if snapshot.get('cycle_excluded_nodes_above_degree',0):st.caption(f"Cycle coverage excludes {snapshot['cycle_excluded_nodes_above_degree']:,} high-degree accounts; fan evidence remains complete.")
     accounts,evidence=st.tabs(['Accounts & entities','Evidence preview'])
     with accounts:
@@ -255,7 +270,17 @@ def explorer():
         st.dataframe(pd.DataFrame(case['nodes'])[available].rename(columns={'bank':'Bank','account':'Account','entity_name':'Entity','entity_id':'Entity ID','entity_unknown':'Unknown mapping'}),hide_index=True,width='stretch')
         st.caption('Account preview from the case bundle. Full participants and evidence references remain in the case manifest.')
     with evidence:
-        st.dataframe(pd.DataFrame(case['transactions'][:200]).rename(columns={'event_time':'Time','source_id':'Source ID','sender_bank':'Sending bank','sender_account':'Sending account','receiver_bank':'Receiving bank','receiver_account':'Receiving account','amount_paid':'Amount paid','payment_currency':'Paid currency','amount_received':'Amount received','receiving_currency':'Received currency','payment_format':'Format'}),hide_index=True,width='stretch')
+        preview=case['transactions'][:200]
+        relationships=transfer_links(case)
+        if relationships:
+            selected_link=st.selectbox('Transfer link',[None,*relationships],
+                format_func=lambda key:'All transfer links' if key is None else relationships[key][0],
+                key=link_key)
+            if selected_link is not None:
+                label,count=relationships[selected_link]
+                preview=arrow_rows if arrow_rows is not None else link_payments(s3,release['release_id'],case,*selected_link,count)
+                st.caption(f'Showing {len(preview):,} of {count:,} payments for {label}.')
+        st.dataframe(pd.DataFrame(preview).rename(columns={'event_time':'Time','source_id':'Source ID','sender_bank':'Sending bank','sender_account':'Sending account','receiver_bank':'Receiving bank','receiver_account':'Receiving account','amount_paid':'Amount paid','payment_currency':'Paid currency','amount_received':'Amount received','receiving_currency':'Received currency','payment_format':'Format'}),hide_index=True,width='stretch')
         st.caption('Up to 200 preview rows. Amounts retain exact strings and separate paid/received currencies. Downloads contain all evidence, including distinct parallel payments.')
     st.subheader('Keep the evidence')
     st.download_button('Download case manifest' if case.get('schema_version',1)>=2 else 'Download complete case JSON',raw,file_name=case['case_id']+'.json',mime='application/json')
@@ -266,7 +291,7 @@ def explorer():
         if archive and archive[:2]==(release['release_id'],case['case_id']):st.download_button('Download all evidence chunks',archive[2],file_name=case['case_id']+'.zip',mime='application/zip')
     else:st.download_button('Download all supporting transactions',evidence_csv(case),file_name=case['case_id']+'.csv',mime='text/csv')
     with st.expander('Rule, scope and full case identity'):
-        st.write(case['interpretation']);st.write('Rule: '+case['rule_version']);st.write('Case: '+case['case_id']);st.write('Snapshot cutoff: '+case_release['q2']['snapshot_cutoff']);st.caption('A structural cycle does not establish a chronological return of identical funds.')
+        st.write(case['interpretation']);st.write('Rule: '+case['rule_version']);st.write('Case: '+case['case_id']);st.write('Snapshot cutoff: '+snapshot['snapshot_cutoff']);st.caption('A structural cycle does not establish a chronological return of identical funds.')
 
 
 def evaluation():
