@@ -12,7 +12,7 @@ import pyarrow.parquet as pq
 import streamlit as st
 
 from dashboard.case_connections import render_graph
-from dashboard.data import get_case, read_evidence_part
+from dashboard.data import full_evidence_archive, get_case, read_evidence_part
 from dashboard.presentation import PATTERNS, kpis, period
 from pipeline.release import read_object, sha, split_uri, verify_ref
 
@@ -159,7 +159,7 @@ def show_ranked_case(s3, replay: Replay, cases: pa.Table) -> None:
                                  pc.equal(index["snapshot_cutoff"], cutoff)))
     if len(match) != 1:
         raise ValueError("Ranked case does not resolve to one original snapshot")
-    case, _ = get_case(s3, replay.release, match.to_pylist()[0])
+    case, raw = get_case(s3, replay.release, match.to_pylist()[0])
     highlighted = set(snapshot["highlighted_source_ids"])
     payments = highlighted_evidence(s3, case, highlighted)
     st.markdown(kpis([
@@ -178,6 +178,14 @@ def show_ranked_case(s3, replay: Replay, cases: pa.Table) -> None:
         edge["ML highlighted"] = edge["source_id"].isin(highlighted)
         st.subheader("Payments on the selected link")
         st.dataframe(edge, hide_index=True, width="stretch")
+    case_id = case["case_id"]
+    with st.expander("Original case evidence"):
+        st.download_button("Download case manifest", raw, file_name=f"{case_id}.json",
+                           mime="application/json", key=f"ml_manifest_{case_id}", on_click="ignore")
+        if case.get("evidence_parts"):
+            st.download_button("Download complete payments", lambda: full_evidence_archive(s3, case),
+                               file_name=f"{case_id}-evidence.zip", mime="application/zip",
+                               key=f"ml_evidence_{case_id}", on_click="ignore")
 
 
 def show_alerts(replay: Replay) -> None:
