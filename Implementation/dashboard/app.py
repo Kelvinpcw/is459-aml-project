@@ -10,8 +10,11 @@ from dashboard.presentation import PATTERNS,esc,kpis,period,exposure_chart,monit
 from dashboard.case_catalog import CaseCatalog
 from dashboard.case_connections import link_payments, render_graph, transfer_links
 from dashboard.case_queue import render_case_queue
+from dashboard.ml_replay import replay_evaluation, replay_explorer
 from dashboard.trends import range_options,date_window,daily_population,population_total,coverage_counts,LOW_DAILY_VOLUME,endpoint_comparison,trend_chart
 from pipeline.release import ACCOUNT,REGION,load_current,verify_ref
+
+ml_replay_pin=os.environ.get('TRACE_ML_REPLAY_PIN')
 
 st.set_page_config(page_title='TRACE | AML intelligence',page_icon='◈',layout='wide',initial_sidebar_state='expanded')
 st.markdown('<style>'+Path(__file__).with_name('styles.css').read_text()+'</style>',unsafe_allow_html=True)
@@ -223,6 +226,10 @@ def explorer():
     st.markdown('<div class="eyebrow">02 / CONNECTED-ACCOUNT INVESTIGATION</div>',unsafe_allow_html=True)
     st.title('Follow the connections.')
     caption('Explainable structures. Traceable evidence. A starting point for investigation.')
+    if ml_replay_pin and st.radio('Case list',['Published rules','Historical ML shortlist'],
+                                  horizontal=True,key='ml_replay_source')=='Historical ML shortlist':
+        replay_explorer(s3,ml_replay_pin)
+        return
     q2=release['q2']
     snapshots={item['window_end']:item for item in q2.get('snapshots') or [q2]}
     ends=sorted(snapshots)
@@ -295,6 +302,7 @@ def explorer():
 
 
 def evaluation():
+    if ml_replay_pin:replay_evaluation(s3,ml_replay_pin)
     st.markdown('<div class="eyebrow">03 / EVALUATION & COVERAGE</div>',unsafe_allow_html=True)
     st.title('Understand the limits.')
     caption('Separate connected-pattern recovery from individual-payment classification.')
