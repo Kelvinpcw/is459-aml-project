@@ -19,9 +19,6 @@ using Currency = std::uint16_t;
 using Time = std::int32_t;
 using Indices = std::span<const Index>;
 constexpr Time day_minutes = 1440;
-constexpr Index population = 31'898'238;
-constexpr Index expected_cases = 2'251'155;
-constexpr std::uint64_t expected_memberships = 81'321'105;
 
 enum Kind : std::uint8_t { fan_in, fan_out, cycle_2, cycle_3, cycle_4 };
 enum Signal : std::uint16_t {
@@ -482,14 +479,18 @@ unsigned period(unsigned day) {
 }
 
 int main(int argc, char** argv) {
-    if (argc != 3) throw std::invalid_argument("Usage: replay staging-directory account-count");
+    if (argc != 3 && argc != 6)
+        throw std::invalid_argument("Usage: replay staging-directory account-count [payments cases memberships]");
     const std::filesystem::path root = argv[1];
     const auto accounts = std::stoul(argv[2]);
+    const Index population = argc == 6 ? std::stoul(argv[3]) : 31'898'238;
+    const Index expected_cases = argc == 6 ? std::stoul(argv[4]) : 2'251'155;
+    const std::uint64_t expected_memberships = argc == 6 ? std::stoull(argv[5]) : 81'321'105;
     if (accounts == 0 || accounts >= std::numeric_limits<Index>::max())
         throw std::invalid_argument("Account count outside the replay format");
     const auto facts = read_file<Fact>(root / "facts.bin", population);
     const auto cases = read_file<Case>(root / "cases.bin", expected_cases);
-    std::cerr << "Loaded " << facts.size() << " AWS cleaned payments and " << cases.size() << " published cases\n";
+    std::cerr << "Loaded " << facts.size() << " cleaned payments and " << cases.size() << " detector cases\n";
     auto chronological = [&](Index a, Index b) {
         const Fact& left = facts[a];
         const Fact& right = facts[b];
@@ -518,10 +519,10 @@ int main(int argc, char** argv) {
     for (Index index = 0; index < cases.size(); ++index) {
         const Case& item = cases[index];
         if (item.day != previous_day) {
-            std::cerr << "Scored cutoff September " << previous_day + 1 << ", " << index << " cumulative cases\n";
+            std::cerr << "Scored snapshot " << previous_day << ", " << index << " cumulative cases\n";
             previous_day = item.day;
         }
-        if (item.day < 1 || item.day > 28 || item.kind > cycle_4 ||
+        if (item.day < 1 || item.day == 255 || item.kind > cycle_4 ||
                 (item.kind >= cycle_2 && item.degree != item.kind))
             throw std::runtime_error("Invalid case record");
         const Time cutoff = item.day * day_minutes, from = cutoff - 7 * day_minutes;

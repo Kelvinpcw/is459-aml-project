@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 from collections import defaultdict
+from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import date, datetime, time, timedelta
 from hashlib import sha256
@@ -30,6 +31,12 @@ FACT = np.dtype([("paid", "<u8", (2,)), ("received", "<u8", (2,)), ("id", "<u4")
                  ("receiver", "<u4"), ("minute", "<u4"), ("paid_currency", "<u2"),
                  ("received_currency", "<u2"), ("pad", "<u4")])
 RESULT = np.dtype({"names": ["offset", "signals"], "formats": ["<u8", "<u2"], "offsets": [0, 10], "itemsize": 40})
+RANKED_CASE_SCHEMA = pa.schema([
+    ("case_id", pa.string()), ("case_row", pa.int64()), ("investigation_id", pa.string()),
+    ("archive_rank", pa.int64()), ("snapshot_cutoff", pa.timestamp("us")), ("pattern_type", pa.string()),
+    ("case_score", pa.float64()), ("investigation_score", pa.float64()),
+    ("highlighted_ordinals", pa.list_(pa.int64())), ("highlighted_source_ids", pa.list_(pa.string())),
+])
 
 
 def require(condition: bool, message: str) -> None:
@@ -37,8 +44,10 @@ def require(condition: bool, message: str) -> None:
         raise ValueError(message)
 
 
-def binary(path: Path, dtype: np.dtype, rows: int) -> np.memmap:
+def binary(path: Path, dtype: np.dtype, rows: int) -> np.ndarray:
     require(path.stat().st_size == rows * dtype.itemsize, f"Unexpected byte size for {path}")
+    if rows == 0:
+        return np.empty(0, dtype=dtype)
     return np.memmap(path, dtype=dtype, mode="r", shape=(rows,))
 
 
@@ -192,26 +201,38 @@ def snapshot_cutoff(first: date, day: int) -> datetime:
 
 def export(data: ReplayFiles, facts: CaseFacts, versions: dict[int, list[Version]], risk: np.ndarray,
            shape_model: Path, progress_model: Path, settings: Settings, destination: Path) -> dict:
+    return export_rankings(data, facts, versions, risk, shape_model, progress_model, settings, destination, 1,
+                           lambda i: f"{settings.source_sha256}:{i}", range(len(risk)))
+
+
+def export_rankings(data: ReplayFiles, facts: CaseFacts, versions: dict[int, list[Version]], risk: np.ndarray,
+                    shape_model: Path, progress_model: Path, settings: Settings, destination: Path,
+                    first_batch_day: int, source_id: Callable[[int], str],
+                    source_ordinals: range | np.ndarray) -> dict:
     matrix, rows = progress_features(data, facts, versions)
-    shape = load(shape_model)["pointwise"]
-    progress = load(progress_model)
-    with threadpool_limits(limits=4):
-        shape_score = shape.predict_proba(features(data, facts, np.asarray([v.row for v in rows], dtype=np.int64)))[:, 1]
-        progress_score = progress.predict_proba(matrix)[:, 1]
-    score = (shape_score + progress_score) / 2
-    file_count = max(v.episode for v in rows) + 1
-    file_score = np.zeros(file_count, dtype=np.float64)
-    np.maximum.at(file_score, [v.episode for v in rows], score)
-    file_order = np.argsort(-file_score, kind="stable")[:settings.archive_limit]
-    _, maximal = archive(versions)
+    score = np.empty(0, dtype=np.float64)
+    if rows:
+        shape = load(shape_model)["pointwise"]
+        progress = load(progress_model)
+        with threadpool_limits(limits=4):
+            shape_score = shape.predict_proba(features(data, facts, np.asarray([v.row for v in rows], dtype=np.int64)))[:, 1]
+            progress_score = progress.predict_proba(matrix)[:, 1]
+        score = (shape_score + progress_score) / 2
+    candidates = {day: [v for v in batch if np.any(data.days[v.ordinals] >= first_batch_day)]
+                  for day, batch in versions.items() if day >= first_batch_day}
+    scores_by_row = {v.row: float(value) for v, value in zip(rows, score, strict=True)}
+    file_score: dict[int, float] = {}
+    for batch in candidates.values():
+        for v in batch:
+            file_score[v.episode] = max(file_score.get(v.episode, 0), scores_by_row[v.row])
+    file_order = sorted(file_score, key=lambda episode: (-file_score[episode], episode))[:settings.archive_limit]
+    _, maximal = archive(candidates)
     grouped: dict[int, list[Version]] = defaultdict(list)
     for batch in maximal.values():
         for version in batch:
             grouped[version.episode].append(version)
-    scores_by_row = {v.row: float(value) for v, value in zip(rows, score, strict=True)}
     selected = []
     evidence_mask = np.zeros(len(risk), dtype=bool)
-    case_prefix = settings.source_sha256 + ":"
     for rank, episode in enumerate(file_order, 1):
         snapshots = grouped[int(episode)]
         first_case_id = data.case_ids[min(v.row for v in snapshots)].decode("ascii")
@@ -224,22 +245,25 @@ def export(data: ReplayFiles, facts: CaseFacts, versions: dict[int, list[Version
                              "investigation_id": investigation, "archive_rank": rank,
                              "snapshot_cutoff": snapshot_cutoff(settings.first_date, v.day), "pattern_type": KINDS[v.kind],
                              "case_score": scores_by_row[v.row], "investigation_score": float(file_score[episode]),
-                             "highlighted_ordinals": [int(i) for i in ids],
-                             "highlighted_source_ids": [f"{case_prefix}{i}" for i in ids]})
-    standalone = risk >= np.float32(settings.standalone_cutoff)
+                             "highlighted_ordinals": [int(source_ordinals[i]) for i in ids],
+                             "highlighted_source_ids": [source_id(i) for i in ids]})
+    standalone = (risk >= np.float32(settings.standalone_cutoff)) & (data.days >= first_batch_day)
     alerts = np.flatnonzero(evidence_mask | standalone)
-    require(bool(len(alerts) and alerts[0] > 0), "Shortlist includes an invalid source ID")
-    payments = pa.table({"source_id": [f"{case_prefix}{i}" for i in alerts], "source_record_ordinal": alerts,
-                         "event_date": [settings.first_date + timedelta(days=int(data.days[i]) - 1) for i in alerts],
+    require(not len(alerts) or alerts[0] > 0, "Shortlist includes an invalid source ID")
+    payments = pa.table({"source_id": pa.array([source_id(i) for i in alerts], type=pa.string()),
+                         "source_record_ordinal": pa.array([int(source_ordinals[i]) for i in alerts], type=pa.int64()),
+                         "event_date": pa.array([settings.first_date + timedelta(days=int(data.days[i]) - 1)
+                                                 for i in alerts], type=pa.date32()),
                          "blended_score": risk[alerts], "standalone_alert": standalone[alerts],
                          "case_evidence": evidence_mask[alerts]})
-    cases_ref = save_table(pa.Table.from_pylist(selected), destination / "ranked_cases.parquet")
+    cases_ref = save_table(pa.Table.from_pylist(selected, schema=RANKED_CASE_SCHEMA), destination / "ranked_cases.parquet")
     payments_ref = save_table(payments, destination / "payment_alerts.parquet")
     print(f"Exported {len(file_order):,} investigations, {len(selected):,} snapshots and {len(alerts):,} payments",
           flush=True)
     return {"release_id": settings.release_id, "dataset_version": settings.dataset_version,
             "first_date": settings.first_date.isoformat(), "last_date": settings.last_date.isoformat(),
-            "candidate_investigations": file_count, "candidate_snapshots": len(rows),
+            "candidate_investigations": len(file_score),
+            "candidate_snapshots": sum(map(len, candidates.values())),
             "investigations": len(file_order), "case_snapshots": len(selected), "payment_alerts": len(alerts),
             "artifacts": {"ranked_cases": cases_ref, "payment_alerts": payments_ref}}
 

@@ -11,7 +11,7 @@ This is the source handoff for the ML replay of the October 30 rules release. Th
 | Verify and evaluate | [Source verification](local/verify_source.py) and [independent evaluator](local/evaluate_preview.py) | Local, using the saved AWS outputs, the original labels, and the IBM annotations |
 | Prepare and display the historical release | [Overlay builder](local/prepare_trace_overlay.py) and [TRACE loader](../dashboard/ml_replay.py) | The overlay was prepared locally, uploaded to S3, and pinned in TRACE on EC2 |
 
-The [editable architecture](../../Proposal/Architecture/Simplified/ML_Replay_Architecture.drawio) shows how this path fits into the existing shared pipeline. The deployed Glue entry point and its Python modules are preserved byte for byte. The experiment source resolves private local input locations through the workspace described below. [AWS validation and release handoff](../team-handoffs/2026-11-09-1658Z-deshaun-q2-ml-glue-shadow.md)
+The [editable architecture](../../Proposal/Architecture/Simplified/ML_Replay_Architecture.drawio) shows how this path fits into the existing shared pipeline. Use commit `d53c2ca` for the exact historical Glue and native sources when reproducing the frozen scores. The experiment source resolves private local input locations through the workspace described below. [AWS validation and release handoff](../team-handoffs/2026-11-09-1658Z-deshaun-q2-ml-glue-shadow.md)
 
 ## Model producers
 
@@ -36,3 +36,53 @@ Copy `experiments/` to a private workspace and preserve its sibling directory na
 - Run `prepare_trace_overlay.py LOCAL_TRACE EVALUATED_REPLAY DASHBOARD DESTINATION NAME EVALUATION_SHA` to assemble a local package and its evidence index from a reviewed report. Use a fresh destination. Deployment and pinning require a separate release action.
 
 The private replay workspaces, model binaries, cloud manifests, operator records, and datasets are supplied separately by the project owner.
+
+## Local scoring for a new prepared batch
+
+The [batch scorer](glue/score_batch.py) takes a label-free detector input manifest and the matching PASSED report from `q2_snapshots.py`. Its local S3 mirror supplies the run's curated Parquet facts and case index. The scorer builds the binary projection, computes features with the available earlier payments, loads the five saved estimators and writes a ranked-case table, a unique payment-alert table, the original case evidence locators and a manifest with input and model hashes.
+
+Supply a prepared corpus with original file checksums and record ordinals, plus consecutive seven-day detection snapshots from the first supplied history day through the final cutoff. The scorer maps each full source ID to an internal index, so two files can contain the same row number. Feature history comes from the supplied corpus.
+
+Keep the model bundle private. Include `models/` with the five estimator files used by the Glue replay, `runtime-models.json`, `frozen-policy.json`, and `category-codes.json` with the training run's `currency_codes` and `format_codes`. Compile the following sources with C++20, using the current source revision for the dynamic input sizes.
+
+| Source under `experiments/` | Executable under the bundle's `native/` |
+| --- | --- |
+| `trace-q2-full-replay/replay.cpp` | `replay` |
+| `trace-ml-experiment/features.cpp` | `boosted_context` |
+| `trace-q2-triage/history.cpp` | `history_boost` |
+| `trace-kaggle-transfer/features.cpp` | `hi_small` |
+
+Record the reviewed files and their SHA-256 digests as the `files` mapping in `bundle.json`, keyed by the paths relative to the bundle. Use the approved digest of that manifest to run the scorer.
+
+```sh
+PYTHONPATH=Implementation:Implementation/jobs:Implementation/ml_replay/glue \
+  python3 Implementation/ml_replay/glue/score_batch.py \
+  --input-manifest /path/to/detector-inputs.json \
+  --detector-report /path/to/detector-report.json \
+  --mirror /path/to/s3-mirror \
+  --model-bundle /path/to/bundle --model-bundle-sha256 APPROVED_SHA256 \
+  --release-id NEW_RELEASE_ID --destination /path/to/new-results
+```
+
+## Fresh BQ2 workflow
+
+The [stage runner](glue/fresh_glue.py) takes a ready manifest through Prepare, Detect, Score and rank, Evaluate, and Publish. Its local runner exchanges checksummed stage files across the same boundaries as the Glue entry point. TRACE reads the published pointer and the case evidence from the same release.
+
+Place CSVs in `fresh-bq2/incoming/` and list them in a `ready.json` with schema version 1. Supply `dataset_version` beginning with `fresh-bq2-`, the `history_start`, `batch_start` and exclusive `cutoff` as ISO dates, the transaction `files`, and the `accounts` file. Each file reference contains its `key` and `sha256`. One run scores one new day against up to 29 days of supplied context. Preparation reports rows excluded at the time boundaries. The bounded detector accepts up to 50,000 input payments and enforces its snapshot and cycle guards.
+
+An optional `labels` reference under `fresh-bq2/reference/` contains JSON rows with `source_id` and binary `is_laundering`. Optional `annotations` there contain `annotation_id`, `pattern_type`, and `source_ids` for the known pattern. The evaluator uses those references to measure payment and pattern metrics. Every batch must pass evidence and integrity validation. Metrics without a denominator display as unavailable.
+
+```sh
+PYTHONPATH=Implementation:Implementation/jobs:Implementation/ml_replay/glue \
+  python3 Implementation/ml_replay/glue/fresh_glue.py --stage local \
+  --local-mirror /path/to/mirror --ready-key fresh-bq2/incoming/example/ready.json \
+  --local-bundle /path/to/bundle --model-bundle-sha256 APPROVED_SHA256 \
+  --attempt-id example-1
+
+PYTHONPATH=Implementation TRACE_BQ2_LOCAL_MIRROR=/path/to/mirror \
+  python3 -m streamlit run Implementation/dashboard/app.py
+```
+
+Run the [integration test](../tests/test_fresh_bq2_flow.py) with `TRACE_TEST_MODEL_BUNDLE` and `TRACE_TEST_MODEL_BUNDLE_SHA256` set to the private approved model bundle and its manifest digest. It exercises two fresh cutoffs, the actual five fitted models, case evidence from both raw files, labelled and unlabelled evaluation, duplicate delivery, and publication after validation.
+
+The [AWS stack generator](../deployment/build_fresh_bq2_stack.py) defines one Standard Step Functions execution with five sequential Glue jobs and a disabled S3 event rule. Build the [Glue code package](../deployment/build_fresh_bq2_bundle.py) with the pinned wheels, and build the native extractors for the Glue Linux runtime before deployment. The first cloud acceptance check is a single manual execution on a fresh fixture and a TRACE readback of its published cases and source payments.

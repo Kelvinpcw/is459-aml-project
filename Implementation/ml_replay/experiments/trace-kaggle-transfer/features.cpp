@@ -116,7 +116,7 @@ constexpr std::array names{
 using Features = std::array<float, names.size()>;
 static_assert(sizeof(Fact)==56 && sizeof(Features)==4*names.size());
 
-Features features(const View& view, Id row) {
+Features features(const View& view, Id row, int first_weekday) {
     const Fact& tx = view.facts[row];
     const Minute t = tx.minute;
     const auto pair = earlier(pair_rows(view, tx), view, t);
@@ -126,7 +126,7 @@ Features features(const View& view, Id row) {
     const float sent_24h = count_since(out, view, t-day);
     const float new_24h = count_since(payees, view, t-day);
     return {
-        float((t%day)/60), float((t/day+3)%7), float(std::log1p(tx.paid.units())),
+        float((t%day)/60), float((t/day+first_weekday)%7), float(std::log1p(tx.paid.units())),
         float(tx.received_currency), float(tx.paid_currency), float(view.formats[tx.ordinal]),
         float(tx.paid_currency != tx.received_currency),
         float(view.banks[tx.sender] != view.banks[tx.receiver]), float(tx.sender == tx.receiver),
@@ -140,9 +140,12 @@ Features features(const View& view, Id row) {
 }
 
 int main(int argc, char** argv) {
-    if (argc != 6) throw std::invalid_argument("Usage: features facts-folder aux-folder output-folder payments accounts");
+    if (argc != 6 && argc != 7)
+        throw std::invalid_argument("Usage: features facts-folder aux-folder output-folder payments accounts [first-weekday]");
     const std::filesystem::path fact_folder=argv[1], auxiliary=argv[2], output=argv[3];
     const Id count=std::stoul(argv[4]), accounts=std::stoul(argv[5]);
+    const int first_weekday = argc == 7 ? std::stoi(argv[6]) : 3;
+    if (first_weekday < 0 || first_weekday > 6) throw std::invalid_argument("Invalid first weekday");
     const auto facts=load<Fact>(fact_folder/"facts.bin", count);
     const auto formats=load<std::uint8_t>(auxiliary/"formats.u8", count+1);
     const auto banks=load<Id>(auxiliary/"banks.u32", accounts);
@@ -185,7 +188,7 @@ int main(int argc, char** argv) {
         for (Id worker=0; worker<workers; ++worker)
             pool.emplace_back([&,worker] {
                 for (Id i=worker*length/workers; i<(worker+1)*length/workers; ++i)
-                    block[i]=features(view,offset+i);
+                    block[i]=features(view,offset+i,first_weekday);
             });
         for (auto& thread: pool) thread.join();
         if (!matrix.write(reinterpret_cast<const char*>(block.data()), block.size()*sizeof(Features)))

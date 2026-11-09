@@ -9,6 +9,7 @@ import shutil
 import subprocess
 import sys
 from tempfile import TemporaryDirectory
+from typing import TypedDict
 
 from joblib import load
 import numpy as np
@@ -29,6 +30,15 @@ class Model:
     source_hash: str
     expected_score_hash: str
     features: tuple[str, ...]
+
+
+class ScoreResult(TypedDict):
+    rows: int
+    score_sha256: str
+    model_sha256: str
+    feature_source_sha256: str
+    features: list[str]
+    reference_score_sha256: str
 
 
 def sha256(path: Path) -> str:
@@ -79,26 +89,28 @@ def check_features(model: Model, block: np.ndarray, start: int) -> None:
         raise ValueError(f"Unexpected nonfinite feature for {model.name} at row {start}")
 
 
-def score(model: Model, features: Path, ids: np.ndarray, output: Path) -> dict:
+def score_rows(model: Model, features: Path, ids: np.ndarray, output: Path, rows: int) -> ScoreResult:
     names = tuple((features.parent / "feature-names.txt").read_text().splitlines())
-    if names != model.features or features.stat().st_size != ROWS * len(names) * 4:
+    if names != model.features or len(ids) != rows or features.stat().st_size != rows * len(names) * 4:
         raise ValueError(f"Unexpected feature order or count for {model.name}")
-    matrix = np.memmap(features, dtype="<f4", mode="r", shape=(ROWS, len(names)))
+    matrix = np.memmap(features, dtype="<f4", mode="r", shape=(rows, len(names)))
     predictor = load(model.artifact)
-    values = np.memmap(output, dtype="<f4", mode="w+", shape=(ROWS + 1,))
+    if not np.array_equal(predictor.classes_, [0, 1]):
+        raise ValueError(f"Unexpected prediction classes for {model.name}")
+    values = np.memmap(output, dtype="<f4", mode="w+", shape=(rows + 1,))
     values[:] = np.nan
     with threadpool_limits(limits=4):
-        for start in range(0, ROWS, BATCH_ROWS):
-            part = slice(start, min(ROWS, start + BATCH_ROWS))
+        for start in range(0, rows, BATCH_ROWS):
+            part = slice(start, min(rows, start + BATCH_ROWS))
             keys, block = ids[part], matrix[part]
-            if np.any(keys < 1) or np.any(keys > ROWS) or len(np.unique(keys)) != len(keys):
+            if np.any(keys < 1) or np.any(keys > rows) or len(np.unique(keys)) != len(keys):
                 raise ValueError(f"Invalid source IDs for {model.name} at row {start}")
             if not np.all(np.isnan(values[keys])):
                 raise ValueError(f"Duplicate score for {model.name} at row {start}")
             check_features(model, block, start)
             values[keys] = predictor.predict_proba(block)[:, 1]
-            if start % (BATCH_ROWS * 32) == 0 or part.stop == ROWS:
-                print(f"{model.name} scored {part.stop:,} / {ROWS:,}", flush=True)
+            if start % (BATCH_ROWS * 32) == 0 or part.stop == rows:
+                print(f"{model.name} scored {part.stop:,} / {rows:,}", flush=True)
     if not np.all(np.isfinite(values[1:])):
         raise ValueError(f"Incomplete score population for {model.name}")
     if model.name == "hi_small":
@@ -106,13 +118,28 @@ def score(model: Model, features: Path, ids: np.ndarray, output: Path) -> dict:
     values.flush()
     observed = sha256(output)
     print(f"Completed score file: {model.name} sha256={observed}", flush=True)
-    return {"rows": ROWS, "score_sha256": observed, "model_sha256": model.artifact_hash,
+    return {"rows": rows, "score_sha256": observed, "model_sha256": model.artifact_hash,
             "feature_source_sha256": model.source_hash, "features": list(names),
             "reference_score_sha256": model.expected_score_hash}
 
 
+def score(model: Model, features: Path, ids: np.ndarray, output: Path) -> ScoreResult:
+    return score_rows(model, features, ids, output, ROWS)
+
+
+def feature_ids(name: str, scratch: Path, replay: Path, rows: int) -> np.ndarray:
+    if name == "boosted_context":
+        return np.memmap(scratch / "ordinals.u32", dtype="<u4", mode="r", shape=(rows,))
+    if name == "history_boost":
+        metadata = np.memmap(scratch / "payments.bin", dtype=[("id", "<u4"), ("minute", "<i4")],
+                             mode="r", shape=(rows,))
+        return metadata["id"]
+    return np.memmap(replay / "facts.bin", dtype={"names": ["id"], "formats": ["<u4"],
+                     "offsets": [32], "itemsize": 56}, mode="r", shape=(rows,))["id"]
+
+
 def extract_and_score(model: Model, executable: Path, replay: Path, aux: Path, scratch: Path,
-                      output: Path, accounts: str) -> dict:
+                      output: Path, accounts: str) -> ScoreResult:
     if model.name == "boosted_context":
         for name in ("formats.u8", "banks.u32"):
             shutil.copyfile(aux / name, scratch / name)
@@ -123,15 +150,7 @@ def extract_and_score(model: Model, executable: Path, replay: Path, aux: Path, s
         arguments = [str(replay), str(aux), str(scratch), str(ROWS), accounts]
     print(f"Extract {len(model.features)} features per payment for {model.name}", flush=True)
     subprocess.run([str(executable), *arguments], check=True)
-    if model.name == "boosted_context":
-        ids = np.memmap(scratch / "ordinals.u32", dtype="<u4", mode="r", shape=(ROWS,))
-    elif model.name == "history_boost":
-        metadata = np.memmap(scratch / "payments.bin", dtype=[("id", "<u4"), ("minute", "<i4")],
-                             mode="r", shape=(ROWS,))
-        ids = metadata["id"]
-    else:
-        ids = np.memmap(replay / "facts.bin", dtype={"names": ["id"], "formats": ["<u4"],
-                        "offsets": [32], "itemsize": 56}, mode="r", shape=(ROWS,))["id"]
+    ids = feature_ids(model.name, scratch, replay, ROWS)
     return score(model, scratch / "features.f32", ids, output)
 
 
