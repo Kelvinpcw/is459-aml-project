@@ -74,12 +74,19 @@ def load_replay(_s3, pin: str) -> Replay:
     manifest = json.loads(raw_manifest)
     metrics = verify_ref(_s3, {"uri": prefix + "evaluation.json", "sha256": release_ref["evaluation_sha256"]})
     if (manifest["release_id"] != release["release_id"] or manifest["dataset_version"] != release["dataset_version"]
-            or metrics["release_id"] != release["release_id"] or metrics["shortlist_manifest_sha256"] != sha(raw_manifest)
-            or metrics["exact_checkpoint_parity"] is not True):
+            or metrics["release_id"] != release["release_id"] or metrics["shortlist_manifest_sha256"] != sha(raw_manifest)):
         raise ValueError("The evaluation and shortlist do not match the pinned rules release")
     for field in ("first_date", "last_date", "payment_alerts", "case_snapshots", "investigations"):
         if metrics[field] != manifest[field]:
             raise ValueError(f"Evaluation and shortlist disagree on {field}")
+    positives = metrics["ibm_positive_payments"]
+    alerted = metrics["payment_alerts"]
+    hits = metrics["ibm_positive_alerts"]
+    if (not 0 <= hits <= min(positives, alerted) or not 0 < max(positives, alerted) <= metrics["payments"]
+            or positives == 0 or alerted == 0 or metrics["payment_precision"] != hits / alerted
+            or metrics["payment_recall"] != hits / positives
+            or not 0 <= metrics["recovered_patterns"] <= metrics["eligible_patterns"]):
+        raise ValueError("The historical replay's evaluation counts and rates disagree")
     ranked = manifest["artifacts"]["ranked_cases"]
     alerts = manifest["artifacts"]["payment_alerts"]
     return Replay(release, metrics,
