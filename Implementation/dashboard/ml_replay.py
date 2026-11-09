@@ -104,10 +104,18 @@ def release_caption(replay: Replay) -> str:
 def replay_evaluation(s3, pin: str) -> None:
     replay = load_replay(s3, pin)
     m = replay.metrics
-    with st.container(border=True):
+    with st.container(border=True, key="ml_replay_metrics"):
         st.subheader("Full archive ML replay")
         st.caption(release_caption(replay))
-        st.markdown(kpis([
+        st.markdown("""<style>
+        .st-key-ml_replay_metrics .kpi-value { white-space: nowrap; }
+        @media (max-width: 1100px) {
+            .st-key-ml_replay_metrics .kpis.four { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
+        @media (max-width: 480px) {
+            .st-key-ml_replay_metrics .kpis.four { grid-template-columns: minmax(0, 1fr); }
+        }
+        </style>""" + kpis([
             ("Eligible patterns recovered", f"{m['recovered_patterns']:,}/{m['eligible_patterns']:,}", "Searchable shortlist"),
             ("Payment precision", f"{m['payment_precision']:.4%}", "IBM-positive share of unique alerts"),
             ("Payment recall", f"{m['payment_recall']:.4%}", "Share of IBM-positive payments found"),
@@ -117,6 +125,7 @@ def replay_evaluation(s3, pin: str) -> None:
                    f"payments · {m['payments']:,} payments evaluated")
         st.dataframe(pd.DataFrame([{"Pattern": PATTERNS[k], "Recovered": v["recovered"], "Eligible": v["eligible"]}
                                    for k, v in m["by_pattern"].items()]), hide_index=True, width="stretch")
+        st.caption("The rules evaluation below uses its own holdout window.")
 
 
 def highlighted_evidence(s3, case: dict, highlighted: set[str]) -> list[dict]:
