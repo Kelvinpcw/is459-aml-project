@@ -56,7 +56,7 @@ def output_cost_estimate(index,evidence,sharded=False):
     return {'estimated_30day_storage_bytes_upper_bound':int(total_bytes),'estimated_put_requests_upper_bound':int(requests+1),
             'estimated_output_cost_usd':total_bytes/1_000_000_000*.023+requests*.000005}
 
-def main():
+def main(argv):
     import argparse,boto3
     from urllib.parse import urlparse
     from datetime import timezone
@@ -68,7 +68,7 @@ def main():
     p.add_argument('--max-cycle-degree',type=int,default=64)
     p.add_argument('--max-cycle-path-rows',type=int,default=2000000)
     p.add_argument('--max-output-cost-usd',type=float,default=10)
-    args,_=p.parse_known_args();s3=boto3.client('s3',region_name='us-east-1')
+    args,_=p.parse_known_args(argv);s3=boto3.client('s3',region_name='us-east-1')
     src=urlparse(args.input_manifest);out=urlparse(args.output_root)
     if src.scheme!='s3' or out.scheme!='s3':raise ValueError('Explicit S3 paths required')
     manifest=json.loads(s3.get_object(Bucket=src.netloc,Key=src.path.lstrip('/'))['Body'].read());validate_manifest(manifest)
@@ -120,4 +120,6 @@ def main():
         report['finished_at_utc']=datetime.now(timezone.utc).isoformat()
         s3.put_object(Bucket=out.netloc,Key=qualitykey,Body=(json.dumps(report,indent=2)+'\n').encode(),IfNoneMatch='*',ContentType='application/json');spark.stop()
 
-if __name__=='__main__':main()
+if __name__=='__main__':
+    import sys
+    main(sys.argv[1:])

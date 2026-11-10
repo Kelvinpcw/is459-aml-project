@@ -10,11 +10,21 @@ from dashboard.presentation import PATTERNS,esc,kpis,period,exposure_chart,monit
 from dashboard.case_catalog import CaseCatalog
 from dashboard.case_connections import link_payments, render_graph, transfer_links
 from dashboard.case_queue import render_case_queue
+from dashboard.ml_replay import render_explorer, replay_evaluation, replay_explorer
+from dashboard.fresh_bq2 import batch_caption, fresh_bq2, fresh_evaluation, local_bq2_workspace
 from dashboard.trends import range_options,date_window,daily_population,population_total,coverage_counts,LOW_DAILY_VOLUME,endpoint_comparison,trend_chart
+from pipeline.bq2_release import BQ2_CURRENT_URI
 from pipeline.release import ACCOUNT,REGION,load_current,verify_ref
+
+ml_replay_pin=os.environ.get('TRACE_ML_REPLAY_PIN')
+bq2_pointer=os.environ.get('TRACE_BQ2_POINTER')
 
 st.set_page_config(page_title='TRACE | AML intelligence',page_icon='◈',layout='wide',initial_sidebar_state='expanded')
 st.markdown('<style>'+Path(__file__).with_name('styles.css').read_text()+'</style>',unsafe_allow_html=True)
+local_bq2_mirror=os.environ.get('TRACE_BQ2_LOCAL_MIRROR')
+if local_bq2_mirror:
+    local_bq2_workspace(Path(local_bq2_mirror), bq2_pointer or BQ2_CURRENT_URI)
+    st.stop()
 
 @st.cache_resource
 def clients(profile,instance):
@@ -223,6 +233,18 @@ def explorer():
     st.markdown('<div class="eyebrow">02 / CONNECTED-ACCOUNT INVESTIGATION</div>',unsafe_allow_html=True)
     st.title('Follow the connections.')
     caption('Explainable structures. Traceable evidence. A starting point for investigation.')
+    case_lists=['Published rules']
+    if ml_replay_pin:case_lists.append('Historical ML shortlist')
+    if bq2_pointer:case_lists.insert(0,'Fresh batch ML shortlist')
+    if len(case_lists)>1:
+        case_list=st.radio('Case list',case_lists,horizontal=True,key='ml_replay_source')
+        if case_list=='Fresh batch ML shortlist':
+            fresh=fresh_bq2(s3,bq2_pointer)
+            render_explorer(s3,fresh,batch_caption(fresh))
+            return
+        if case_list=='Historical ML shortlist':
+            replay_explorer(s3,ml_replay_pin)
+            return
     q2=release['q2']
     snapshots={item['window_end']:item for item in q2.get('snapshots') or [q2]}
     ends=sorted(snapshots)
@@ -295,6 +317,8 @@ def explorer():
 
 
 def evaluation():
+    if bq2_pointer:fresh_evaluation(fresh_bq2(s3,bq2_pointer))
+    if ml_replay_pin:replay_evaluation(s3,ml_replay_pin)
     st.markdown('<div class="eyebrow">03 / EVALUATION & COVERAGE</div>',unsafe_allow_html=True)
     st.title('Understand the limits.')
     caption('Separate connected-pattern recovery from individual-payment classification.')
