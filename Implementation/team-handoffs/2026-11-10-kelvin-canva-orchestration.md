@@ -1,7 +1,7 @@
 # Kelvin's orchestration and conclusion slides
 
 - Owner: Kelvin with Codex.
-- Added three editable slides and presenter notes to the shared Canva final presentation, immediately before the thank-you page. The slides cover the completed full-batch workflow, the release gate and failure behavior, and the two decisions supported by TRACE.
-- Checked the workflow against the [end-to-end guide](../END_TO_END_GUIDE.md) and [30 October run handoff](2026-10-30-kelvin-full-pipeline.md). Verified page order, editable text, notes, and save status in Canva. The rest of the deck was left in place.
-- AWS: none. The slides describe the documented full batch and use no console images or private run records.
-- Next step: keep this section after evaluation when the remaining group sections are added.
+- Revised section 06 in the shared Big Data Final Presentation. Slides 23–25 follow evaluation and precede the recordings and project artefacts. The new slides show the parallel Glue workflow, what TRACE serves when release checks pass or fail, and the two decisions supported by the historical results.
+- Added presenter notes with demo cues for the completed Step Functions execution and the dashboard's Release & provenance view. The conclusion distinguishes eligible pattern recovery from payment-level precision and calls for a chronological shortlist test at a fixed review budget.
+- Checked the workflow against the [end-to-end guide](../END_TO_END_GUIDE.md), [completed full-run handoff](2026-10-30-kelvin-full-pipeline.md) and [implementation status](../STATUS.md). The editable import passed package and geometry validation. Verified all three slides visually in Canva, checked section labels and notes, and confirmed the saved order.
+- AWS: none. Used existing project evidence. No cloud action or cleanup was needed.
