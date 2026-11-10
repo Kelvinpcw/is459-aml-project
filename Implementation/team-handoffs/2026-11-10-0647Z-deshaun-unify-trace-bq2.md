@@ -2,7 +2,7 @@
 
 - **Owner** Deshaun with Codex
 - **Branch and PR** [Full-volume BQ2 rollout](https://github.com/Kelvinpcw/is459-aml-project/pull/29)
-- **Status** PLANNED
+- **Status** IN_PROGRESS
 - **Evidence** Deployed dashboard and workflow inspection
 
 The existing public TRACE site shows the pinned historical replay, whose pattern recovery used an 80% evidence threshold. The validated full-volume workflow reports complete matches. Use its existing immutable output to initialize the current BQ2 pointer in place of the daily smoke-test fixture, then configure the existing site to follow that pointer.
