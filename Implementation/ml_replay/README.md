@@ -23,7 +23,9 @@ The [editable architecture](../../Proposal/Architecture/Simplified/ML_Replay_Arc
 | Case shape | [case_rank.py](experiments/trace-q2-ml-v2/case_rank.py), command `freeze` | Pointwise estimator in `case-models.joblib`, staged as `case-shape.joblib` |
 | Evidence progress | [case_backlog.py](experiments/trace-q2-ml-v2/case_backlog.py), command `freeze` | `progress-model.joblib`, staged as `evidence-progress.joblib` |
 
-The fitting and evaluation code use labels offline. The Glue job uses label-free facts, case evidence, and frozen models. A repeatable AWS training job, managed evaluator, and automatic release promotion remain future work.
+Graph context and account history fit on September 1–5, 2022, and validate on September 6–8. The two case estimators fit on September 1–6 and validate on September 7–8. The HI-Small model uses a chronological train, validation, and test split with approximately 60%, 20%, and 20% of that separate dataset. The full September replay includes development dates. Use the September 9–16 holdout when reporting out-of-sample performance on HI-Medium.
+
+Training runs locally with offline labels. The current AWS batch scores label-free facts and case evidence with the frozen models. Its separate evaluator can use verified labels and annotations before Glue publishes the release. The [approved Linux bundle manifest](model-bundle-manifest.json) records the exact file digests. Its SHA-256 is `6638cdeac221574910c01ba58f4102e22bb5d9f282922e77ff21d79ba75b8c2e`.
 
 ## Local workspace
 
