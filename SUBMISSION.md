@@ -35,7 +35,7 @@ flowchart LR
     Publish --> Trace[Public TRACE on EC2]
 ```
 
-Daily publication advances the BQ2 release. Monitoring and the published rules view read the separate historical release. The upload and schedule triggers are disabled. The earlier full-volume execution and the main-workflow smoke test passed. One newly uploaded batch remains to be verified through the current main route to public TRACE.
+Daily publication advances the BQ2 release. Monitoring and the published rules view read the separate historical release. The upload and schedule triggers are disabled. The earlier full-volume execution and the main-workflow smoke test passed. A fresh synthetic day has passed through the main route to the public TRACE site; the full-volume historical release was restored afterward for the presentation. [Live acceptance handoff](Implementation/team-handoffs/2026-11-10-0800Z-deshaun-public-trace-fresh-batch.md)
 
 ## eLearn and presentation appendix
 
