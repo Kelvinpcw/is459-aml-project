@@ -1,15 +1,15 @@
 """Prepare fresh CSV files and detect complete, bounded BQ2 snapshots."""
 
 import csv
-from collections import defaultdict
+from collections import Counter, defaultdict
+from contextlib import contextmanager
 from dataclasses import asdict
 from datetime import date, datetime, timedelta
 from decimal import Decimal
-import io
 import json
 from pathlib import Path
 import re
-from typing import TypedDict
+from typing import Iterator, TextIO, TypedDict
 
 import pyarrow as pa
 import pyarrow.parquet as pq
@@ -24,11 +24,9 @@ from q2_snapshots import schedule
 TRANSACTION_HEADER = ("Timestamp", "From Bank", "Account", "To Bank", "Account", "Amount Received",
                       "Receiving Currency", "Amount Paid", "Payment Currency", "Payment Format")
 ACCOUNT_HEADER = ("Bank Name", "Bank ID", "Account Number", "Entity ID", "Entity Name")
-MAX_PAYMENTS = 50_000
-MAX_TRANSACTION_FILE_BYTES = 16 * 1024 * 1024
-MAX_ACCOUNT_FILE_BYTES = 128 * 1024 * 1024
+PARQUET_BATCH_ROWS = 100_000
 MAX_CYCLE_DEGREE = 64
-ANALYSIS_ID = "fresh-bq2-v1"
+ANALYSIS_ID = "fresh-bq2-v2"
 TIMESTAMP_POLICY = "dataset-local; source timezone unspecified"
 RawFact = dict[str, str | int | bool | datetime | Decimal | None]
 
@@ -82,18 +80,20 @@ def write_object(path: Path, body: bytes) -> None:
         stream.write(body)
 
 
-def verified_csv(mirror: Path, reference: CsvReference, maximum_bytes: int) -> io.StringIO:
+@contextmanager
+def verified_csv(mirror: Path, reference: CsvReference) -> Iterator[TextIO]:
     key = reference["key"]
     split_uri(f"s3://{BUCKET}/{key}")
     path = mirror / key
     if (not key.startswith("fresh-bq2/incoming/") or not key.endswith(".csv") or
             not path.resolve().is_relative_to(mirror.resolve())):
         raise ValueError(f"CSV must be inside the batch input namespace: {key}")
-    with path.open("rb") as stream:
-        raw = stream.read(maximum_bytes + 1)
-    if len(raw) > maximum_bytes or sha(raw) != reference["sha256"]:
-        raise ValueError(f"CSV exceeds the approved byte limit or differs from the manifest checksum: {key}")
-    return io.StringIO(raw.decode("utf-8-sig"), newline="")
+    from score_payments import sha256
+
+    if sha256(path) != reference["sha256"]:
+        raise ValueError(f"CSV differs from the manifest checksum: {key}")
+    with path.open("r", encoding="utf-8-sig", newline="") as stream:
+        yield stream
 
 
 def normalized_bank(value: str) -> str:
@@ -132,7 +132,7 @@ def transaction(raw: list[str], event: datetime, source_hash: str, ordinal: int,
 
 def account_mappings(mirror: Path, reference: CsvReference) -> dict[tuple[str, str], tuple[str, str]]:
     mappings: dict[tuple[str, str], tuple[str, str]] = {}
-    with verified_csv(mirror, reference, MAX_ACCOUNT_FILE_BYTES) as stream:
+    with verified_csv(mirror, reference) as stream:
         reader = csv.reader(stream, strict=True)
         if tuple(next(reader, [])) != ACCOUNT_HEADER:
             raise ValueError("Unexpected account mapping header")
@@ -157,18 +157,30 @@ def prepare_batch(ready: ReadyInputs, batch_id: str, mirror: Path, work: Path) -
     if (not 1 <= len(files) <= 32 or len({ref["sha256"] for ref in files}) != len(files)
             or len({ref["key"] for ref in files}) != len(files)):
         raise ValueError("Expected 1–32 different transaction CSVs with distinct keys and checksums")
+    accounts = account_mappings(mirror, ready["accounts"])
+    prefix = f"curated/dataset_version={dataset}/run_id={run}/transactions/"
     records: dict[date, list[RawFact]] = defaultdict(list)
+    parts: Counter[date] = Counter()
+    new = buffered = 0
+
+    def flush() -> None:
+        for day, daily in sorted(records.items()):
+            path = mirror / prefix / f"event_date={day}" / f"part-{parts[day]:05d}.parquet"
+            path.parent.mkdir(parents=True, exist_ok=True)
+            with path.open("xb") as stream:
+                pq.write_table(pa.Table.from_pylist(daily, schema=FACT_SCHEMA), stream)
+            parts[day] += 1
+        records.clear()
+
     scanned = before = after = 0
     for ref in sorted(files, key=lambda item: item["sha256"]):
-        with verified_csv(mirror, ref, MAX_TRANSACTION_FILE_BYTES) as stream:
+        with verified_csv(mirror, ref) as stream:
             reader = csv.reader(stream, strict=True)
             header = tuple(next(reader, []))
             if header not in (TRANSACTION_HEADER, (*TRANSACTION_HEADER, "Is Laundering")):
                 raise ValueError(f"Unexpected transaction header in {ref['key']}")
             for ordinal, raw in enumerate(reader, 1):
                 scanned += 1
-                if scanned > MAX_PAYMENTS:
-                    raise ValueError(f"Fresh BQ2 is bounded to {MAX_PAYMENTS:,} input transaction rows")
                 try:
                     if len(raw) != len(header):
                         raise ValueError("Wrong number of transaction fields")
@@ -179,25 +191,24 @@ def prepare_batch(ready: ReadyInputs, batch_id: str, mirror: Path, work: Path) -
                     elif day >= cutoff:
                         after += 1
                     else:
-                        records[day].append(transaction(raw, event, ref["sha256"], ordinal, dataset, run))
+                        row = transaction(raw, event, ref["sha256"], ordinal, dataset, run)
+                        for side in ("sender", "receiver"):
+                            pair = str(row[f"{side}_bank"]), str(row[f"{side}_account"])
+                            mapping = accounts.get(pair)
+                            row[f"{side}_entity_id"], row[f"{side}_entity_name"] = mapping or (None, None)
+                            row[f"{side}_entity_unknown"] = mapping is None
+                        records[day].append(row)
+                        buffered += 1
+                        new += int(day >= start)
                 except ValueError as error:
                     raise ValueError(f"{ref['key']} data row {ordinal}: {error}") from error
+                if buffered == PARQUET_BATCH_ROWS:
+                    flush()
+                    buffered = 0
+    flush()
     accepted = scanned - before - after
-    if not any(day >= start for day in records):
+    if not new:
         raise ValueError("The declared new batch contains no transactions before its cutoff")
-    accounts = account_mappings(mirror, ready["accounts"])
-    prefix = f"curated/dataset_version={dataset}/run_id={run}/transactions/"
-    for day, daily in sorted(records.items()):
-        for row in daily:
-            for side in ("sender", "receiver"):
-                pair = str(row[f"{side}_bank"]), str(row[f"{side}_account"])
-                mapping = accounts.get(pair)
-                row[f"{side}_entity_id"], row[f"{side}_entity_name"] = mapping or (None, None)
-                row[f"{side}_entity_unknown"] = mapping is None
-        output = mirror / prefix / f"event_date={day}" / "part-00000.parquet"
-        output.parent.mkdir(parents=True, exist_ok=True)
-        with output.open("xb") as stream:
-            pq.write_table(pa.Table.from_pylist(daily, schema=FACT_SCHEMA), stream)
     manifest = {
         "schema_version": 1, "stage": "detector_inputs", "preparation_status": "PASSED",
         "dataset_version": dataset, "run_id": run, "accepted_rows": accepted,
@@ -209,7 +220,7 @@ def prepare_batch(ready: ReadyInputs, batch_id: str, mirror: Path, work: Path) -
     write_object(work / "preparation-report.json", encoded({
         "status": "PASSED", "dataset_version": dataset, "run_id": run,
         "input_rows": scanned, "accepted_rows": accepted, "before_history_rows": before,
-        "at_or_after_cutoff_rows": after, "new_rows": sum(len(rows) for day, rows in records.items() if day >= start),
+        "at_or_after_cutoff_rows": after, "new_rows": new,
         "history_start": first.isoformat(), "batch_start": start.isoformat(), "cutoff": cutoff.isoformat(),
     }))
     path = work / "detector-inputs.json"
@@ -299,8 +310,8 @@ def detect_batch(manifest_path: Path, mirror: Path, work: Path, first_day: date,
     for path in paths:
         parquet = pq.ParquetFile(path)
         assert_label_free_columns(parquet.schema_arrow.names)
-        if parquet.schema_arrow != FACT_SCHEMA or len(records) + parquet.metadata.num_rows > MAX_PAYMENTS:
-            raise ValueError("Prepared fact schema or population exceeds the bounded detector contract")
+        if parquet.schema_arrow != FACT_SCHEMA:
+            raise ValueError("Unexpected local detector fact schema")
         records.extend(parquet.read(columns=DETECTOR_COLUMNS).to_pylist())
     if (len(records) != manifest["accepted_rows"] or len({row["source_id"] for row in records}) != len(records)
             or any(not first_day <= row["event_time"].date() < cutoff for row in records)):
@@ -310,8 +321,9 @@ def detect_batch(manifest_path: Path, mirror: Path, work: Path, first_day: date,
     windows = schedule(*ends)
     snapshots = []
     for start, end in windows:
-        config = Config(dataset, run, ANALYSIS_ID, start.isoformat(), end.isoformat(), end.isoformat())
         selected = [row for row in records if start <= row["event_time"] < end]
+        config = Config(dataset, run, ANALYSIS_ID, start.isoformat(), end.isoformat(), end.isoformat(),
+                        max_window_rows=max(1, len(selected)))
         stats = snapshot_index(selected, config, prefix, mirror)
         snapshots.append({
             "window_start": config.window_start, "window_end": config.window_end,

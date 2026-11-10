@@ -138,6 +138,50 @@ def exercise(mirror: Path, bundle: Path, approved_digest: str) -> dict:
 
 
 class FreshBQ2FlowTests(unittest.TestCase):
+    def test_large_csv_preserves_source_ids_and_graph_across_parquet_parts(self):
+        import pyarrow.parquet as pq
+
+        from fresh_glue import hash_file, parse_ready
+        from fresh_inputs import ACCOUNT_HEADER, PARQUET_BATCH_ROWS, TRANSACTION_HEADER, detect_batch, prepare_batch
+        from pipeline.release import encoded, split_uri
+
+        with TemporaryDirectory(prefix="trace-fresh-volume-") as directory:
+            mirror = Path(directory)
+            incoming = mirror / "fresh-bq2/incoming"
+            incoming.mkdir(parents=True)
+            payments = incoming / "payments.csv"
+            accounts = incoming / "accounts.csv"
+            work = mirror / "reports"
+            work.mkdir()
+            with accounts.open("w", newline="") as stream:
+                csv.writer(stream).writerow(ACCOUNT_HEADER)
+            common = ["2024/10/07 10:00", "1", "HUB", "1"]
+            amounts = ["725.0", "US Dollar", "725.0", "US Dollar", "ACH"]
+            with payments.open("w", newline="") as stream:
+                writer = csv.writer(stream)
+                writer.writerow(TRANSACTION_HEADER)
+                writer.writerows([*common, f"DEST{i}", *amounts] for i in range(4))
+                writer.writerows([*common, "HUB", *amounts] for _ in range(PARQUET_BATCH_ROWS - 4))
+                writer.writerow([*common, "DEST4", *amounts])
+            ready = parse_ready(encoded({
+                "schema_version": 1, "dataset_version": "fresh-bq2-spill",
+                "history_start": "2024-10-07", "batch_start": "2024-10-07", "cutoff": "2024-10-08",
+                "files": [{"key": str(payments.relative_to(mirror)), "sha256": hash_file(payments)}],
+                "accounts": {"key": str(accounts.relative_to(mirror)), "sha256": hash_file(accounts)},
+            }))
+            manifest_path = prepare_batch(ready, "spill-check", mirror, work)
+            manifest = json.loads(manifest_path.read_bytes())
+            self.assertEqual(manifest["accepted_rows"], PARQUET_BATCH_ROWS + 1)
+            _, facts = split_uri(manifest["inputs"]["transactions"])
+            parts = sorted((mirror / facts).glob("event_date=*/*.parquet"))
+            self.assertEqual([pq.ParquetFile(path).metadata.num_rows for path in parts], [PARQUET_BATCH_ROWS, 1])
+            self.assertEqual(pq.ParquetFile(parts[-1]).read(columns=["source_id"])[0][0].as_py(),
+                             f"{hash_file(payments)}:{PARQUET_BATCH_ROWS + 1}")
+            detector = detect_batch(manifest_path, mirror, work, date(2024, 10, 7), date(2024, 10, 8))
+            stats = json.loads(detector.read_bytes())["statistics"]
+            self.assertEqual(stats["case_count"], 1)
+            self.assertEqual(stats["case_evidence_rows_including_case_overlap"], 5)
+
     def test_two_batches_with_saved_models(self):
         bundle = os.environ.get("TRACE_TEST_MODEL_BUNDLE")
         digest = os.environ.get("TRACE_TEST_MODEL_BUNDLE_SHA256")

@@ -13,6 +13,7 @@ from dashboard.case_queue import render_case_queue
 from dashboard.ml_replay import render_explorer, replay_evaluation, replay_explorer
 from dashboard.fresh_bq2 import batch_caption, fresh_bq2, fresh_evaluation, local_bq2_workspace
 from dashboard.trends import range_options,date_window,daily_population,population_total,coverage_counts,LOW_DAILY_VOLUME,endpoint_comparison,trend_chart
+from pipeline.bq2_release import BQ2_CURRENT_URI
 from pipeline.release import ACCOUNT,REGION,load_current,verify_ref
 
 ml_replay_pin=os.environ.get('TRACE_ML_REPLAY_PIN')
@@ -22,7 +23,7 @@ st.set_page_config(page_title='TRACE | AML intelligence',page_icon='◈',layout=
 st.markdown('<style>'+Path(__file__).with_name('styles.css').read_text()+'</style>',unsafe_allow_html=True)
 local_bq2_mirror=os.environ.get('TRACE_BQ2_LOCAL_MIRROR')
 if local_bq2_mirror:
-    local_bq2_workspace(Path(local_bq2_mirror))
+    local_bq2_workspace(Path(local_bq2_mirror), bq2_pointer or BQ2_CURRENT_URI)
     st.stop()
 
 @st.cache_resource

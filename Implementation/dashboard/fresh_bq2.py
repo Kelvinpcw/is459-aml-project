@@ -9,7 +9,7 @@ import streamlit as st
 
 from dashboard.ml_replay import Replay, parquet_table, render_explorer
 from dashboard.presentation import PATTERNS, kpis, period
-from pipeline.bq2_release import BQ2_CURRENT_URI, LocalBQ2Objects, TABLES, release_uri
+from pipeline.bq2_release import BQ2_CURRENT_URI, BQ2_SCALE_CHECK_URI, LocalBQ2Objects, TABLES, release_uri
 from pipeline.release import read_object, sha, verify_ref
 
 
@@ -46,7 +46,7 @@ def load_fresh_release(_s3, uri: str, checksum: str) -> Replay:
 
 
 def fresh_bq2(s3, pointer_uri: str) -> Replay:
-    if pointer_uri != BQ2_CURRENT_URI:
+    if pointer_uri not in (BQ2_CURRENT_URI, BQ2_SCALE_CHECK_URI):
         raise ValueError("Require the project BQ2 release pointer")
     pointer = json.loads(read_object(s3, pointer_uri))
     return load_fresh_release(s3, pointer["uri"], pointer["sha256"])
@@ -80,11 +80,11 @@ def fresh_evaluation(replay: Replay) -> None:
     st.caption(f"Model bundle SHA-256 {m['model_bundle_sha256']}")
 
 
-def local_bq2_workspace(mirror: Path) -> None:
+def local_bq2_workspace(mirror: Path, pointer_uri: str) -> None:
     store = LocalBQ2Objects(mirror)
     st.title("TRACE · Fresh batch BQ2")
     view = st.sidebar.radio("Workspace", ["Connected cases", "Evaluation & coverage"], key="fresh_bq2_workspace")
-    replay = fresh_bq2(store, BQ2_CURRENT_URI)
+    replay = fresh_bq2(store, pointer_uri)
     if view == "Connected cases":
         render_explorer(store, replay, batch_caption(replay))
     else:

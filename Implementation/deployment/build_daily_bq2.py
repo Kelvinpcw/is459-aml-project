@@ -16,6 +16,8 @@ READY_SUFFIX = "/ready.json"
 DATE_PATTERN = r"/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/"
 TIMESTAMP_PATTERN = r"/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?Z$/"
 ETAG_PATTERN = r'/^"[0-9a-f]{32}(-[0-9]{1,5})?"$/'
+CHILD_NAME = r"is459-aml-fresh-bq2-[a-z0-9][a-z0-9-]{0,19}"
+CHILD_WAIT_SECONDS = 11_100
 
 
 def daily_states(legacy_start: str, child_arn: str) -> dict:
@@ -83,7 +85,7 @@ def daily_states(legacy_start: str, child_arn: str) -> dict:
         "RunDailyBQ2": {
             "Type": "Task", "Resource": "arn:aws:states:::states:startExecution.sync:2",
             "Parameters": {"StateMachineArn": child_arn, "Name.$": "$.attempt_id", "Input.$": "$"},
-            "TimeoutSeconds": 3900,
+            "TimeoutSeconds": CHILD_WAIT_SECONDS,
             "End": True,
         },
         "InvalidDailyBQ2Input": {
@@ -98,7 +100,7 @@ def daily_states(legacy_start: str, child_arn: str) -> dict:
 
 
 def build(base: dict, child_name: str) -> dict:
-    if not re.fullmatch(r"is459-aml-fresh-bq2-[a-z0-9][a-z0-9-]{0,19}", child_name):
+    if not re.fullmatch(CHILD_NAME, child_name):
         raise ValueError("Supply the name of the reviewed fresh BQ2 workflow in the project account")
 
     template = deepcopy(base)
@@ -133,11 +135,47 @@ def build(base: dict, child_name: str) -> dict:
     return template
 
 
+def retarget(base: dict, old_child: str, new_child: str) -> dict:
+    """Replace the reviewed child target and widen only its synchronous wait."""
+    if (not re.fullmatch(CHILD_NAME, old_child) or not re.fullmatch(CHILD_NAME, new_child)
+            or old_child == new_child):
+        raise ValueError("Supply distinct reviewed fresh BQ2 workflow names")
+    template = deepcopy(base)
+    resources = template["Resources"]
+    workflow = resources["Workflow"]["Properties"]
+    if workflow["StateMachineName"] != MAIN or workflow["RoleArn"] != attr("WorkflowRole", "Arn"):
+        raise ValueError("Require the project main workflow and its execution role")
+    slot = workflow["DefinitionString"]["Fn::Sub"]
+    definition = json.loads(slot[0])
+    task = definition["States"]["RunDailyBQ2"]
+    old_state_machine = f"arn:aws:states:{REGION}:{ACCOUNT}:stateMachine:{old_child}"
+    new_state_machine = f"arn:aws:states:{REGION}:{ACCOUNT}:stateMachine:{new_child}"
+    old_execution = f"arn:aws:states:{REGION}:{ACCOUNT}:execution:{old_child}:{MODE}-*"
+    new_execution = f"arn:aws:states:{REGION}:{ACCOUNT}:execution:{new_child}:{MODE}-*"
+    if (definition["StartAt"] != "SelectWorkload" or task["Resource"] != "arn:aws:states:::states:startExecution.sync:2"
+            or task["Parameters"]["StateMachineArn"] != old_state_machine
+            or definition["TimeoutSeconds"] <= CHILD_WAIT_SECONDS):
+        raise ValueError("Main workflow is not the reviewed daily BQ2 route")
+    policy, = [entry["PolicyDocument"] for entry in resources["WorkflowRole"]["Properties"]["Policies"]
+               if entry["PolicyName"] == "RunDailyBQ2"]
+    for action, previous, updated in (("states:StartExecution", old_state_machine, new_state_machine),
+                                      (["states:DescribeExecution", "states:StopExecution"], old_execution, new_execution)):
+        statement, = [item for item in policy["Statement"] if item == allow(action, previous)]
+        statement["Resource"] = updated
+    task["Parameters"]["StateMachineArn"] = new_state_machine
+    task["TimeoutSeconds"] = CHILD_WAIT_SECONDS
+    slot[0] = json.dumps(definition)
+    return template
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--main-template", required=True, type=Path)
     parser.add_argument("--child-name", required=True)
+    parser.add_argument("--replace-child-name")
     args = parser.parse_args()
-    template = build(json.loads(args.main_template.read_bytes()), args.child_name)
+    base = json.loads(args.main_template.read_bytes())
+    template = (retarget(base, args.replace_child_name, args.child_name)
+                if args.replace_child_name else build(base, args.child_name))
     # Keep the reviewed main stack within CloudFormation's 51,200-byte inline template limit.
     print(json.dumps(template, indent=1))

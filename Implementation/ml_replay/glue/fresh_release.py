@@ -1,7 +1,7 @@
 """Evaluate a fresh BQ2 shortlist and prepare its immutable TRACE release."""
 
 from collections import defaultdict
-from datetime import date, datetime, time
+from datetime import date, datetime, time, timedelta
 from decimal import Decimal
 import json
 from math import isfinite
@@ -9,6 +9,7 @@ from pathlib import Path
 import shutil
 
 import pyarrow as pa
+import pyarrow.compute as pc
 import pyarrow.parquet as pq
 
 from batch_projection import batch_inputs
@@ -34,17 +35,28 @@ def score_tables(scores: Path, manifest: dict) -> dict[str, pa.Table]:
     return tables
 
 
-def facts_by_id(facts_path: Path, count: int) -> dict[str, dict]:
+def facts_by_id(facts_path: Path, count: int, sources: set[str], start: date,
+                cutoff: date) -> tuple[dict[str, dict], int]:
+    """Count the full corpus while materializing only rows needed for evaluation."""
     fields = [*EVIDENCE_COLUMNS, "source_record_ordinal"]
     facts = {}
+    keys = pa.array(sorted(sources), type=pa.string())
+    population = eligible = 0
     for path in sorted(facts_path.glob("event_date=*/*.parquet")):
-        for chunk in pq.ParquetFile(path).iter_batches(columns=fields):
-            for row in chunk.to_pylist():
+        day = date.fromisoformat(path.parent.name.removeprefix("event_date="))
+        parquet = pq.ParquetFile(path)
+        require(day < cutoff, "Prepared payment partition is at or after the cutoff")
+        population += parquet.metadata.num_rows
+        if day >= start:
+            eligible += parquet.metadata.num_rows
+        for chunk in parquet.iter_batches(columns=fields):
+            for row in chunk.filter(pc.is_in(chunk["source_id"], value_set=keys)).to_pylist():
                 source_id = row["source_id"]
                 require(source_id not in facts, "Prepared evidence contains a repeated payment identity")
                 facts[source_id] = row
-    require(len(facts) == count, "Prepared evidence count differs from the scored population")
-    return facts
+    require(population == count and bool(eligible), "Prepared evidence count differs from the scored population")
+    require(facts.keys() == sources, "Scored evidence or reference includes a payment missing from the prepared batch")
+    return facts, eligible
 
 
 def trace_scope(detector: dict, manifest: dict) -> dict:
@@ -63,17 +75,18 @@ def trace_scope(detector: dict, manifest: dict) -> dict:
     }
 
 
-def check_evidence(store: LocalBQ2Objects, scope: dict, cases: pa.Table, index: pa.Table,
-                   facts: dict[str, dict], cutoff: datetime) -> dict[str, list[set[str]]]:
+def check_evidence(store, scope: dict, cases: pa.Table, index: pa.Table, first_cutoff: datetime,
+                   cutoff: datetime) -> tuple[dict[str, list[set[str]]], dict[str, dict]]:
     indexed = {(row["case_id"], row["snapshot_cutoff"]): row for row in index.to_pylist()}
     require(len(indexed) == len(index), "The evidence index contains repeated case snapshots")
     seen = set()
     highlights_by_kind: dict[str, list[set[str]]] = defaultdict(list)
+    evidence = {}
     cache = {}
     for row in cases.to_pylist():
         key = (row["case_id"], row["snapshot_cutoff"].isoformat())
-        require(key in indexed and key not in seen and row["snapshot_cutoff"] == cutoff,
-                "Each ranked case must resolve once at the current batch cutoff")
+        require(key in indexed and key not in seen and first_cutoff <= row["snapshot_cutoff"] <= cutoff,
+                "Each ranked case must resolve once within the current batch cutoffs")
         seen.add(key)
         case, _ = get_case(store, scope, indexed[key])
         require(case["pattern_type"] == row["pattern_type"] and case["snapshot_cutoff"] == key[1]
@@ -88,16 +101,15 @@ def check_evidence(store: LocalBQ2Objects, scope: dict, cases: pa.Table, index: 
             for line in rows:
                 payment = json.loads(line)
                 source_id = payment["source_id"]
-                require(source_id in facts and source_id not in payments, "Case evidence is missing or repeated")
-                original = facts[source_id]
-                require(start <= original["event_time"] < cutoff, "Case evidence is outside the detector window")
-                for field in EVIDENCE_COLUMNS:
-                    value = payment[field]
-                    if field == "event_time":
-                        value = datetime.fromisoformat(value)
-                    elif field in ("amount_paid", "amount_received"):
-                        value = Decimal(value)
-                    require(value == original[field], f"Case evidence differs from prepared payment field: {field}")
+                require(source_id not in payments, "Case evidence is repeated")
+                record = {field: payment[field] for field in EVIDENCE_COLUMNS}
+                record["event_time"] = datetime.fromisoformat(record["event_time"])
+                for field in ("amount_paid", "amount_received"):
+                    record[field] = Decimal(record[field])
+                require(start <= record["event_time"] < row["snapshot_cutoff"],
+                        "Case evidence is outside the detector window")
+                require(evidence.setdefault(source_id, record) == record,
+                        "Evidence copies disagree for the same source payment")
                 if compared_preview < preview_count:
                     require(case["transactions"][compared_preview] == payment, "Case preview differs from full evidence")
                     compared_preview += 1
@@ -108,18 +120,22 @@ def check_evidence(store: LocalBQ2Objects, scope: dict, cases: pa.Table, index: 
                 and highlighted <= payments, "Ranked case highlights do not match complete case evidence")
         highlights_by_kind[row["pattern_type"]].append(highlighted)
     require(seen == indexed.keys(), "The evidence index includes unranked cases")
-    return highlights_by_kind
+    return highlights_by_kind, evidence
 
 
-def reference_rows(ready: dict, field: str, store: LocalBQ2Objects) -> list[dict]:
-    if field not in ready:
-        return []
+def reference_json(ready: dict, field: str, store: LocalBQ2Objects) -> list[dict] | dict:
     ref = ready[field]
     key = ref["key"]
     require(key.startswith("fresh-bq2/reference/") and key.endswith(".json"), f"Invalid {field} reference key")
     body = read_object(store, f"s3://{BUCKET}/{key}")
     require(sha(body) == ref["sha256"], f"The {field} reference checksum changed")
-    rows = json.loads(body)
+    return json.loads(body)
+
+
+def reference_rows(ready: dict, field: str, store: LocalBQ2Objects) -> list[dict]:
+    if field not in ready:
+        return []
+    rows = reference_json(ready, field, store)
     require(isinstance(rows, list) and all(isinstance(row, dict) for row in rows),
             f"The {field} reference must contain a JSON array of objects")
     return rows
@@ -145,6 +161,25 @@ def payment_metrics(rows: list[dict], eligible: set[str], alert_ids: set[str]) -
     }
 
 
+def complete_label_metrics(document: dict, files: list[dict], population: int,
+                           prepared: int, alerts: set[str]) -> dict:
+    """Evaluate a fully labelled single-file batch using only its positive ordinals."""
+    require(isinstance(document, dict) and set(document) == {"source_sha256", "rows", "positive_ordinals"},
+            "Complete labels require a source checksum, total row count and positive ordinals")
+    require(len(files) == 1 and document["source_sha256"] == files[0]["sha256"]
+            and type(document["rows"]) is int and document["rows"] == population == prepared,
+            "Complete labels must cover every prepared payment of this source")
+    positives = document["positive_ordinals"]
+    require(isinstance(positives, list) and all(type(value) is int and 1 <= value <= population for value in positives)
+            and len(set(positives)) == len(positives), "Complete labels contain invalid or repeated positive ordinals")
+    labelled = {f"{document['source_sha256']}:{ordinal}" for ordinal in positives}
+    hits = len(alerts & labelled)
+    return {"labelled_payments": population, "labelled_alerts": len(alerts),
+            "positive_payments": len(positives), "positive_alerts": hits,
+            "payment_precision": hits / len(alerts) if alerts else None,
+            "payment_recall": hits / len(positives) if positives else None}
+
+
 def pattern_metrics(rows: list[dict], eligible: set[str], facts: dict[str, dict],
                     highlights: dict[str, list[set[str]]]) -> dict:
     counts = {}
@@ -168,7 +203,7 @@ def pattern_metrics(rows: list[dict], eligible: set[str], facts: dict[str, dict]
 
 
 def evaluate_batch(ready: dict, mirror: Path, manifest_path: Path, detector_path: Path,
-                   scores: Path, output: Path) -> None:
+                   scores: Path, output: Path, evidence_store) -> None:
     manifest_bytes = manifest_path.read_bytes()
     detector_bytes = detector_path.read_bytes()
     detector = json.loads(detector_bytes)
@@ -184,10 +219,8 @@ def evaluate_batch(ready: dict, mirror: Path, manifest_path: Path, detector_path
     scope = trace_scope(detector, manifest)
     store = LocalBQ2Objects(mirror)
     tables = score_tables(scores, manifest)
-    facts = facts_by_id(batch.facts_path, batch.payments)
-    eligible = {source for source, row in facts.items() if start <= row["event_time"] < cutoff}
-    require(bool(eligible) and all(row["event_time"] < cutoff for row in facts.values()),
-            "Prepared payments are outside the declared batch cutoff")
+    labels = reference_rows(ready, "labels", store)
+    annotations = reference_rows(ready, "annotations", store)
     ranks: dict[int, str] = {}
     for row in tables["ranked_cases"].to_pylist():
         rank, investigation = row["archive_rank"], row["investigation_id"]
@@ -196,7 +229,15 @@ def evaluate_batch(ready: dict, mirror: Path, manifest_path: Path, detector_path
                 "Ranked case has an invalid investigation rank or model score")
     require(set(ranks) == set(range(1, manifest["investigations"] + 1))
             and len(set(ranks.values())) == len(ranks), "Ranked investigations differ from the manifest")
-    highlights = check_evidence(store, scope, tables["ranked_cases"], tables["evidence_index"], facts, cutoff)
+    highlights, evidence = check_evidence(evidence_store, scope, tables["ranked_cases"],
+                                          tables["evidence_index"], start + timedelta(days=1), cutoff)
+    sources = (set(evidence) | set(tables["payment_alerts"]["source_id"].to_pylist())
+               | {row["source_id"] for row in labels} | {source for row in annotations for source in row["source_ids"]})
+    facts, population = facts_by_id(batch.facts_path, batch.payments, sources, start.date(), cutoff.date())
+    for source, payment in evidence.items():
+        require(all(payment[field] == facts[source][field] for field in EVIDENCE_COLUMNS),
+                f"Case evidence differs from prepared payment: {source}")
+    eligible = {source for source, row in facts.items() if start <= row["event_time"] < cutoff}
     highlighted_ids = set().union(*(group for groups in highlights.values() for group in groups))
     alert_ids = set()
     for row in tables["payment_alerts"].to_pylist():
@@ -213,13 +254,18 @@ def evaluate_batch(ready: dict, mirror: Path, manifest_path: Path, detector_path
                 "Payment alert does not match its prepared payment or case evidence")
         alert_ids.add(source)
     require(highlighted_ids <= alert_ids, "A highlighted payment is missing from the alerts table")
+    if "complete_labels" in ready:
+        complete = reference_json(ready, "complete_labels", store)
+        payment_results = complete_label_metrics(complete, ready["files"], population, batch.payments, alert_ids & eligible)
+    else:
+        payment_results = payment_metrics(labels, eligible, alert_ids)
     metrics = {
         "schema_version": 1, "status": "PASSED", "release_id": scope["release_id"],
         "shortlist_manifest_sha256": sha(shortlist_bytes), "detector_report_sha256": sha(detector_bytes),
-        "ready_sha256": sha(encoded(ready)), "eligible_payments": len(eligible),
+        "ready_sha256": sha(encoded(ready)), "eligible_payments": population,
         "eligible_alerts": len(alert_ids & eligible), "scored_payments": batch.payments,
-        **payment_metrics(reference_rows(ready, "labels", store), eligible, alert_ids),
-        **pattern_metrics(reference_rows(ready, "annotations", store), eligible, facts, highlights),
+        **payment_results,
+        **pattern_metrics(annotations, eligible, facts, highlights),
     }
     with output.open("xb") as stream:
         stream.write(encoded(metrics))

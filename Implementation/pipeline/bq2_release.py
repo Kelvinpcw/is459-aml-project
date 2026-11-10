@@ -7,6 +7,7 @@ from pipeline.release import BUCKET, safe_id, split_uri
 
 BQ2_PREFIX = "published/bq2/"
 BQ2_CURRENT_URI = f"s3://{BUCKET}/{BQ2_PREFIX}current.json"
+BQ2_SCALE_CHECK_URI = f"s3://{BUCKET}/{BQ2_PREFIX}scale-check.json"
 TABLES = {"ranked_cases": "case_snapshots", "payment_alerts": "payment_alerts", "evidence_index": "case_snapshots"}
 
 

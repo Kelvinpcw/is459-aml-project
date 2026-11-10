@@ -1,14 +1,16 @@
 """Run one stage of the fresh BQ2 workflow against a local mirror or S3."""
 
 import argparse
+from base64 import b64encode
 from contextlib import closing
 from dataclasses import dataclass
 from datetime import date, timedelta
-from hashlib import sha256
+from hashlib import file_digest, sha256
 import json
 import os
 from pathlib import Path, PurePosixPath
 import re
+from shutil import copyfile, copyfileobj
 from tempfile import NamedTemporaryFile, TemporaryDirectory
 from typing import Protocol
 
@@ -16,8 +18,8 @@ from pipeline.release import ACCOUNT, BUCKET, REGION, encoded, safe_id, sha, spl
 
 STAGES = ("prepare", "detect", "score", "evaluate", "publish")
 CURRENT = "published/bq2/current.json"
+SCALE_CHECK = "published/bq2/scale-check.json"
 MAX_OBJECT = 64 * 1024 * 1024
-MAX_INPUT = 128 * 1024 * 1024
 HEX = re.compile(r"[0-9a-f]{64}")
 
 
@@ -29,8 +31,10 @@ class Object:
 
 class Store(Protocol):
     def read(self, key: str) -> Object: ...
-    def current(self) -> Object | None: ...
+    def current(self, key: str) -> Object | None: ...
     def write(self, key: str, body: bytes, previous: str | None) -> None: ...
+    def download(self, key: str, path: Path) -> None: ...
+    def upload(self, key: str, path: Path, digest: str) -> None: ...
 
 
 def object_key(value: str) -> str:
@@ -52,9 +56,9 @@ class LocalStore:
         body = path.read_bytes()
         return Object(body, sha(body))
 
-    def current(self) -> Object | None:
+    def current(self, key: str) -> Object | None:
         try:
-            return self.read(CURRENT)
+            return self.read(key)
         except FileNotFoundError:
             return None
 
@@ -67,7 +71,7 @@ class LocalStore:
             fcntl.flock(lock, fcntl.LOCK_EX)
             if path.exists():
                 existing = self.read(key)
-                if previous is None and key != CURRENT and existing.body == body:
+                if previous is None and key not in (CURRENT, SCALE_CHECK) and existing.body == body:
                     return
                 if existing.etag != previous:
                     raise FileExistsError(f"Object changed before publication: {key}")
@@ -82,6 +86,15 @@ class LocalStore:
                 finally:
                     scratch.unlink(missing_ok=True)
 
+    def download(self, key: str, path: Path) -> None:
+        copyfile(self.root / object_key(key), path)
+
+    def upload(self, key: str, path: Path, digest: str) -> None:
+        target = self.root / object_key(key)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        with path.open("rb") as source, target.open("xb") as destination:
+            copyfileobj(source, destination)
+
 
 class S3Store:
     def __init__(self, client):
@@ -94,13 +107,13 @@ class S3Store:
                 raise ValueError(f"Object exceeds the batch demo limit: {key}")
             return Object(body.read(), reply["ETag"].strip('"'))
 
-    def current(self) -> Object | None:
+    def current(self, key: str) -> Object | None:
         # Use an exact-prefix listing so absence is distinguishable from denied access.
-        reply = self.client.list_objects_v2(Bucket=BUCKET, Prefix=CURRENT, MaxKeys=1,
+        reply = self.client.list_objects_v2(Bucket=BUCKET, Prefix=key, MaxKeys=1,
                                             ExpectedBucketOwner=ACCOUNT)
-        if not reply.get("Contents") or reply["Contents"][0]["Key"] != CURRENT:
+        if not reply.get("Contents") or reply["Contents"][0]["Key"] != key:
             return None
-        return self.read(CURRENT)
+        return self.read(key)
 
     def write(self, key: str, body: bytes, previous: str | None) -> None:
         from botocore.exceptions import ClientError
@@ -110,11 +123,61 @@ class S3Store:
             self.client.put_object(Bucket=BUCKET, Key=object_key(key), Body=body,
                                    ExpectedBucketOwner=ACCOUNT, ServerSideEncryption="AES256", **condition)
         except ClientError as error:
-            if (previous is None and key != CURRENT and
+            if (previous is None and key not in (CURRENT, SCALE_CHECK) and
                     error.response["Error"]["Code"] in ("PreconditionFailed", "412") and
                     self.read(key).body == body):
                 return
             raise
+
+    def download(self, key: str, path: Path) -> None:
+        reply = self.client.get_object(Bucket=BUCKET, Key=object_key(key), ExpectedBucketOwner=ACCOUNT)
+        with closing(reply["Body"]) as body, path.open("xb") as stream:
+            copyfileobj(body, stream, length=8 * 1024 * 1024)
+
+    def upload(self, key: str, path: Path, digest: str) -> None:
+        from botocore.exceptions import ClientError
+
+        checksum = b64encode(bytes.fromhex(digest)).decode("ascii")
+        with path.open("rb") as stream:
+            try:
+                self.client.put_object(Bucket=BUCKET, Key=object_key(key), Body=stream, IfNoneMatch="*",
+                                       ExpectedBucketOwner=ACCOUNT, ServerSideEncryption="AES256",
+                                       ChecksumSHA256=checksum)
+            except ClientError as error:
+                if error.response["Error"]["Code"] not in ("PreconditionFailed", "412"):
+                    raise
+                current = self.client.head_object(Bucket=BUCKET, Key=key, ExpectedBucketOwner=ACCOUNT,
+                                                  ChecksumMode="ENABLED")
+                if current.get("ChecksumSHA256") != checksum:
+                    raise
+
+    def download_case_index(self, scratch: Path, prefix: str) -> None:
+        objects = self.client.get_paginator("list_objects_v2")
+        for page in objects.paginate(Bucket=BUCKET, Prefix=prefix, ExpectedBucketOwner=ACCOUNT):
+            for entry in page.get("Contents", ()):
+                key = object_key(entry["Key"])
+                if re.fullmatch(r"window_date=\d{4}-\d{2}-\d{2}/part-[\w.-]+\.parquet",
+                                key.removeprefix(prefix)):
+                    path = scratch / key
+                    path.parent.mkdir(parents=True, exist_ok=True)
+                    self.download(key, path)
+
+
+class S3Evidence:
+    """Keep requested immutable case shards on disk during evaluation."""
+
+    def __init__(self, store: S3Store, cache: Path):
+        self.store = store
+        self.cache = cache
+
+    def get_object(self, Bucket: str, Key: str) -> dict:
+        if Bucket != BUCKET:
+            raise ValueError("Case evidence must be in the project bucket")
+        path = self.cache / object_key(Key)
+        if not path.exists():
+            path.parent.mkdir(parents=True, exist_ok=True)
+            self.store.download(Key, path)
+        return {"Body": path.open("rb")}
 
 
 def reference(ref: dict, prefix: str, suffix: str) -> tuple[str, str]:
@@ -130,51 +193,55 @@ def reference(ref: dict, prefix: str, suffix: str) -> tuple[str, str]:
 def parse_ready(raw: bytes) -> dict:
     value = json.loads(raw)
     required = {"schema_version", "dataset_version", "history_start", "batch_start", "cutoff", "files", "accounts"}
-    if (not isinstance(value, dict) or not required <= set(value) <= required | {"labels", "annotations"} or
+    references = ("labels", "complete_labels", "annotations")
+    if (not isinstance(value, dict) or not required <= set(value) <= required | set(references) or
             type(value["schema_version"]) is not int or value["schema_version"] != 1):
         raise ValueError("Unsupported fresh BQ2 ready manifest")
     if not safe_id(value["dataset_version"]).startswith("fresh-bq2-"):
         raise ValueError("Require an isolated fresh-bq2 dataset identifier")
     history, start, cutoff = (date.fromisoformat(value[field]) for field in ("history_start", "batch_start", "cutoff"))
-    if (not history <= start or cutoff != start + timedelta(days=1) or (cutoff - history).days > 29 or
+    if (not history <= start < cutoff or (cutoff - history).days > 29 or
             (history.isoformat(), start.isoformat(), cutoff.isoformat()) !=
             (value["history_start"], value["batch_start"], value["cutoff"])):
-        raise ValueError("Require one new day and at most 29 days of supplied context")
+        raise ValueError("Require a nonempty batch and at most 29 days of supplied transactions")
     if not isinstance(value["files"], list) or not 1 <= len(value["files"]) <= 32:
         raise ValueError("Require 1–32 transaction CSV references")
     files = [reference(row, "fresh-bq2/incoming/", ".csv") for row in value["files"]]
     accounts = reference(value["accounts"], "fresh-bq2/incoming/", ".csv")
     if not files or len({key for key, _ in [*files, accounts]}) != len(files) + 1:
         raise ValueError("Require unique transaction CSVs and a separate account CSV")
-    for name in ("labels", "annotations"):
+    if "labels" in value and "complete_labels" in value:
+        raise ValueError("Supply either individual or complete payment labels")
+    for name in references:
         if name in value:
             reference(value[name], "fresh-bq2/reference/", ".json")
     return value
 
 
-def materialize(store: Store, scratch: Path, key: str, checksum: str) -> int:
-    body = store.read(key).body
-    if sha(body) != checksum:
-        raise ValueError(f"Pinned object bytes changed: {key}")
+def hash_file(path: Path) -> str:
+    with path.open("rb") as stream:
+        return file_digest(stream, "sha256").hexdigest()
+
+
+def materialize(store: Store, scratch: Path, key: str, checksum: str) -> None:
     path = scratch / key
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_bytes(body)
-    return len(body)
+    store.download(key, path)
+    if hash_file(path) != checksum:
+        raise ValueError(f"Pinned object bytes changed: {key}")
 
 
 def persist_stage(store: Store, scratch: Path, stage_dir: str, paths: list[Path], identity: str) -> None:
     files: dict[str, str] = {}
     for path in sorted(paths):
         key = path.relative_to(scratch).as_posix()
-        body = path.read_bytes()
-        if len(body) > MAX_OBJECT:
-            raise ValueError(f"Stage artifact exceeds the batch demo limit: {key}")
-        store.write(key, body, None)
-        files[key] = sha(body)
+        files[key] = hash_file(path)
+        store.upload(key, path, files[key])
     store.write(stage_dir + "/inventory.json", encoded({"identity": identity, "files": files}), None)
 
 
-def restore_stage(store: Store, scratch: Path, stage_dir: str, identity: str, prefixes: tuple[str, ...]) -> None:
+def restore_stage(store: Store, scratch: Path, stage_dir: str, identity: str, prefixes: tuple[str, ...],
+                  include_data: bool) -> None:
     inventory = json.loads(store.read(stage_dir + "/inventory.json").body)
     if inventory["identity"] != identity:
         raise ValueError(f"Stage outputs belong to another batch: {stage_dir}")
@@ -182,7 +249,8 @@ def restore_stage(store: Store, scratch: Path, stage_dir: str, identity: str, pr
         object_key(key)
         if not key.startswith((stage_dir + "/", *prefixes)):
             raise ValueError(f"Unexpected artifact in stage inventory: {key}")
-        materialize(store, scratch, key, checksum)
+        if include_data or key.startswith(stage_dir + "/"):
+            materialize(store, scratch, key, checksum)
 
 
 def load_bundle(store: Store, path: Path, bundle_uri: str, checksum: str) -> None:
@@ -220,18 +288,20 @@ def release_is_current(current: Object | None, release_id: str, cutoff: str) -> 
 
 
 def run_stage(store: Store, scratch: Path, stage: str, ready_key: str, ready_etag: str, attempt: str,
-              bundle_uri: str, bundle_sha256: str, local_bundle: Path | None) -> str:
+              bundle_uri: str, bundle_sha256: str, local_bundle: Path | None, pointer: str) -> str:
     safe_id(attempt)
     if (stage not in STAGES or not object_key(ready_key).startswith("fresh-bq2/incoming/") or
-            not ready_key.endswith("/ready.json") or not HEX.fullmatch(bundle_sha256)):
+            not ready_key.endswith("/ready.json") or not HEX.fullmatch(bundle_sha256)
+            or pointer not in (CURRENT, SCALE_CHECK)):
         raise ValueError("Invalid fresh BQ2 stage, manifest key or model digest")
     ready_object = store.read(ready_key)
     if ready_object.etag != ready_etag:
         raise ValueError("Ready manifest differs from the ETag supplied at workflow start")
     ready = parse_ready(ready_object.body)
-    identity = sha256((sha(ready_object.body) + bundle_sha256).encode()).hexdigest()
+    namespace = pointer if pointer == SCALE_CHECK else ""
+    identity = sha256((sha(ready_object.body) + bundle_sha256 + namespace).encode()).hexdigest()
     release_id = "fresh-" + identity
-    current = store.current()
+    current = store.current(pointer)
     if release_is_current(current, release_id, ready["cutoff"]):
         return "already-published"
 
@@ -250,26 +320,45 @@ def run_stage(store: Store, scratch: Path, stage: str, ready_key: str, ready_eta
         "evaluate": ("prepare", "detect", "score"), "publish": ("detect", "score", "evaluate"),
     }
     prefixes = {"prepare": (facts_prefix,), "detect": (cases_prefix,), "score": (), "evaluate": ()}
+    cloud = isinstance(store, S3Store)
     for prior in dependencies[stage]:
-        restore_stage(store, scratch, root + "/" + prior, identity, prefixes[prior])
+        restore_stage(store, scratch, root + "/" + prior, identity, prefixes[prior],
+                      not cloud or stage != "detect")
 
     if stage == "prepare":
         from fresh_inputs import prepare_batch
 
-        total = 0
         for row in [*ready["files"], ready["accounts"]]:
-            total += materialize(store, scratch, row["key"], row["sha256"])
-            if total > MAX_INPUT:
-                raise ValueError("Input exceeds the bounded BQ2 demo size")
+            materialize(store, scratch, row["key"], row["sha256"])
         prepare_batch(ready, attempt, scratch, work)
     elif stage == "detect":
-        from fresh_inputs import detect_batch
+        from fresh_inputs import ANALYSIS_ID, detect_batch
 
-        detect_batch(manifest, scratch, work, date.fromisoformat(ready["history_start"]),
-                     date.fromisoformat(ready["cutoff"]))
+        first = date.fromisoformat(ready["history_start"])
+        cutoff = date.fromisoformat(ready["cutoff"])
+        if cloud:
+            from q2_snapshots import main as detect_distributed
+
+            detect_distributed([
+                "--input-manifest", f"s3://{BUCKET}/{manifest.relative_to(scratch).as_posix()}",
+                "--output-root", f"s3://{BUCKET}", "--analysis-id", ANALYSIS_ID,
+                "--first-snapshot-end", (first + timedelta(days=1)).isoformat(),
+                "--last-snapshot-end", cutoff.isoformat(),
+                "--max-cycle-path-rows", "200000000", "--max-output-cost-usd", "10",
+            ])
+            quality = f"quality/q2/{suffix}analysis_id={ANALYSIS_ID}/report.json"
+            (work / "detector-report.json").write_bytes(store.read(quality).body)
+        else:
+            detect_batch(manifest, scratch, work, first, cutoff)
     elif stage == "score":
+        from fresh_inputs import ANALYSIS_ID
         from score_batch import score_fresh_batch
 
+        if cloud:
+            _, index = split_uri(json.loads(detector.read_bytes())["outputs"]["case_index"])
+            if index != cases_prefix + f"analysis_id={ANALYSIS_ID}/case_index/":
+                raise ValueError("Case index does not identify this batch")
+            store.download_case_index(scratch, index)
         bundle = local_bundle if local_bundle is not None else scratch / "bundle"
         if local_bundle is None:
             load_bundle(store, bundle, bundle_uri, bundle_sha256)
@@ -278,24 +367,26 @@ def run_stage(store: Store, scratch: Path, stage: str, ready_key: str, ready_eta
                           date.fromisoformat(ready["batch_start"]))
     elif stage == "evaluate":
         from fresh_release import evaluate_batch
+        from pipeline.bq2_release import LocalBQ2Objects
 
-        for name in ("labels", "annotations"):
+        for name in ("labels", "complete_labels", "annotations"):
             if name in ready:
                 ref = ready[name]
                 materialize(store, scratch, ref["key"], ref["sha256"])
-        evaluate_batch(ready, scratch, manifest, detector, scores, evaluation)
+        evidence_store = S3Evidence(store, scratch / "evidence-cache") if cloud else LocalBQ2Objects(scratch)
+        evaluate_batch(ready, scratch, manifest, detector, scores, evaluation, evidence_store)
     else:
         from fresh_release import stage_release
 
         destination = work / "release"
-        pointer = stage_release(detector, scores, evaluation, destination)
-        _, release_key = split_uri(pointer["uri"])
+        release = stage_release(detector, scores, evaluation, destination)
+        _, release_key = split_uri(release["uri"])
         if release_key != f"published/bq2/{release_id}/release.json":
             raise ValueError("Release pointer does not identify this batch")
         for file in sorted(destination.iterdir(), key=lambda path: (path.name == "release.json", path.name)):
-            store.write(release_key.removesuffix("release.json") + file.name, file.read_bytes(), None)
+            store.upload(release_key.removesuffix("release.json") + file.name, file, hash_file(file))
         # Compare against the pointer read at stage start. A concurrent run cannot move it backward.
-        store.write(CURRENT, encoded({**pointer, "release_id": release_id, "cutoff": ready["cutoff"]}),
+        store.write(pointer, encoded({**release, "release_id": release_id, "cutoff": ready["cutoff"]}),
                     current.etag if current is not None else None)
         return "published"
 
@@ -312,7 +403,7 @@ def run_local(mirror: Path, ready_key: str, bundle: Path, bundle_sha256: str, at
     for stage in STAGES:
         with TemporaryDirectory(prefix="fresh-bq2-") as folder:
             results[stage] = run_stage(store, Path(folder), stage, ready_key, etag, attempt, "",
-                                       bundle_sha256, bundle)
+                                       bundle_sha256, bundle, CURRENT)
         if results[stage] == "already-published":
             break
     return results
@@ -322,7 +413,8 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ("stage", "ready-key", "attempt-id", "model-bundle-sha256"):
         parser.add_argument("--" + name, required=True)
-    for name in ("ready-etag", "bucket", "bucket-owner", "model-bundle-uri", "local-mirror", "local-bundle"):
+    for name in ("ready-etag", "bucket", "bucket-owner", "model-bundle-uri", "release-pointer",
+                 "local-mirror", "local-bundle"):
         parser.add_argument("--" + name)
     args, _ = parser.parse_known_args()
     if args.stage == "local" and args.local_mirror and args.local_bundle:
@@ -336,7 +428,7 @@ def main() -> None:
     with TemporaryDirectory(prefix="fresh-bq2-") as folder:
         status = run_stage(S3Store(boto3.client("s3", region_name=REGION)), Path(folder),
                            args.stage, args.ready_key, args.ready_etag, args.attempt_id,
-                           args.model_bundle_uri, args.model_bundle_sha256, None)
+                           args.model_bundle_uri, args.model_bundle_sha256, None, args.release_pointer)
         print(json.dumps({"stage": args.stage, "attempt": args.attempt_id, "status": status}))
 
 
