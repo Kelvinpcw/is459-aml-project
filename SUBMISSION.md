@@ -2,6 +2,8 @@
 
 Use this index with the final presentation. The project answers BQ1 with historical monitoring summaries and BQ2 with explainable connected-payment cases and an ML shortlist.
 
+Download the source ZIP and architecture PDF from the [submission package](submission/README.md).
+
 ## Source and architecture on GitHub
 
 1. [Business questions and data dictionary](Proposal/Project_Proposal.md). Include the objective, intended users, IBM HI-Medium source, field definitions, and known limits.
