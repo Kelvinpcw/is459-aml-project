@@ -1,9 +1,9 @@
 # Retire isolated BQ2 test infrastructure
 
 - **Owner** Deshaun, with Codex.
-- **Status** IN_PROGRESS.
-- **Scope** Deshaun approved removal of the isolated daily mock, smoke child and historical replay CloudFormation stacks after checking live dependencies.
+- **Status** COMPLETED.
+- **Review** [PR #35](https://github.com/Kelvinpcw/is459-aml-project/pull/35).
 
-The main Q1 and rules-based Q2 jobs and the production ML child do not reference these stacks. The mock calls the smoke child, so the mock goes first, followed by the smoke and historical replay stacks. The test triggers are disabled, both test workflows have no running executions and all six test Glue jobs are idle. The stacks own no S3 resources or shared exports. Published outputs, trained models and public TRACE are outside the cleanup scope.
+Deshaun approved retiring three isolated CloudFormation stacks. Live definitions showed that the daily mock depended on the smoke child, while the main workflow used the production child. Both test triggers were disabled and the workflows and six Glue jobs were idle. CloudFormation reached `DELETE_COMPLETE` for the daily mock, smoke child and historical replay stacks, in that order. Readback confirmed that all six test job definitions, both test workflows and both test triggers were removed. No processing was started or stopped.
 
-Cleanup uses CloudFormation. Verify terminal stack states, retained jobs and workflows, and the published TRACE output. No processing is planned. See the [daily mock](2026-11-10-0126Z-deshaun-daily-bq2-mock.md) and [historical replay](2026-11-09-1658Z-deshaun-q2-ml-glue-shadow.md) handoffs.
+The main and production child workflow definitions and all ten production Glue jobs matched their pre-cleanup state. Both published release pointers and the saved production model objects in S3 also matched. Public TRACE passed its health check and opened Q1 Monitoring, Q2 Published rules, the ML shortlist and the same published ML evaluation. No S3 objects were deleted. The earlier [daily mock](2026-11-10-0126Z-deshaun-daily-bq2-mock.md) and [historical replay](2026-11-09-1658Z-deshaun-q2-ml-glue-shadow.md) remain documented for reproducibility.
