@@ -16,7 +16,7 @@ S3 inputs → preparation → Q1 summaries + label-free Q2 cases
     → separate evaluation → validated published release → TRACE dashboard
 ```
 
-The software path is implemented. Scheduled/incremental daily ingestion is not implemented. Code, local tests and actual cloud observations are different evidence; use the guides below before claiming that something ran or remains running.
+The shared pipeline and manual BQ2 batch route are implemented. The BQ2 route scores a dated input batch with the five saved models and publishes a validated release to TRACE. The automatic triggers are disabled. See the [submission index](SUBMISSION.md) for the code, model artifacts, and evidence to include.
 
 Start with the [plain-language walkthrough](PIPELINE_WALKTHROUGH.md), then practise using [Q&A](Q_AND_A.md). No assigned task or formal role is needed to explore the project.
 

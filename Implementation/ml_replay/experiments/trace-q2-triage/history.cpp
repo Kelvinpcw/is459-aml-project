@@ -17,7 +17,6 @@ using Minute = std::int32_t;
 using Money = __uint128_t;
 using Rows = std::span<const Id>;
 constexpr Minute day = 1440;
-constexpr Id payments = 31'898'238;
 
 struct Amount {
     std::uint64_t low, high;
@@ -238,9 +237,11 @@ Features derive(const View& view, const Inputs& input, Id row) {
 }
 
 int main(int argc, char** argv) {
-    if (argc != 5) throw std::invalid_argument("Usage: features replay-input formats-input working-folder accounts");
+    if (argc != 5 && argc != 6)
+        throw std::invalid_argument("Usage: features replay-input formats-input working-folder accounts [payments]");
     const std::filesystem::path replay = argv[1], auxiliary = argv[2], work = argv[3];
     const auto accounts = Id(std::stoul(argv[4]));
+    const Id payments = argc == 6 ? std::stoul(argv[5]) : 31'898'238;
     const auto facts = load<Fact>(replay/"facts.bin", payments);
     const auto formats = load<std::uint8_t>(auxiliary/"formats.u8", payments+1);
     const auto banks = load<Id>(auxiliary/"banks.u32", accounts);

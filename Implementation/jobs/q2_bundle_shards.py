@@ -14,19 +14,27 @@ def export_shards(rows,bucket,prefix,snapshot,partition,profile=None,region='us-
     import boto3
     from botocore.exceptions import ClientError
     session=boto3.Session(profile_name=profile,region_name=region) if profile else boto3.Session(region_name=region)
-    s3=session.client('s3');sequence=0;buffer=None;archive=None;size=0
-    def uri():return f's3://{bucket}/{prefix}bundles/shards/{snapshot}/partition-{partition:05d}-{sequence:06d}.zip'
-    def flush():
-        nonlocal archive,buffer,size,sequence
-        if archive is None:return
-        archive.close();body=buffer.getvalue()
-        if len(body)>10_000_000:raise ValueError('Compressed shard exceeds read bound')
-        key=uri().split(f's3://{bucket}/',1)[1];digest=hashlib.sha256(body).hexdigest()
+    s3=session.client('s3')
+    def put(key,body):
+        digest=hashlib.sha256(body).hexdigest()
         try:s3.put_object(Bucket=bucket,Key=key,Body=body,IfNoneMatch='*',ContentType='application/zip',Metadata={'sha256':digest})
         except ClientError as error:
             if error.response['Error']['Code'] not in ('PreconditionFailed','412'):raise
             old=s3.get_object(Bucket=bucket,Key=key)['Body'].read()
             if hashlib.sha256(old).hexdigest()!=digest:raise ValueError('Conflicting immutable shard retry')
+    yield from pack_shards((row.asDict(recursive=True) for row in rows),bucket,prefix,snapshot,partition,put,shard_bytes)
+
+
+def pack_shards(rows,bucket,prefix,snapshot,partition,put,shard_bytes):
+    """Pack sorted evidence mappings and write each completed shard through put."""
+    sequence=0;buffer=None;archive=None;size=0
+    def key():return f'{prefix}bundles/shards/{snapshot}/partition-{partition:05d}-{sequence:06d}.zip'
+    def flush():
+        nonlocal archive,buffer,size,sequence
+        if archive is None:return
+        archive.close();body=buffer.getvalue()
+        if len(body)>10_000_000:raise ValueError('Compressed shard exceeds read bound')
+        put(key(),body)
         buffer=None;archive=None;size=0;sequence+=1
     def add(member,body):
         nonlocal archive,buffer,size
@@ -36,7 +44,7 @@ def export_shards(rows,bucket,prefix,snapshot,partition,profile=None,region='us-
             buffer=io.BytesIO();archive=zipfile.ZipFile(buffer,'w',compression=zipfile.ZIP_DEFLATED)
         info=zipfile.ZipInfo(member,date_time=(1980,1,1,0,0,0));info.compress_type=zipfile.ZIP_DEFLATED
         archive.writestr(info,body);size+=len(body)
-        return {'uri':uri(),'member':member,'sha256':hashlib.sha256(body).hexdigest(),'bytes':len(body)}
+        return {'uri':f's3://{bucket}/{key()}','member':member,'sha256':hashlib.sha256(body).hexdigest(),'bytes':len(body)}
     for case_id,group in itertools.groupby(rows,key=lambda r:r['case_id']):
         parts=[];chunk=[];chunk_bytes=0;count=0;nodes={};edges={};preview=[];first=None
         def write_chunk():
@@ -44,8 +52,7 @@ def export_shards(rows,bucket,prefix,snapshot,partition,profile=None,region='us-
             if not chunk:return
             raw=('\n'.join(chunk)+'\n').encode();ref=add(f'evidence/{case_id}/part-{len(parts):06d}.jsonl',raw)
             ref['rows']=len(chunk);parts.append(ref);chunk=[];chunk_bytes=0
-        for row in group:
-            data=row.asDict(recursive=True)
+        for data in group:
             if first is None:first=data
             tx={k:data[k] for k in DETECTOR_COLUMNS if k not in ('dataset_version','run_id')}
             line=json.dumps(tx,default=_json_default,sort_keys=True);length=len(line.encode())+1

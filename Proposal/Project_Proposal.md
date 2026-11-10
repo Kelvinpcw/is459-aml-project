@@ -164,7 +164,7 @@ All Q2 cases must be generated from label-free data. Known labels and pattern an
 
 ![Proposed shared AWS pipeline with isolated evaluation](assets/Proposed_AWS_Architecture.png)
 
-The [detailed architecture pack](Architecture/Detailed/AWS_Architecture_Pack.pdf) is the technical reference; the [simplified pack](Architecture/Simplified/AWS_Architecture_Pack.pdf) provides presentation views of the same design. Their editable sources are the corresponding AWS_Architecture.drawio files.
+The [detailed architecture pack](Architecture/Detailed/AWS_Architecture_Pack.pdf) records the original design. The [current presentation pack](Architecture/Simplified/AWS_Architecture_Pack.pdf) also shows the implemented on-demand BQ2 route and how Glue uses the five saved models. The [editable current diagrams](Architecture/Simplified/AWS_Architecture.drawio) accompany the presentation pack.
 
 ### Service-to-requirement mapping
 

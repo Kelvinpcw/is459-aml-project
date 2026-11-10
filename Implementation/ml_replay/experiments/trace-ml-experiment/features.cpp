@@ -17,9 +17,6 @@ using Minute = std::int32_t;
 using Money = __uint128_t;
 using Rows = std::span<const Id>;
 constexpr Minute day = 1440;
-constexpr Id payments = 31'898'238;
-constexpr Id cases = 2'251'155;
-constexpr std::size_t memberships = 81'321'105;
 
 struct Amount {
     std::uint64_t low, high;
@@ -167,7 +164,8 @@ std::vector<Id> distinct_daily(const std::vector<Fact>& facts, const Index& inde
     return degree;
 }
 
-std::vector<Graph> day_end_graph(const std::filesystem::path& replay, const std::vector<std::uint8_t>& dates) {
+std::vector<Graph> day_end_graph(const std::filesystem::path& replay, const std::vector<std::uint8_t>& dates,
+                               Id payments, Id cases, std::size_t memberships) {
     const auto descriptors = load<Case>(replay / "cases.bin", cases);
     const auto decisions = load<Rule>(replay / "scored.bin", cases);
     const auto evidence = load<Id>(replay / "evidence.u32", memberships);
@@ -176,7 +174,7 @@ std::vector<Graph> day_end_graph(const std::filesystem::path& replay, const std:
     for (Id i = 0; i < cases; ++i) {
         const auto& c = descriptors[i];
         const auto& r = decisions[i];
-        if (r.offset != offset || offset + c.size > memberships || c.day < 1 || c.day > 28 || c.kind > 4)
+        if (r.offset != offset || offset + c.size > memberships || c.day < 1 || c.day == 255 || c.kind > 4)
             throw std::runtime_error("Published case and evidence are out of alignment");
         for (Id id : std::span(evidence).subspan(offset, c.size)) {
             if (id == 0 || id > payments || dates[id] > c.day)
@@ -258,15 +256,19 @@ Features features(const View& view, const Inputs& input, Id row) {
 }
 
 int main(int argc, char** argv) {
-    if (argc != 4) throw std::invalid_argument("Usage: features replay-directory work-directory account-count");
+    if (argc != 4 && argc != 7)
+        throw std::invalid_argument("Usage: features replay-directory work-directory account-count [payments cases memberships]");
     const std::filesystem::path replay = argv[1], work = argv[2];
     const auto accounts = Id(std::stoul(argv[3]));
+    const Id payments = argc == 7 ? std::stoul(argv[4]) : 31'898'238;
+    const Id cases = argc == 7 ? std::stoul(argv[5]) : 2'251'155;
+    const std::size_t memberships = argc == 7 ? std::stoull(argv[6]) : 81'321'105;
     if (!accounts) throw std::invalid_argument("Expected nonempty account codebook");
     const auto facts = load<Fact>(replay / "facts.bin", payments);
     const auto dates = load<std::uint8_t>(replay / "days.u8", payments + 1);
     const auto formats = load<std::uint8_t>(work / "formats.u8", payments + 1);
     const auto banks = load<Id>(work / "banks.u32", accounts);
-    const auto graph = day_end_graph(replay, dates);
+    const auto graph = day_end_graph(replay, dates, payments, cases, memberships);
     std::cerr << "Verified label-free daily graph inputs for all published cases\n";
 
     auto sender = [](const Fact& f) { return f.sender; };
