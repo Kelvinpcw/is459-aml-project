@@ -1,8 +1,8 @@
 # Task: Verify a new BQ2 batch on public TRACE
 
 - **Owner:** Deshaun (request and presentation); Codex (execution).
-- **Branch:** `agent/codex-trace-fresh-public-proof`.
-- **Status:** PLANNED
+- **Branch / PR:** [#33](https://github.com/Kelvinpcw/is459-aml-project/pull/33).
+- **Status:** IN_PROGRESS
 - **Evidence kind:** Preflight inspection.
 
 ## Scope and coordination
