@@ -4,7 +4,7 @@ Think of **Q1 as a reporting job** and **Q2 as an investigation job**. They shar
 
 **Design reference, updated 29 October 2026:** `main` implements this path and its recovery. Detailed AWS validation records and the operational checkpoint remain local; public-safe session summaries must now be committed/pushed under the [shared handoff policy](../../Implementation/AWS_HANDOFF.md). Read these handoffs, open PRs and the [checkpoint pointer](../../PROJECT_CHECKPOINT.md) before continuation. Configuration/local tests do not establish cloud completion or effectiveness. The IBM dataset is synthetic.
 
-**Architecture diagrams:** [Simplified PDF](Simplified/AWS_Architecture_Pack.pdf) · [Detailed PDF](Detailed/AWS_Architecture_Pack.pdf)
+The [current architecture PDF](Simplified/AWS_Architecture_Pack.pdf) and [editable diagrams](Simplified/AWS_Architecture.drawio) cover the deployed BQ2 batch route. The [detailed design PDF](Detailed/AWS_Architecture_Pack.pdf) and this walkthrough describe the original shared pipeline. The [fresh BQ2 workflow guide](../../Implementation/ml_replay/README.md#fresh-bq2-workflow) explains how to submit a new batch.
 
 ## 1. Business Question 1: Where should we focus monitoring?
 
