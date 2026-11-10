@@ -22,26 +22,29 @@ class PatternResult(TypedDict):
     eligible: int
 
 
-class ReplayMetrics(TypedDict):
+class ShortlistMetrics(TypedDict):
     release_id: str
     first_date: str
     last_date: str
-    payments: int
     payment_alerts: int
+    investigations: int
+    case_snapshots: int
+
+
+class ReplayMetrics(ShortlistMetrics):
+    payments: int
     ibm_positive_alerts: int
     ibm_positive_payments: int
     payment_precision: float
     payment_recall: float
     eligible_patterns: int
     recovered_patterns: int
-    investigations: int
-    case_snapshots: int
     by_pattern: dict[str, PatternResult]
 
 
 class Replay(NamedTuple):
     release: dict
-    metrics: ReplayMetrics
+    metrics: ShortlistMetrics
     cases: pa.Table
     alerts: pa.Table
     evidence_index: pa.Table
@@ -145,8 +148,12 @@ def highlighted_evidence(s3, case: dict, highlighted: set[str]) -> list[dict]:
 
 def replay_explorer(s3, pin: str) -> None:
     replay = load_replay(s3, pin)
+    render_explorer(s3, replay, release_caption(replay))
+
+
+def render_explorer(s3, replay: Replay, caption: str) -> None:
     m = replay.metrics
-    st.caption(release_caption(replay))
+    st.caption(caption)
     st.caption(f"{m['investigations']:,} ranked investigations · {m['case_snapshots']:,} retained snapshots")
     investigation_tab, payment_tab = st.tabs(["Ranked investigations", "Payment alerts"])
     with investigation_tab:
