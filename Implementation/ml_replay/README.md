@@ -20,10 +20,34 @@ The [editable architecture](../../Proposal/Architecture/Simplified/ML_Replay_Arc
 | Graph context | [model.py](experiments/trace-ml-experiment/model.py), command `fit` | `work/boosted_context.joblib` |
 | Account history | [fit_history.py](experiments/trace-q2-triage/fit_history.py), model `history_boost` | `work/history_boost.joblib` |
 | HI-Small transfer | [fit_transfer.py](experiments/trace-kaggle-transfer/fit_transfer.py), function `fit()` | `work/transfer.joblib`, staged as `hi_small.joblib` |
-| Case shape | [case_rank.py](experiments/trace-q2-ml-v2/case_rank.py), command `freeze` | Pointwise estimator in `case-models.joblib`, staged as `case-shape.joblib` |
+| Case shape | [case_rank.py](experiments/trace-q2-ml-v2/case_rank.py), command `freeze` | `case-models.joblib`, staged as `case-shape.joblib`. Glue selects its pointwise estimator. |
 | Evidence progress | [case_backlog.py](experiments/trace-q2-ml-v2/case_backlog.py), command `freeze` | `progress-model.joblib`, staged as `evidence-progress.joblib` |
 
-Graph context and account history fit on September 1–5, 2022, and validate on September 6–8. The two case estimators fit on September 1–6 and validate on September 7–8. The HI-Small model uses a chronological train, validation, and test split with approximately 60%, 20%, and 20% of that separate dataset. The full September replay includes development dates. Use the September 9–16 holdout when reporting out-of-sample performance on HI-Medium.
+### Training steps and fitted parameters
+
+1. **Prepare local features and targets.** Use the checksummed HI-Medium facts and graph evidence to build payment and case features. Join IBM labels and annotations to build training targets. The graph model uses context available at the daily cutoff. The account-history model uses events strictly before the payment minute. Prepare HI-Small separately with its own features and labels.
+2. **Fit the two HI-Medium payment models.** Train on September 1–5, 2022, using all 7,172 IBM-positive payments and 600,000 sampled IBM-zero payments per model. Use seed 459 for sampling and weights of 3 for positives and 1 for negatives. Compare payment models on September 6–8. The graph experiment compares a logistic baseline, payment-only boosting, and boosting with graph context using average precision.
+3. **Fit the HI-Small transfer model.** Split HI-Small chronologically into approximately 60% training, 20% validation, and 20% test, keeping same-minute payments together at the boundaries. Use balanced class weights. Fit on HI-Small, calibrate its experiment thresholds on the validation block, and apply the saved estimator to HI-Medium features for supporting payment scores.
+4. **Fit the case models.** Use HI-Medium development snapshots from September 1–6 and validate on September 7–8. Case shape learns from snapshots matched to annotated patterns and clean controls. Evidence progress treats matches with at least 80% of the annotated evidence as positive training examples. Partial matches and cases with no IBM-positive evidence provide controls. Both use training weights that reduce the influence of repeated positive snapshots of the same topology.
+5. **Save and package the selected estimators.** Use the fitting entry points listed above, then bundle their fitted files, feature encodings, extractors, and ranking policy. Glue verifies the bundle hashes and reuses the saved parameters for each batch.
+
+All five estimators used by Glue are scikit-learn 1.7.1 histogram gradient boosting classifiers. These are the settings in the approved fitted bundle.
+
+| Estimator | Learning rate | Iteration cap / fitted | Max leaves | Max depth | Min samples per leaf | L2 | Seed |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| Graph context | 0.09 | 115 / 115 | 31 | 6 | 35 | 1.5 | 459 |
+| Account history | 0.075 | 150 / 150 | 31 | 7 | 30 | 1.5 | 459 |
+| HI-Small transfer | 0.10 | 300 / 52 | 31 | Unbounded | 20 | 0 | 0 |
+| Case shape (pointwise) | 0.065 | 85 / 85 | 12 | 4 | 12 | 4.0 | 459 |
+| Evidence progress | 0.065 | 85 / 85 | 12 | 4 | 12 | 4.0 | 459 |
+
+HI-Small used early stopping with an internal 10% validation fraction from its training block. The other four ran their full iteration caps. See the fitting scripts for the full estimator and feature definitions.
+
+### Alert and ranking calibration
+
+The deployed shortlist averages the graph-context and account-history scores. It uses a **0.636** standalone alert cutoff and a **0.6400573** case rejoin cutoff. The graph score selects the top **0.25%** of payments per day as seeds and the top **2%** as supporting candidates, with at least two seeds for the anchored route. The HI-Small model can suggest supporting payments at a score of **0.85** or above under the bounded case-completion rules. Each retained snapshot gets the mean of its case-shape and evidence-progress scores. An investigation ranks by its best snapshot score, with up to **9,493** investigations retained per release. [Ranking implementation](glue/rank_shortlist.py)
+
+Model and feature comparisons used chronological development and validation blocks. The final shortlist size, ranking policy, and standalone cutoff were selected using the historical month. Report that replay as a historical result, and keep the September 9–16 holdout results from the earlier experiment separate. [Historical policy experiments](../team-handoffs/2026-11-09-1619Z-deshaun-q2-full-month-ml-replay.md) · [Earlier holdout](../team-handoffs/2026-11-09-1200Z-deshaun-q2-ml-replay.md)
 
 Training runs locally with offline labels. The current AWS batch scores label-free facts and case evidence with the frozen models. Its separate evaluator can use verified labels and annotations before Glue publishes the release. The [approved Linux bundle manifest](model-bundle-manifest.json) records the exact file digests. Its SHA-256 is `6638cdeac221574910c01ba58f4102e22bb5d9f282922e77ff21d79ba75b8c2e`.
 
