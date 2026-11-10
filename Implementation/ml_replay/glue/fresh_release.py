@@ -35,13 +35,17 @@ def score_tables(scores: Path, manifest: dict) -> dict[str, pa.Table]:
     return tables
 
 
-def facts_by_id(facts_path: Path, count: int, sources: set[str], start: date,
+def facts_by_id(facts_path: Path, count: int, sources: dict[str, date | None], start: date,
                 cutoff: date) -> tuple[dict[str, dict], int]:
     """Count the full corpus while materializing only rows needed for evaluation."""
     fields = [*EVIDENCE_COLUMNS, "source_record_ordinal"]
     facts = {}
-    keys = pa.array(sorted(sources), type=pa.string())
+    source_days: dict[date | None, list[str]] = defaultdict(list)
+    for source, day in sources.items():
+        source_days[day].append(source)
     population = eligible = 0
+    previous = None
+    keys = pa.array([], type=pa.string())
     for path in sorted(facts_path.glob("event_date=*/*.parquet")):
         day = date.fromisoformat(path.parent.name.removeprefix("event_date="))
         parquet = pq.ParquetFile(path)
@@ -49,13 +53,19 @@ def facts_by_id(facts_path: Path, count: int, sources: set[str], start: date,
         population += parquet.metadata.num_rows
         if day >= start:
             eligible += parquet.metadata.num_rows
+        if day != previous:
+            keys = pa.array(source_days[day] + source_days[None], type=pa.string())
+            previous = day
+        if not len(keys):
+            continue
         for chunk in parquet.iter_batches(columns=fields):
             for row in chunk.filter(pc.is_in(chunk["source_id"], value_set=keys)).to_pylist():
                 source_id = row["source_id"]
                 require(source_id not in facts, "Prepared evidence contains a repeated payment identity")
                 facts[source_id] = row
     require(population == count and bool(eligible), "Prepared evidence count differs from the scored population")
-    require(facts.keys() == sources, "Scored evidence or reference includes a payment missing from the prepared batch")
+    require(facts.keys() == sources.keys(),
+            "Scored evidence or reference includes a payment missing from its prepared date partition")
     return facts, eligible
 
 
@@ -231,9 +241,18 @@ def evaluate_batch(ready: dict, mirror: Path, manifest_path: Path, detector_path
             and len(set(ranks.values())) == len(ranks), "Ranked investigations differ from the manifest")
     highlights, evidence = check_evidence(evidence_store, scope, tables["ranked_cases"],
                                           tables["evidence_index"], start + timedelta(days=1), cutoff)
-    sources = (set(evidence) | set(tables["payment_alerts"]["source_id"].to_pylist())
-               | {row["source_id"] for row in labels} | {source for row in annotations for source in row["source_ids"]})
+    print(json.dumps({"stage": "evaluate", "step": "verified_case_evidence",
+                      "distinct_evidence_payments": len(evidence)}), flush=True)
+    sources = {source: row["event_time"].date() for source, row in evidence.items()}
+    alerts = tables["payment_alerts"].select(["source_id", "event_date"]).to_pylist()
+    for row in alerts:
+        require(sources.setdefault(row["source_id"], row["event_date"]) == row["event_date"],
+                "Payment alert date disagrees with case evidence")
+    for source in {row["source_id"] for row in labels} | {source for row in annotations for source in row["source_ids"]}:
+        sources.setdefault(source, None)
     facts, population = facts_by_id(batch.facts_path, batch.payments, sources, start.date(), cutoff.date())
+    print(json.dumps({"stage": "evaluate", "step": "matched_prepared_payments",
+                      "population": population, "matched": len(facts)}), flush=True)
     for source, payment in evidence.items():
         require(all(payment[field] == facts[source][field] for field in EVIDENCE_COLUMNS),
                 f"Case evidence differs from prepared payment: {source}")

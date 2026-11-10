@@ -2,6 +2,7 @@
 
 import argparse
 from base64 import b64encode
+from concurrent.futures import ThreadPoolExecutor
 from contextlib import closing
 from dataclasses import dataclass
 from datetime import date, timedelta
@@ -179,6 +180,15 @@ class S3Evidence:
             self.store.download(Key, path)
         return {"Body": path.open("rb")}
 
+    def prefetch(self, keys: set[str]) -> None:
+        def cache(key: str) -> None:
+            with self.get_object(BUCKET, key)["Body"]:
+                pass
+
+        with ThreadPoolExecutor(max_workers=8) as pool:
+            for _ in pool.map(cache, sorted(keys)):
+                pass
+
 
 def reference(ref: dict, prefix: str, suffix: str) -> tuple[str, str]:
     if not isinstance(ref, dict) or set(ref) != {"key", "sha256"}:
@@ -245,12 +255,19 @@ def restore_stage(store: Store, scratch: Path, stage_dir: str, identity: str, pr
     inventory = json.loads(store.read(stage_dir + "/inventory.json").body)
     if inventory["identity"] != identity:
         raise ValueError(f"Stage outputs belong to another batch: {stage_dir}")
-    for key, checksum in inventory["files"].items():
+    files = inventory["files"]
+    for key in files:
         object_key(key)
         if not key.startswith((stage_dir + "/", *prefixes)):
             raise ValueError(f"Unexpected artifact in stage inventory: {key}")
-        if include_data or key.startswith(stage_dir + "/"):
-            materialize(store, scratch, key, checksum)
+    selected = [(key, checksum) for key, checksum in files.items() if include_data or key.startswith(stage_dir + "/")]
+
+    def restore(item: tuple[str, str]) -> None:
+        materialize(store, scratch, *item)
+
+    with ThreadPoolExecutor(max_workers=8) as pool:
+        for _ in pool.map(restore, selected):
+            pass
 
 
 def load_bundle(store: Store, path: Path, bundle_uri: str, checksum: str) -> None:
@@ -366,14 +383,27 @@ def run_stage(store: Store, scratch: Path, stage: str, ready_key: str, ready_eta
         score_fresh_batch(manifest, detector, scratch, bundle, bundle_sha256, release_id, work,
                           date.fromisoformat(ready["batch_start"]))
     elif stage == "evaluate":
-        from fresh_release import evaluate_batch
+        from fresh_release import evaluate_batch, score_tables, trace_scope
         from pipeline.bq2_release import LocalBQ2Objects
 
         for name in ("labels", "complete_labels", "annotations"):
             if name in ready:
                 ref = ready[name]
                 materialize(store, scratch, ref["key"], ref["sha256"])
-        evidence_store = S3Evidence(store, scratch / "evidence-cache") if cloud else LocalBQ2Objects(scratch)
+        if cloud:
+            print(json.dumps({"stage": "evaluate", "step": "restored_scored_batch"}), flush=True)
+            score_manifest = json.loads((scores / "manifest.json").read_bytes())
+            scope = trace_scope(json.loads(detector.read_bytes()), score_manifest)
+            index = score_tables(scores, score_manifest)["evidence_index"]
+            prefix = scope["q2"]["bundles"] + "shards/"
+            locations = set(index["bundle_uri"].to_pylist())
+            if any(not uri.startswith(prefix) for uri in locations):
+                raise ValueError("Evidence shard lies outside the evaluated batch")
+            evidence_store = S3Evidence(store, scratch / "evidence-cache")
+            evidence_store.prefetch({split_uri(uri)[1] for uri in locations})
+            print(json.dumps({"stage": "evaluate", "step": "cached_evidence", "shards": len(locations)}), flush=True)
+        else:
+            evidence_store = LocalBQ2Objects(scratch)
         evaluate_batch(ready, scratch, manifest, detector, scores, evaluation, evidence_store)
     else:
         from fresh_release import stage_release
