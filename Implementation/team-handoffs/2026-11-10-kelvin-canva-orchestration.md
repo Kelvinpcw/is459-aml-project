@@ -11,3 +11,9 @@
 Reviewed the current architecture, ETL, monitoring, detection and evaluation slides. Updated only slides 23–25 and their presenter notes. Section 06 now follows the completed execution and its job dependencies, demos release provenance and failure behavior, and closes with the review decisions and the remaining validation step. Removed repeated dataset totals, ACH figures and holdout metrics. Checked all three layouts, presenter notes and Canva save status. AWS: none.
 
 Removed live demo cues from slides 23–24 and their presenter notes. Section 06 explains the workflow and release behavior. The team will use its existing video for the walkthrough. Verified the updated slides, notes and Canva save status. AWS: none.
+
+## 11 November final presentation edit
+
+Updated only Canva slides 24 and 25 and their notes. Slide 24 pairs a graph-only crop of the successful 30 October Step Functions execution with readable branch labels and the requirement that both jobs succeed before Catalog registers tables. Slide 25 retains the publication checks and PASS/FAIL layout and makes the manifest-before-pointer ordering explicit. The 192-word script leaves the demo to the separate video.
+
+Verified both slides in presentation view, compared both saved note fields with the script, and checked Canva's save status. AWS scope was read-only console viewing. No jobs were started and no cloud resources were changed, so no AWS cleanup was needed.
