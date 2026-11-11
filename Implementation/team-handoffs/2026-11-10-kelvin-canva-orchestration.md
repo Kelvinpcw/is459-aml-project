@@ -17,3 +17,9 @@ Removed live demo cues from slides 23–24 and their presenter notes. Section 06
 Updated only Canva slides 24 and 25 and their notes. Slide 24 pairs a graph-only crop of the successful 30 October Step Functions execution with readable branch labels and the requirement that both jobs succeed before Catalog registers tables. Slide 25 retains the publication checks and PASS/FAIL layout and makes the manifest-before-pointer ordering explicit. The 192-word script leaves the demo to the separate video.
 
 Verified both slides in presentation view, compared both saved note fields with the script, and checked Canva's save status. AWS scope was read-only console viewing. No jobs were started and no cloud resources were changed, so no AWS cleanup was needed.
+
+## 11 November overlap and release-scope revision
+
+- Updated Kelvin's Canva pages 24, 25 and 27 and their speaker notes. Page 24 uses the existing execution graph to explain the successful Publish step. Page 25 explains the manifest and release switch, including failure retention and the separate daily BQ2 release. Page 27 closes on analyst decisions and validation at a fixed review budget. Slide 5 covers pipeline architecture and slide 21 covers validation checks.
+- Checked the 30 October success and publication event in the Step Functions console, verified the slide layouts and saved notes in Canva, and cross-checked the release behavior against the publisher, submission index and BQ2 handoff.
+- AWS: read-only console viewing. No processing, query, deployment or resource change was started. No cleanup was required.
