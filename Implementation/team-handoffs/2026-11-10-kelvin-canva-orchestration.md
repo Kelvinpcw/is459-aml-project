@@ -23,3 +23,8 @@ Verified both slides in presentation view, compared both saved note fields with 
 - Updated Kelvin's Canva pages 24, 25 and 27 and their speaker notes. Page 24 uses the existing execution graph to explain the successful Publish step. Page 25 explains the manifest and release switch, including failure retention and the separate daily BQ2 release. Page 27 closes on analyst decisions and validation at a fixed review budget. Slide 5 covers pipeline architecture and slide 21 covers validation checks.
 - Checked the 30 October success and publication event in the Step Functions console, verified the slide layouts and saved notes in Canva, and cross-checked the release behavior against the publisher, submission index and BQ2 handoff.
 - AWS: read-only console viewing. No processing, query, deployment or resource change was started. No cleanup was required.
+
+## 11 November presentation run correction
+
+- Updated the execution slide, now page 22, to use the successful 9 November batch. Replaced the event-number references with plain-language bullets and replaced the graph with a crop of that execution. Checked the slide and speaker notes in Canva.
+- AWS: read-only execution history. No processing, query or resource change. No cleanup required.
