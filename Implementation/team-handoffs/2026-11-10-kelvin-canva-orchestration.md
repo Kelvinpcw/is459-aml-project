@@ -33,3 +33,8 @@ Verified both slides in presentation view, compared both saved note fields with 
 
 - Rewrote Canva page 24 with one monitoring point, one investigation point and one validation step. Replaced the speaker notes with an approximately 18-second closing script. Checked the slide layout and saved notes in Canva.
 - AWS: none.
+
+## Closing speaker notes
+
+- Checked pages 22–24 against the preceding evaluation slide. Shortened the notes to cover the successful publication, release fallback, and the next dashboard validation step. Verified the saved notes on all three pages. Slide visuals were unchanged.
+- AWS: none.
