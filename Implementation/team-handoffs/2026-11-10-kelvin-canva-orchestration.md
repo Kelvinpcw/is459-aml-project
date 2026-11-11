@@ -28,3 +28,8 @@ Verified both slides in presentation view, compared both saved note fields with 
 
 - Updated the execution slide, now page 22, to use the successful 9 November batch. Replaced the event-number references with plain-language bullets and replaced the graph with a crop of that execution. Checked the slide and speaker notes in Canva.
 - AWS: read-only execution history. No processing, query or resource change. No cleanup required.
+
+## Dashboard conclusion revision
+
+- Rewrote Canva page 24 with one monitoring point, one investigation point and one validation step. Replaced the speaker notes with an approximately 18-second closing script. Checked the slide layout and saved notes in Canva.
+- AWS: none.
